@@ -1,10 +1,14 @@
 lexer grammar MxLexer;
+<<<<<<< HEAD
 // Comments
 COMMENT
     :   ( '//' ~[\r\n]* '\r'? '\n'
         | '/*' .*? '*/'
         ) -> skip
     ;
+=======
+
+>>>>>>> a2b1b15694424b9256ae9521c16f0ad8e8a0cc4f
 //void, bool, int, string, new, class, null, true, false, this, if, else, for, while, break, continue, return
 Void:'void';
 Bool:'bool';
@@ -23,6 +27,7 @@ While:'while';
 Break:'break';
 Continue:'continue';
 Return:'return';
+<<<<<<< HEAD
 //Symbols
 Add:'+';
 SelfAdd:'++';
@@ -82,3 +87,5 @@ WhiteSpace
 |'//')->skip;
 Identifier: Letter IdentifierCharacter*;
 
+=======
+>>>>>>> a2b1b15694424b9256ae9521c16f0ad8e8a0cc4f
