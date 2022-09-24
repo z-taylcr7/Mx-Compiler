@@ -1,19 +1,15 @@
 lexer grammar MxLexer;
-<<<<<<< HEAD
 // Comments
-COMMENT
+Comment
     :   ( '//' ~[\r\n]* '\r'? '\n'
         | '/*' .*? '*/'
         ) -> skip
     ;
-=======
-
->>>>>>> a2b1b15694424b9256ae9521c16f0ad8e8a0cc4f
 //void, bool, int, string, new, class, null, true, false, this, if, else, for, while, break, continue, return
 Void:'void';
 Bool:'bool';
 Int:'int';
-Stirng:'string';
+String:'string';
 New:'new';
 Class:'class';
 Null:'null';
@@ -27,18 +23,20 @@ While:'while';
 Break:'break';
 Continue:'continue';
 Return:'return';
-<<<<<<< HEAD
+
 //Symbols
-Add:'+';
 SelfAdd:'++';
-Minus:'-';
+Add:'+';
 SelfMinus:'--';
+Minus:'-';
 Multiply:'*';
 Divide:'/';
 Mod:'%';
 LogicAnd:'&&';
 LogicOr:'||';
 LogicNegative:'!';
+LeftShift:'<<';
+RightShift:'>>';
 Greater:'>';
 Less:'<';
 Equal:'==';
@@ -49,8 +47,6 @@ And:'&';
 Or:'|';
 Xor:'^';
 Negative:'~';
-LeftShift:'<<';
-RightShift:'>>';
 Assign:'=';
 Object:'.';
 LBlanket:'[';
@@ -64,11 +60,11 @@ Comma:',';
 
 
 //fragments
-fragment Digit: [0-9];
-fragment Symbol: [!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~];
-fragment DigitExceptZero: [1-9];
-fragment Letter: [a-zA-Z];
-fragment IdentifierCharacter: [a-zA-Z0-9_];
+fragment Digit: '0'..'9';
+fragment Symbol: [!"#$%&'()*+,-./:;=><?[\]^_`{|}~];
+fragment DigitExceptZero: '1'..'9';
+fragment Letter: 'a'..'z'|'A'..'Z';
+fragment IdentifierCharacter: 'a'..'z'|'A'..'Z'|'0'..'9'|'_';
 fragment EscapeCharacter
     : '\n'
     | '\\'
@@ -77,15 +73,19 @@ fragment StringCharacter
     : Digit
     | Letter
     | Symbol
-    | '\\' EscapeCharacter;
+    | EscapeCharacter;
 
-// whitespace
-WhiteSpace
-:(' '
-|'\t'
-|'\n'
-|'//')->skip;
+//ID
 Identifier: Letter IdentifierCharacter*;
 
-=======
->>>>>>> a2b1b15694424b9256ae9521c16f0ad8e8a0cc4f
+//literal
+BoolLiteral:True|False;
+IntLiteral: '0'|DigitExceptZero Digit*;
+StringLiteral:'"' StringCharacter+ '"';
+NullLiteral:Null;
+
+
+//seperator
+WhiteSpace: (' '|'\t'|'\n'|'//')->skip;
+
+Enter:('\r'|'\n');
