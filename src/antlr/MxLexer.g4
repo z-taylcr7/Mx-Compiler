@@ -89,3 +89,10 @@ NullLiteral:Null;
 WhiteSpace: (' '|'\t'|'\n'|'//')->skip;
 
 Enter:('\r'|'\n');
+
+//variables
+INT:IntLiteral|'-' IntLiteral;
+BOOL:True|False;
+VOID:'NULL';//Dont know what to do
+STRING:StringLiteral;//how to get immutable?
+
