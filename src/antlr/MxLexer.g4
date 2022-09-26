@@ -59,12 +59,22 @@ SemiColon:';';
 Comma:',';
 
 
+
+//ID
+Identifier: Letter IdentifierCharacter*;
+//literal
+BoolLiteral:True|False;
+IntLiteral: '0'|DigitExceptZero Digit*;
+StringLiteral:'"' StringCharacter+ '"';
+NullLiteral:Null;
 //fragments
 fragment Digit: '0'..'9';
 fragment DigitExceptZero: '1'..'9';
 fragment Letter: 'a'..'z'|'A'..'Z';
 fragment Symbol: [!"#$%&'()*+,-./:;=><?[\]^_`{|}~];
+
 fragment IdentifierCharacter: 'a'..'z'|'A'..'Z'|'0'..'9'|'_';
+
 fragment EscapeCharacter
     : '\n'
     | '\\'
@@ -75,14 +85,7 @@ fragment StringCharacter
     | Symbol
     | EscapeCharacter;
 
-//ID
-Identifier: Letter IdentifierCharacter*;
 
-//literal
-BoolLiteral:True|False;
-IntLiteral: '0'|DigitExceptZero Digit*;
-StringLiteral:'"' StringCharacter+ '"';
-NullLiteral:Null;
 
 
 //seperator
