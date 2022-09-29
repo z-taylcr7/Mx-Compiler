@@ -3,28 +3,34 @@ grammar Mx;
 //parser
 
 //coding
-MxCode:(funcDef|classDef|varDefStmt)*EOF;
+mxCode:(funcDef|classDef|varDefStmt)* EOF;
 
 //class
+classDef:Class ID LBrace (varDefStmt|funcDef|classConstructorDef)* RBrace SemiColon;
+classConstructorDef:ID LParen RParen pack;
 
 //function
+funcDef:varDefType ID LParen funcDefArgs? RParen pack;
+funcDefArgs:varDefType ID (Comma varDefType ID)*;
+funcCallArgs: LParen (expression (Comma expression)*)? RParen;
 //variables
 
 //arraytype
 varDefType:BasicType | ID |(BasicType|ID)(LBracket RBracket)*;
-varDefBody:varDefType varDefSingle (comma varDefObj)*;
+varDefObj:varDefType varDefSingle (Comma varDefSingle)*;
 varDefSingle:ID (Assign expression)?;
-newExpSizeDeclaration: LeftBracket expression? RightBracket;
+newExpSizeDeclaration: LBracket expression? RBracket;
 
 //Statements
 pack:LBrace statement* RBrace;
 ifStmt:If LParen expression RParen statement (Else statement)?;
 whileStmt: While LParen expression RParen pack;
-varDefStmt:varDefBody SemiColon;//todo:
-forInit:varDefType varDefObj (comma varDefObj)*;
+varDefStmt:varDefObj SemiColon;
+forInit:varDefType varDefObj (Comma varDefObj)*;
 returnStmt: Return expression? SemiColon;
 forStmt:For LBrace forInit? SemiColon forCond=expression? SemiColon forIncr=expression? RBrace pack;
 packStmt:pack;
+controlStmt:(Break|Continue) SemiColon;
 pureStmt:expression?SemiColon;
 statement
     :   packStmt
@@ -39,25 +45,44 @@ statement
 
 //expressions
 
-//operators
-prefixOps:SelfAdd|SelfMinus;
-suffixOps:SelfAdd|SelfMinus;
-unaryOps:Negative|Add|Minus|LogicNegative;
-shiftOps:LeftShift|RightShift;
-supOps:Multiply|Divide;
-infOps:Add|Minus;
-compareOps:Greater|Less|GEQ|LEQ;
-equalOps:NEQ|Equal;
+    //operators
+    prefixOps:SelfAdd|SelfMinus;
+    suffixOps:SelfAdd|SelfMinus;
+    unaryOps:LogicNegative|Negative|Add|Minus|LogicNegative;
+    shiftOps:LeftShift|RightShift;
+    supOps:Multiply|Divide;
+    infOps:Add|Minus;
+    compareOps:Greater|Less|GEQ|LEQ;
+    equalOps:NEQ|Equal;
+    bitOps:Or|Xor|And;
+    logicOps:LogicAnd|LogicOr;
 
+    expression:
+            basicExp                                                                        //atomExp
+            |LParen expression RParen                                                       //parenExo
+            |New (ID|BasicType) newExpSizeDeclaration* (LParen RParen)?                     //newExp
+            |expression LBracket expression RBracket                                        //ArrayExp
+            |expression Object ID                                                           //memberExp
+            |expression funcCallArgs                                                        //functionCallExp
+            |LambdaStart (LParen funcDefArgs? RParen)?
+             LambdaArrow pack funcCallArgs                                                  //lambdaExp
+            |expression suffixOps
+            |<assoc=right> prefixOps expression                                             //prefixExp
+            |<assoc=right> unaryOps expression                                              //unaryExp
 
-expression:
-        basicExp                                                                        //atomExp
-        |LParen expression RParen                                                       //parenExo
-        |New (ID|BasicType) newExpSizeDeclaration* (LParen RParen)?//todo: not good     //newExp
-        |expression LBracket expression RBracket                                        //ArrayExp
-        |expression Object ID                                                           //memberExp
-        |
-basicExp:ID|True|False|This|IntLiteral|StringLiteral|Null;
+            |expression infOps expression
+            |expression supOps expression
+            |expression shiftOps expression
+            |expression compareOps expression
+            |expression equalOps expression
+            |expression logicOps expression
+            |expression bitOps expression                                                   //binaryExp
+
+            |<assoc=right> expression Assign expression                                     //assignExp
+
+            |expression Comma expression                                                    //commaExp
+            ;
+    basicExp:ID|True|False|This|IntLiteral|StringLiteral|Null;
 
 
 //lexer
@@ -101,6 +126,8 @@ LBrace:'{';
 RBrace:'}';
 SemiColon:';';
 Comma:',';
+LambdaStart:'[&]';
+LambdaArrow:'->';
 
 //keywords
 
