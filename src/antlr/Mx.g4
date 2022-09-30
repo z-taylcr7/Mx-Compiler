@@ -14,11 +14,11 @@ funcDef:varDefType ID LParen funcDefArgs? RParen pack;
 funcDefArgs:varDefType ID (Comma varDefType ID)*;
 funcCallArgs: LParen (expression (Comma expression)*)? RParen;
 //variables
-
+basicType:BoolType|IntType|StringType|VoidType;
 //arraytype
-varDefType:BasicType | ID |(BasicType|ID)(LBracket RBracket)*;
+varDefType:basicType | ID |(basicType|ID)(LBracket RBracket)*;
 varDefObj:varDefType varDefSingle (Comma varDefSingle)*;
-varDefSingle:ID (Assign expression)?;
+varDefSingle:(basicType|ID) (Assign expression)?;
 newExpSizeDeclaration: LBracket expression? RBracket;
 
 //Statements
@@ -31,7 +31,7 @@ returnStmt: Return expression? SemiColon;
 forStmt:For LBrace forInit? SemiColon forCond=expression? SemiColon forIncr=expression? RBrace pack;
 packStmt:pack;
 controlStmt:(Break|Continue) SemiColon;
-pureStmt:expression?SemiColon;
+pureStmt:expression? SemiColon;
 statement
     :   packStmt
     |   ifStmt
@@ -60,7 +60,7 @@ statement
     expression:
             basicExp                                                                        //atomExp
             |LParen expression RParen                                                       //parenExo
-            |New (ID|BasicType) newExpSizeDeclaration* (LParen RParen)?                     //newExp
+            |New (ID|basicType) newExpSizeDeclaration* (LParen RParen)?                     //newExp
             |expression LBracket expression RBracket                                        //ArrayExp
             |expression Object ID                                                           //memberExp
             |expression funcCallArgs                                                        //functionCallExp
@@ -136,7 +136,6 @@ BoolType:'bool';
 IntType:'int';
 StringType:'string';
 VoidType:'void';
-BasicType:BoolType|IntType|StringType|VoidType;
 //class keywords
 New:'new';
 Class:'class';
@@ -168,10 +167,17 @@ NewLine:('\r' '\n'?| '\n') -> skip;
 //ID
 ID: Letter IdentifierCharacter*;
 //literal
-Literal:BoolLiteral|IntLiteral|StringLiteral|NullLiteral;
+
+IntLiteral: '0'|([1-9] [0-9]*);
 BoolLiteral:True|False;
-IntLiteral: '0'|DigitExceptZero Digit*;
-StringLiteral:'"' StringCharacter* ?'"';
+
+EscapeEnter: '\\n';
+EscapeBackslash: '\\\\';
+EscapeQuote: '\\"';
+StringContent: [ -~];
+StringLiteral
+    :   '"' (EscapeEnter | EscapeBackslash | EscapeQuote | StringContent)*? '"';
+
 NullLiteral:Null;
 //fragments
 fragment Digit: '0'..'9';
