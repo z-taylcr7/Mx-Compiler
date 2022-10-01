@@ -24,11 +24,11 @@ newExpSizeDeclaration: LBracket expression? RBracket;
 //Statements
 pack:LBrace statement* RBrace;
 ifStmt:If LParen expression RParen statement (Else statement)?;
-whileStmt: While LParen expression RParen pack;
+whileStmt: While LParen expression RParen (statement);
 varDefStmt:varDefObj SemiColon;
-forInit:varDefType varDefObj (Comma varDefObj)*;
+forInit:(varDefObj|expression);
 returnStmt: Return expression? SemiColon;
-forStmt:For LBrace forInit? SemiColon forCond=expression? SemiColon forIncr=expression? RBrace pack;
+forStmt:For LParen forInit? SemiColon forCond=expression? SemiColon forIncr=expression? RParen (statement);
 packStmt:pack;
 controlStmt:(Break|Continue) SemiColon;
 pureStmt:expression? SemiColon;
@@ -50,7 +50,7 @@ statement
     suffixOps:SelfAdd|SelfMinus;
     unaryOps:LogicNegative|Negative|Add|Minus|LogicNegative;
     shiftOps:LeftShift|RightShift;
-    supOps:Multiply|Divide;
+    supOps:Multiply|Divide|Mod;
     infOps:Add|Minus;
     compareOps:Greater|Less|GEQ|LEQ;
     equalOps:NEQ|Equal;
