@@ -1,7 +1,7 @@
 package Util;
 
 import MIR.register;
-import Util.error.semanticError;
+import utility.error.semanticError;
 
 import java.util.HashMap;
 

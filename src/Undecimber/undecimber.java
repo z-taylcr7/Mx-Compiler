@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import undecimber.compiler.frontend.parser.MxParser;
 import undecimber.compiler.frontend.parser.MxLexer;
+import undecimber.compiler.frontend.ast.ASTBuilder;
+import undecimber.compiler.frontend.ast.ASTPrinter;
+
 
 
 
