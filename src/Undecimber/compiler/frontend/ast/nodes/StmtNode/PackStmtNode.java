@@ -1,6 +1,6 @@
 package undecimber.compiler.frontend.ast.nodes.StmtNode;
 
-import utility.position;
+import utility.Position;
 
 import java.util.ArrayList;
 

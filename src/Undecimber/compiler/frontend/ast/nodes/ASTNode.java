@@ -1,6 +1,6 @@
 package undecimber.compiler.frontend.ast.nodes;
 
-import utility.position;
+import utility.Position;
 
 abstract public class ASTNode {
     public position pos;

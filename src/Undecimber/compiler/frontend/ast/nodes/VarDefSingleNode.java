@@ -1,8 +1,8 @@
 package undecimber.compiler.frontend.ast.nodes;
 
-import Utility.position;
-import Undecimber.compiler.frontend.info.registry.VarRegistry;
-import Undecimber.compiler.frontend.ast.ASTVisitor;
+import utility.Position;
+import undecimber.compiler.frontend.registry.VarRegistry;
+import undecimber.compiler.frontend.ast.ASTVisitor;
 
 public class VarDefSingleNode extends BaseNode {
     public VarRegistry varRegistry;

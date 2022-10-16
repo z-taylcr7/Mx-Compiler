@@ -1,7 +1,7 @@
 package undecimber.compiler.frontend.ast.nodes.ExprNode;
 
 import undecimber.compiler.ast.ASTVisitor;
-import undecimber.compiler.frontend.ast.nodes.ExprNode;
+import undecimber.compiler.frontend.ast.nodes.*;
 import utility.Position;
 
 

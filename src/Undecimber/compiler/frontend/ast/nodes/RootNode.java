@@ -1,6 +1,6 @@
 package undecimber.compiler.frontend.ast.nodes;
 
-import Util.position;
+import utility.Position;
 import undecimber.compiler.frontend.scope.GlobalScope;
 import java.util.ArrayList;
 

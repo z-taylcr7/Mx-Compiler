@@ -1,9 +1,9 @@
 package undecimber.compiler.frontend.ast.nodes;
 
-import ast.nodes.*;
-import Undecimber.frontend.info.types.MxBaseType;
+import undecimber.compiler.frontend.ast.nodes.*;
+import utility.types.MxBaseType;
 
-import utility.position;
+import utility.Position;
 import java.util.Objects;
 
 public class FuncDefNode extends BaseNode {

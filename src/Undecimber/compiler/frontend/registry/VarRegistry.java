@@ -1,7 +1,7 @@
 package undecimber.compiler.frontend.registry;
 
-import utility.type.MxBaseType;
-import utility.type.VarType;
+import utility.types.MxBaseType;
+import utility.types.VarType;
 import undecimber.compiler.frontend.parser.MxParser;
 
 import java.util.ArrayList;

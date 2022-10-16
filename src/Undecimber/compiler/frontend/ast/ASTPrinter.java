@@ -1,7 +1,7 @@
-package Undecimber.compiler.frontend.ast;
-import Undecimber.compiler.frontend.ast.nodes.*;
-import Undecimber.compiler.frontend.ast.node.ExprNode.*;
-import Undecimber.compiler.frontend.ast.node.StmtNode.*;
+package undecimber.compiler.frontend.ast;
+import undecimber.compiler.frontend.ast.nodes.*;
+import undecimber.compiler.frontend.ast.nodes.ExprNode.*;
+import undecimber.compiler.frontend.ast.nodes.StmtNode.*;
 
 
 import java.io.PrintStream;

@@ -1,8 +1,8 @@
 package undecimber.compiler.frontend.ast.nodes;
 
-import Undecimber.Compiler.mir.Value;
-import Util.Type;
-import Util.position;
+import undecimber.compiler.middleend.mir.value;
+import utility.Type;
+import utility.Position;
 
 public abstract class ExprNode extends ASTNode {
     public Type type;

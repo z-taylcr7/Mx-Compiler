@@ -1,6 +1,6 @@
 package undecimber.compiler.frontend.scope;
 
-import undecimber.compiler.frontend.info.registry.*;
+import undecimber.compiler.frontend.registry.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 

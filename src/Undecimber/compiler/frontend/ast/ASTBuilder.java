@@ -2,7 +2,7 @@ package undecimber.compiler.frontend.ast;
 
 import undecimber.compiler.frontend.ast.nodes.*;
 import undecimber.compiler.frontend.ast.nodes.ExprNode.*;
-import undecimber.compiler.frontend.ast.node.StmtNode.*;
+import undecimber.compiler.frontend.ast.nodes.StmtNode.*;
 import undecimber.compiler.frontend.registry.*;
 import undecimber.compiler.frontend.scope.*;
 import utility.errors.*;

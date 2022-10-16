@@ -1,4 +1,4 @@
-package undecimber.compiler.frontend.ast.nodes;
+package undecimber.compiler.frontend.ast;
 
 public interface ASTVisitor {
     void visit(RootNode it);

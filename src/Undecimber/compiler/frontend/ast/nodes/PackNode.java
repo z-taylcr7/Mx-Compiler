@@ -1,8 +1,8 @@
 package undecimber.compiler.frontend.ast.nodes;
 
 
-import utility.position;
-import ast.ASTVisitor;
+import utility.Position;
+import undecimber.compiler.frontend.ast.nodes.ASTVisitor;
 
 import java.util.ArrayList;
 

@@ -1,6 +1,5 @@
 package undecimber.compiler.frontend.ast.nodes.StmtNode;
-
-import utility.position;
+import utility.Position;
 
 public class PureStmtNode extends StmtNode{
     public PureNode pure;

@@ -1,7 +1,7 @@
 package undecimber.compiler.frontend.ast.nodes;
 
-import utility.position;
-import Undecimber.compiler.frontend.ast.nodes.Stmtnode.VarDefStmtNode;
+import utility.Position;
+import undecimber.compiler.frontend.ast.nodes.Stmtnode.VarDefStmtNode;
 import java.util.ArrayList;
 import undecimber.compiler.frontend.registry.ClassRegistry;
 public class ClassDefNode extends ASTNode {

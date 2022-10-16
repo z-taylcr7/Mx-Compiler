@@ -1,7 +1,7 @@
 package undecimber.compiler.frontend.ast.nodes.StmtNode;
 
 
-import Util.position;
+import utility.Position;
 
 public class ifStmtNode extends StmtNode {
     public ExprNode condition;

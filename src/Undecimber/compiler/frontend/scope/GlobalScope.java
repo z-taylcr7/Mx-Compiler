@@ -1,10 +1,9 @@
-package masterball.compiler.frontend.info.scope;
+package undecimber.compiler.frontend.scope;
 
-import masterball.compiler.share.error.semantic.NameError;
-import masterball.compiler.frontend.info.registry.ClassRegistry;
-import masterball.compiler.frontend.info.registry.FuncRegistry;
-import masterball.compiler.frontend.info.registry.BaseRegistry;
-import masterball.compiler.frontend.info.registry.VarRegistry;
+import undecimber.compiler.frontend.registry.ClassRegistry;
+import undecimber.compiler.frontend.registry.FuncRegistry;
+import undecimber.compiler.frontend.registry.BaseRegistry;
+import undecimber.compiler.frontend.registry.VarRegistry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
