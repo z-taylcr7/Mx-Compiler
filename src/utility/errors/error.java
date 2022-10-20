@@ -1,16 +1,13 @@
-package Util.error;
-import Util.position;
+package utility.errors;
+import utility.Position;
 
 abstract public class error extends RuntimeException {
-    private position pos;
+    private Position pos;
     private String message;
 
-    public error(String msg, position pos) {
+    public error(String msg, Position pos) {
         this.pos = pos;
         this.message = msg;
     }
-
-    public String toString() {
-        return message + ": " + pos.toString();
-    }
+    public void tell() {System.err.println("<compiler ERROR>: " + message);}
 }

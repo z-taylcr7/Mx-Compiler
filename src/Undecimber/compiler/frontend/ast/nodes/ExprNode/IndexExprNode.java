@@ -1,15 +1,15 @@
-package undecimber.compiler.frontend.ast.nodes.ExprNode;
+package undecimber.compiler.frontend.ast.nodes.exprNode;
 
-import undecimber.compiler.ast.ASTVisitor;
+import undecimber.compiler.frontend.ast.ASTVisitor;
 import undecimber.compiler.frontend.ast.nodes.*;
 import utility.Position;
 
 
 public class IndexExprNode extends ExprNode {
-    public ExprNode arrayExpNode;
-    public ExprNode indexExpNode;
+    public ExprNode arrayExprNode;
+    public ExprNode indexExprNode;
 
-    public IndexExprNode(Positiion pos, ExpBaseNode arrayExpNode, ExpBaseNode indexExpNode) {
+    public IndexExprNode(Position pos, ExprNode arrayExpNode, ExprNode indexExpNode) {
         super(pos);
         this.arrayExprNode = arrayExpNode;
         this.indexExprNode = indexExpNode;

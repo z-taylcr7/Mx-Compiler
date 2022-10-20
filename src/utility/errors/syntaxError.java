@@ -1,10 +1,10 @@
-package Util.error;
-import Util.position;
+package utility.errors;
+import utility.Position;
 
 public class syntaxError extends error {
 
-    public syntaxError(String msg, position pos) {
-        super("SyntaxError: " + msg, pos);
+    public syntaxError(Position pos, String msg,String name) {
+        super("SyntaxError: <"+name+">" + msg, pos);
     }
 
 }

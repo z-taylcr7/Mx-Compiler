@@ -1,17 +1,23 @@
-package undecimber.compiler.frontend.ast.nodes.StmtNode;
+package undecimber.compiler.frontend.ast.nodes.stmtNode;
 
 
+import undecimber.compiler.frontend.ast.ASTVisitor;
+import undecimber.compiler.frontend.ast.nodes.BaseStmtNode;
+import undecimber.compiler.frontend.ast.nodes.ExprNode;
+import undecimber.compiler.frontend.scope.*;
 import utility.Position;
 
-public class ifStmtNode extends StmtNode {
+public class IfStmtNode extends BaseStmtNode {
     public ExprNode condition;
-    public StmtNode thenStmt, elseStmt;
-
-    public ifStmtNode(ExprNode condition, StmtNode thenStmt, StmtNode elseStmt, position pos) {
+    public BaseStmtNode thenStmt, elseStmt;
+    public IfScope thenScope, elseScope;
+    public IfStmtNode( Position pos,ExprNode condition, BaseStmtNode thenStmt) {
         super(pos);
+        this.thenScope=new IfScope();
+        this.elseScope=new IfScope();
         this.condition = condition;
         this.thenStmt = thenStmt;
-        this.elseStmt = elseStmt;
+        this.elseStmt = null;
     }
 
     @Override

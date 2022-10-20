@@ -1,27 +1,31 @@
 package utility.types;
-import Undecimber.compiler.frontend.ast.nodes.ExpBaseNode;
+import undecimber.compiler.frontend.ast.nodes.ExprNode;
 
 import java.util.ArrayList;
 
-import static utility.types.MxBaseType.BuiltinType.FUNC;
+import static utility.types.MxBaseType.BasicType.FUNC;
 
 public class MxFuncType extends MxBaseType {
     public VarType retType;
     public ArrayList<VarType> funcArgsType;
 
     public MxFuncType() {
-        super(BuiltinType.FUNC);
+        super(BasicType.FUNC);
         retType = null;
         funcArgsType = new ArrayList<>();
     }
 
     @Override
-    public boolean match(MxBaseType other) {return false;}
+    public boolean match(MxBaseType other) {
+        return false;
+    }
 
     @Override
-    public boolean match(BuiltinType other) {return other == FUNC;}
+    public boolean match(BasicType other) {
+        return other == FUNC;
+    }
 
-    public int funcCallMatch(ArrayList<ExpBaseNode> args) {
+    public int funcCallMatch(ArrayList<ExprNode> args) {
         if (funcArgsType.size() != args.size()) {
             return -1;
         }
@@ -50,9 +54,10 @@ public class MxFuncType extends MxBaseType {
 
     public String toString() {
         StringBuilder ret = new StringBuilder();
-        ret.append("func, retType:").append(retType).append(" args:");
+        ret.append("func; return Type is:").append(retType).append(" args:");
         for (int i = 0; i < funcArgsType.size(); ++i) {
             ret.append(funcArgsType.get(i).toString() + " ");
         }
         return ret.toString();
     }
+}

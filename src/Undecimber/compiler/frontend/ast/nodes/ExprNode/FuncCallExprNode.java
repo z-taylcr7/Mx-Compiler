@@ -1,17 +1,18 @@
-package undecimber.compiler.frontend.ast.nodes.ExprNode;
+package undecimber.compiler.frontend.ast.nodes.exprNode;
 
-import undecimber.compiler.ast.ASTVisitor;
+import undecimber.compiler.frontend.ast.ASTVisitor;
 import undecimber.compiler.frontend.ast.nodes.ExprNode;
 import utility.Position;
 
 import java.util.ArrayList;
 
-public class FuncCallExpNode extends ExprNode
-    public ArrayList<ExpBaseNode> callArgExpNodes;
+public class FuncCallExprNode extends ExprNode {
+    public ArrayList<ExprNode> callArgExpNodes;
+    public ExprNode callExprNode;
 
-    public FuncCallExpNode(Position pos, ExprNode callExpNode) {
+    public FuncCallExprNode(Position pos, ExprNode callExprNode) {
         super(pos);
-        this.callExprNode = callExpNode;
+        this.callExprNode = callExprNode;
         this.callArgExpNodes = new ArrayList<>();
     }
 
@@ -24,3 +25,4 @@ public class FuncCallExpNode extends ExprNode
     public boolean isLeftValue() {
         return false;
     }
+}

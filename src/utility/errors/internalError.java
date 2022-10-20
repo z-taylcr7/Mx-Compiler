@@ -1,10 +1,10 @@
-package Util.error;
-import Util.position;
+package utility.errors;
+import utility.Position;
 
 public class internalError extends error {
 
-    public internalError(String msg, position pos) {
-        super("Internal Error:" + msg, pos);
+    public internalError(Position pos, String msg,String name ) {
+        super("Internal Error:<"+name+">" + msg, pos);
     }
 
 }

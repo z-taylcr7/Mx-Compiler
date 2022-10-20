@@ -1,13 +1,15 @@
 package utility.types;
 
 
-import utility.position;
-import Undecimber.compiler.frontend.parser.MxParser;
-import utility.errors.semantic.typeError;
+import utility.Position;
+import undecimber.compiler.frontend.parser.MxParser;
+import utility.errors.semantic.TypeError;
+import utility.errors.syntax.ArrayDeclarationError;
+
 import java.util.Objects;
 
 public class VarType extends MxBaseType {
-
+    public static final String nonClass = "not a class";
     public String className;
 
     public int dimension;  // for array
@@ -29,73 +31,74 @@ public class VarType extends MxBaseType {
         dimension = ctx.LBracket().size();
         className = nonClass;
 
-        if (ctx.BasicType() != null) {
-            if (ctx.BasicType().IntType() != null) basicType = BasicType.INT;
-            else if (ctx.BasicType().BoolType() != null)basicType = BasicType.BOOL;
-            else if (ctx.BasicType().StringType() != null) basicType = BasicType.STRING;
-            else if (ctx.BasicType().VoidType() != null) basicType = BasicType.VOID;
+        if (ctx.basicType() != null) {
+            if (ctx.basicType().IntType() != null) basicType = BasicType.INT;
+            else if (ctx.basicType().BoolType() != null)basicType = BasicType.BOOL;
+            else if (ctx.basicType().StringType() != null) basicType = BasicType.STRING;
+            else if (ctx.basicType().VoidType() != null) basicType = BasicType.VOID;
         } else if (ctx.ID() != null) {
             basicType = BasicType.CLASS;
             className = ctx.ID().toString();
         }
     }
 
-    public VarType(MxStarParser.VarDefTypeContext ctx) {
+    public VarType(MxParser.VarDefTypeContext ctx) {
         super(BasicType.NULL);
         dimension = ctx.LBracket().size();
         className = nonClass;
 
-        if (ctx.BasicType() != null) {
-            if (ctx.BasicType().IntType() != null) basicType = BasicType.INT;
-            else if (ctx.BasicType().BoolType() != null) basicType = BasicType.BOOL;
-            else if (ctx.BasicType().StringType() != null) basicType = BasicType.STRING;
-            else if (ctx.BasicType().VoidType() != null) {
-                throw new TypeError(new position(ctx), TypeError.canNotBeVoid);
+        if (ctx.basicType() != null) {
+            if (ctx.basicType().IntType() != null) basicType = BasicType.INT;
+            else if (ctx.basicType().BoolType() != null) basicType = BasicType.BOOL;
+            else if (ctx.basicType().StringType() != null) basicType = BasicType.STRING;
+            else if (ctx.basicType().VoidType() != null) {
+                throw new TypeError(new Position(ctx), TypeError.canNotBeVoid);
             }
-        } else if (ctx.Identifier() != null) {
+        } else if (ctx.ID() != null) {
             basicType = BasicType.CLASS;
             className = ctx.ID().toString();
         }
     }
 
-    public VarType(MxStarParser.NewExpContext ctx) {
+    public VarType(MxParser.NewExpContext ctx) {
         super(BasicType.NULL);
         dimension = ctx.newExpSizeDeclaration().size();
         className = nonClass;
 
-        boolean isAllNull = (dimension > 0);
+        boolean isNull = (dimension > 0);
 
         for (int i = 0; i < dimension; i++)
-            if (ctx.new ExpSizeDeclaration(i).expression() != null)
-                isAllNull = false;
+            if (ctx.newExpSizeDeclaration(i).expression() != null)
+                isNull = false;
 
-        if (isAllNull) throw new ArrayDeclarationError(new CodePos(ctx), ArrayDeclarationError.leastOneSize);
+        if (isNull) throw new ArrayDeclarationError(new Position(ctx), ArrayDeclarationError.undefinedSize);
 
         for (int i = 0; i < dimension-1; i++) {
             if (ctx.newExpSizeDeclaration(i).expression() == null &&
                     ctx.newExpSizeDeclaration(i+1).expression() != null) {
                 throw new ArrayDeclarationError(
-                        new CodePos(ctx.newExpSizeDeclaration(i)),
-                        ArrayDeclarationError.outsizeFirst
+                        new Position(ctx.newExpSizeDeclaration(i)),
+                        ArrayDeclarationError.outOfSize
                 );
             }
         }
 
-        if (ctx.BasicType() != null) {
-            if (ctx.BasicType().IntType() != null) BasicType = BasicType.INT;
-            else if (ctx.BasicType().BoolType() != null) BasicType = BasicType.BOOL;
-            else if (ctx.BasicType().StringType() != null) BasicType = BasicType.STRING;
-            else if (ctx.BasicType().VoidType() != null)  {
-                throw new TypeError(new position(ctx), TypeError.canNotBeVoid);
+        if (ctx.basicType() != null) {
+            if (ctx.basicType().IntType() != null) basicType = BasicType.INT;
+            else if (ctx.basicType().BoolType() != null) basicType = BasicType.BOOL;
+            else if (ctx.basicType().StringType() != null) basicType = BasicType.STRING;
+            else if (ctx.basicType().VoidType() != null)  {
+                throw new TypeError(new Position(ctx), TypeError.canNotBeVoid);
             }
-        } else if (ctx.Identifier() != null) {
-            BasicType = BasicType.CLASS;
-            className = ctx.Identifier().toString();
+        } else if (ctx.ID() != null) {
+            basicType = BasicType.CLASS;
+            className = ctx.ID().toString();
         }
     }
 
+    //operator=
     public MxBaseType copy() {
-        VarType ret = new VarType(BasicType);
+        VarType ret = new VarType(basicType);
         ret.dimension = dimension;
         ret.className = className;
         return ret;
@@ -109,10 +112,10 @@ public class VarType extends MxBaseType {
     @Override
     public boolean match(MxBaseType other) {
         if (other instanceof VarType) {
-            if ((dimension > 0 || BasicType == BasicType.CLASS) && other.BasicType == BasicType.NULL) {
+            if ((dimension > 0 || basicType == BasicType.CLASS) && other.basicType == BasicType.NULL) {
                 return true;
             }
-            return BasicType == other.BasicType &&
+            return basicType == other.basicType &&
                     Objects.equals(className, ((VarType) other).className)
                     && dimension == ((VarType) other).dimension;
         }
@@ -121,17 +124,17 @@ public class VarType extends MxBaseType {
 
     @Override
     public boolean match(BasicType other) {
-        if ((dimension > 0 || BasicType == BasicType.CLASS) && other == BasicType.NULL) {
+        if ((dimension > 0 || basicType == BasicType.CLASS) && other == BasicType.NULL) {
             return true;
         }
-        return BasicType == other && dimension == 0;
+        return basicType == other && dimension == 0;
     }
 
     public String toString() {
         StringBuilder ret = null;
 
-        if (BasicType == BasicType.CLASS) ret = new StringBuilder(className);
-        else ret = new StringBuilder(BasicType.toString());
+        if (basicType == BasicType.CLASS) ret = new StringBuilder(className);
+        else ret = new StringBuilder(basicType.toString());
 
         for (int i = 0; i < dimension; ++i) ret.append("[]");
         return ret.toString();

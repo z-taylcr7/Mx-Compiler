@@ -1,13 +1,14 @@
 package undecimber.compiler.frontend.ast.nodes;
 
+import undecimber.compiler.frontend.ast.ASTVisitor;
 import utility.Position;
 
-abstract public class ASTNode {
-    public position pos;
+public abstract  class ASTNode {
+    public Position pos;
 
-    public ASTNode(position pos) {
+    public ASTNode(Position pos) {
         this.pos = pos;
     }
 
-    abstract public void accept(ASTVisitor visitor);
+    public abstract void accept(ASTVisitor visitor);
 }

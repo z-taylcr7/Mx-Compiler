@@ -1,10 +1,10 @@
-package undecimber.compiler.frontend.ast.nodes.StmtNode;
+package undecimber.compiler.frontend.ast.nodes.stmtNode;
 
 import utility.Position;
 import undecimber.compiler.frontend.ast.ASTVisitor;
-import undecimber.compiler.frontend.ast.StmtNode;
+import undecimber.compiler.frontend.ast.nodes.BaseStmtNode;
 
-public class ControlStmtNode extends StmtBaseNode {
+public class ControlStmtNode extends BaseStmtNode {
     public String controlKey;
 
     public ControlStmtNode(Position pos, String controlKey) {

@@ -1,0 +1,48 @@
+package undecimber.compiler.frontend;
+//import undecimber.compiler.frontend.ast.ASTPrinter;
+import undecimber.compiler.frontend.semantic.SemanticChecker;
+import utility.errors.MxErrorListener;
+import utility.errors.*;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
+
+import undecimber.compiler.frontend.parser.MxParser;
+import undecimber.compiler.frontend.parser.MxLexer;
+import undecimber.compiler.frontend.ast.ASTBuilder;
+import undecimber.compiler.frontend.ast.nodes.RootNode;
+
+
+public class Frontend {
+    public final RootNode ASTRoot;
+    private final MxLexer lexer;
+    private final MxParser parser;
+    private final ParseTree parseTreeRoot;
+    public Frontend() throws Exception
+    {
+        String name = "testcases/codegen/e10.mx";
+        String name_= "test.out";
+        InputStream input = new FileInputStream(name);
+        PrintStream output =new PrintStream(name_);
+        //InputStream input = System.in;
+        CharStream charstream = CharStreams.fromStream(input);
+            lexer = new MxLexer(charstream);
+            lexer.removeErrorListeners();
+            lexer.addErrorListener(new MxErrorListener());
+
+            parser = new MxParser(new CommonTokenStream(lexer));
+            parser.removeErrorListeners();
+            parser.addErrorListener(new MxErrorListener());
+
+            parseTreeRoot = parser.mxCode();
+            this.ASTRoot=(RootNode)new ASTBuilder().visit(parseTreeRoot);
+            //new ASTPrinter(output).visit(this.ASTRoot);
+            new SemanticChecker().visit(ASTRoot);
+
+        }
+    }

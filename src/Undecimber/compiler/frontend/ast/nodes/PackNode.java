@@ -1,16 +1,18 @@
 package undecimber.compiler.frontend.ast.nodes;
 
 
+import undecimber.compiler.frontend.ast.ASTVisitor;
+import undecimber.compiler.frontend.scope.NormalScope;
 import utility.Position;
-import undecimber.compiler.frontend.ast.nodes.ASTVisitor;
-
 import java.util.ArrayList;
 
-public class PackStmtNode extends StmtNode {
-    public ArrayList<StmtNode> stmtNodes;
+public class PackNode extends ASTNode {
+    public ArrayList<BaseStmtNode> stmtNodes;
+    public NormalScope scope;
     //todo:
-    public PackStmtNode(position pos) {
+    public PackNode(Position pos) {
         super(pos);
+        this.scope=new NormalScope();
         this.stmtNodes = new ArrayList<>();
     }
 

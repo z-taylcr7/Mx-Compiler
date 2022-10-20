@@ -1,15 +1,15 @@
-package undecimber.compiler.frontend.ast.nodes.ExprNode;
+package undecimber.compiler.frontend.ast.nodes.exprNode;
 
-import undecimber.compiler.ast.ASTVisitor;
+import undecimber.compiler.frontend.ast.ASTVisitor;
 import undecimber.compiler.frontend.ast.nodes.*;
 import utility.Position;
-import utility.types.varType;
+import utility.types.VarType;
 import java.util.ArrayList;
 
 public class NewExprNode extends ExprNode{
-    ArrayList<ExprNode> DimLengthExprNodes;
-    varType type;
-    public NewExprNode(Position pos, varType type){
+    public ArrayList<ExprNode> DimLengthExprNodes;
+    public VarType type;
+    public NewExprNode(Position pos, VarType type){
         super(pos);
 
         this.type=type;

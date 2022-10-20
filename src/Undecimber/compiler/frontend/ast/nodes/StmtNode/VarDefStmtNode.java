@@ -1,14 +1,16 @@
-package undecimber.compiler.frontend.ast.nodes.StmtNode;
+package undecimber.compiler.frontend.ast.nodes.stmtNode;
+import undecimber.compiler.frontend.ast.ASTVisitor;
+import undecimber.compiler.frontend.ast.nodes.BaseStmtNode;
+import undecimber.compiler.frontend.ast.nodes.ExprNode;
+import undecimber.compiler.frontend.ast.nodes.VarDefSingleNode;
 import utility.Position;
-public class varDefStmtNode extends StmtNode {
-    public String name, typeName;
-    public ExprNode init;
 
-    public varDefStmtNode(String typeName, String name, ExprNode init, position pos) {
+import java.util.ArrayList;
+
+public class VarDefStmtNode extends BaseStmtNode {
+    public ArrayList<VarDefSingleNode> varDefSingleNodes;
+    public VarDefStmtNode(Position pos) {
         super(pos);
-        this.name = name;
-        this.typeName = typeName;
-        this.init = init;
     }
 
     @Override

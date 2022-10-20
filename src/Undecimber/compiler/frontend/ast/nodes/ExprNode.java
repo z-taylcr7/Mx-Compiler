@@ -1,18 +1,16 @@
 package undecimber.compiler.frontend.ast.nodes;
 
-import undecimber.compiler.middleend.mir.value;
-import utility.Type;
+import utility.types.*;
 import utility.Position;
 
 public abstract class ExprNode extends ASTNode {
-    public Type type;
-    public Value val;
+    public MxBaseType type;
 
-    public ExprNode(position pos) {
+    public ExprNode(Position pos) {
         super(pos);
     }
 
-    public boolean isAssignable() {
+    public boolean isLeftValue() {
         return true;
     }
 }

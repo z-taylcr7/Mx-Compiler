@@ -1,15 +1,16 @@
-package undecimber.compiler.frontend.ast.nodes.StmtNode;
+package undecimber.compiler.frontend.ast.nodes.stmtNode;
 
 import utility.Position;
+import undecimber.compiler.frontend.ast.nodes.*;
+import undecimber.compiler.frontend.ast.*;
 
 import java.util.ArrayList;
 
-public class PackStmtNode extends StmtNode {
-    public ArrayList<StmtNode> stmts;
+public class PackStmtNode extends BaseStmtNode {
+    public PackNode packNode;
 
-    public PackStmtNode(position pos) {
-        super(pos);
-        this.stmts = new ArrayList<>();
+    public PackStmtNode(Position pos,PackNode packNode) {
+        super(pos);this.packNode=packNode;
     }
 
     @Override

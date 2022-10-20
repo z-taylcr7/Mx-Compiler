@@ -5,15 +5,15 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 public abstract class BaseRegistry {
     public final String name;
-    public final position pos;
+    public final Position pos;
 
     BaseRegistry(String name) {
         this.name = name;
-        this.codePos = null;
+        this.pos = null;
     }
 
     BaseRegistry(String name, ParserRuleContext ctx) {
         this.name = name;
-        this.codePos = new CodePos(ctx);
+        this.pos= new Position(ctx);
     }
 }

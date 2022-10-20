@@ -1,7 +1,7 @@
 package undecimber.compiler.frontend.ast;
 import undecimber.compiler.frontend.ast.nodes.*;
-import undecimber.compiler.frontend.ast.nodes.ExprNode.*;
-import undecimber.compiler.frontend.ast.nodes.StmtNode.*;
+import undecimber.compiler.frontend.ast.nodes.exprNode.*;
+import undecimber.compiler.frontend.ast.nodes.stmtNode.*;
 
 
 import java.io.PrintStream;
@@ -33,8 +33,8 @@ public class ASTPrinter implements ASTVisitor {
         ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- ClassDefNode --- *\n");
         ps.println(node.classRegistry);
         if (node.constructorDefNode != null) visit(node.constructorDefNode);
-        node.varDefStmtNodes.forEach(sonnode -> sonnode.accept(this));
-        node.funcDefNodes.forEach(sonnode -> sonnode.accept(this));
+        node.varDefs.forEach(sonnode -> sonnode.accept(this));
+        node.funcDefs.forEach(sonnode -> sonnode.accept(this));
         nowIndentNum--;
     }
 
@@ -43,7 +43,7 @@ public class ASTPrinter implements ASTVisitor {
         nowIndentNum++;
         ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- FuncDefNode --- *\n");
         ps.println(node.funcRegistry);
-        if (node.suiteNode != null) visit(node.suiteNode);
+        if (node.packNode != null) visit(node.packNode);
         nowIndentNum--;
     }
 
@@ -65,19 +65,19 @@ public class ASTPrinter implements ASTVisitor {
     }
 
     @Override
-    public void visit(SuiteNode node) {
+    public void visit(PackNode node) {
         nowIndentNum++;
-        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- SuiteNode --- *\n");
+        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- packNode --- *\n");
         ps.println(node.scope);
         node.stmtNodes.forEach(sonnode -> sonnode.accept(this));
         nowIndentNum--;
     }
 
     @Override
-    public void visit(SuiteStmtNode node) {
+    public void visit(PackStmtNode node) {
         nowIndentNum++;
         ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- SuiteStmtNode --- *\n");
-        visit(node.suiteNode);
+        visit(node.packNode);
         nowIndentNum--;
     }
 
@@ -86,11 +86,11 @@ public class ASTPrinter implements ASTVisitor {
         nowIndentNum++;
         ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- IfStmtNode --- *\n");
         ps.println("condi: ");
-        node.conditionExpNode.accept(this);
+        node.condition.accept(this);
         ps.println("if true: ");
-        node.ifTrueStmtNode.accept(this);
+        node.thenStmt.accept(this);
         ps.println("else: ");
-        if (node.elseStmtNode != null) node.elseStmtNode.accept(this);
+        if (node.elseStmt != null) node.elseStmt.accept(this);
         nowIndentNum--;
     }
 
@@ -99,7 +99,7 @@ public class ASTPrinter implements ASTVisitor {
         nowIndentNum++;
         ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- WhileStmtNode --- *\n");
         ps.println("condi: ");
-        if (node.conditionExpNode != null) node.conditionExpNode.accept(this);
+        if (node.conditionExprNode != null) node.conditionExprNode.accept(this);
         ps.println("body: ");
         if (node.bodyStmtNode != null) node.bodyStmtNode.accept(this);
         nowIndentNum--;
@@ -110,12 +110,12 @@ public class ASTPrinter implements ASTVisitor {
         nowIndentNum++;
         ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- ForStmtNode --- *\n");
         ps.println("init: ");
-        if (node.initExpNode != null) node.initExpNode.accept(this);
+        if (node.initExprNode != null) node.initExprNode.accept(this);
         node.initVarDefSingleNodes.forEach(sonnode -> sonnode.accept(this));
         ps.println("condi: ");
-        if (node.conditionExpNode != null) node.conditionExpNode.accept(this);
+        if (node.conditionExprNode != null) node.conditionExprNode.accept(this);
         ps.println("incr: ");
-        if (node.incrExpNode != null) node.incrExpNode.accept(this);
+        if (node.incrExprNode != null) node.incrExprNode.accept(this);
         ps.println("body: ");
         if (node.bodyStmtNode != null) node.bodyStmtNode.accept(this);
         nowIndentNum--;
@@ -125,7 +125,7 @@ public class ASTPrinter implements ASTVisitor {
     public void visit(ReturnStmtNode node) {
         nowIndentNum++;
         ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- ReturnStmtNode --- *\n");
-        if (node.retExpNode != null) node.retExpNode.accept(this);
+        if (node.value!= null) node.value.accept(this);
         nowIndentNum--;
     }
 
@@ -133,7 +133,7 @@ public class ASTPrinter implements ASTVisitor {
     public void visit(ControlStmtNode node) {
         nowIndentNum++;
         ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- ControlStmtNode --- *\n");
-        ps.println(node.controlWord);
+        ps.println(node.controlKey);
         nowIndentNum--;
     }
 
@@ -141,64 +141,64 @@ public class ASTPrinter implements ASTVisitor {
     public void visit(PureStmtNode node) {
         nowIndentNum++;
         ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- PureStmtNode --- *\n");
-        if (node.expNode != null) node.expNode.accept(this);
+        if (node.pure != null) node.pure.accept(this);
         nowIndentNum--;
     }
 
     @Override
-    public void visit(AssignExpNode node) {
+    public void visit(AssignExprNode node) {
         nowIndentNum++;
-        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- AssignExpNode --- *\n");
+        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- AssignExprNode --- *\n");
         ps.println("type: " + node.type);
-        if (node.lhsExpNode != null) node.lhsExpNode.accept(this);
-        if (node.rhsExpNode != null) node.rhsExpNode.accept(this);
+        if (node.lhs != null) node.lhs .accept(this);
+        if (node.rhs != null) node.rhs .accept(this);
         nowIndentNum--;
     }
 
     @Override
-    public void visit(BinaryExpNode node) {
+    public void visit(BinaryExprNode node) {
         nowIndentNum++;
-        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- BinaryExpNode --- *\n");
+        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- BinaryExprNode --- *\n");
         ps.println("type: " + node.type);
         ps.println("op: " + node.op);
-        if (node.lhsExpNode != null) node.lhsExpNode.accept(this);
-        if (node.rhsExpNode != null) node.rhsExpNode.accept(this);
+        if (node.lhsExprNode != null) node.lhsExprNode.accept(this);
+        if (node.rhsExprNode != null) node.rhsExprNode.accept(this);
         nowIndentNum--;
     }
 
     @Override
-    public void visit(FuncCallExpNode node) {
+    public void visit(FuncCallExprNode node) {
         nowIndentNum++;
-        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- FuncCallExpNode --- *\n");
+        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- FuncCallExprNode --- *\n");
         ps.println("type: " + node.type);
-        node.callExpNode.accept(this);
+        node.accept(this);
         node.callArgExpNodes.forEach(sonnode -> sonnode.accept(this));
         nowIndentNum--;
     }
 
     @Override
-    public void visit(IndexExpNode node) {
+    public void visit(IndexExprNode node) {
         nowIndentNum++;
-        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- IndexExpNode --- *\n");
+        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- IndexExprNode --- *\n");
         ps.println("type: " + node.type);
-        if (node.arrayExpNode != null) node.arrayExpNode.accept(this);
-        if (node.indexExpNode != null) node.indexExpNode.accept(this);
+        if (node.arrayExprNode != null) node.arrayExprNode.accept(this);
+        if (node.indexExprNode != null) node.indexExprNode.accept(this);
         nowIndentNum--;
     }
 
     @Override
-    public void visit(MemberExpNode node) {
+    public void visit(MemberExprNode node) {
         nowIndentNum++;
-        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- MemberExpNode --- *\n");
+        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- MemberExprNode --- *\n");
         ps.println("type: " + node.type);
-        if (node.superExpNode != null) node.superExpNode.accept(this);
+        if (node.supExprNode != null) node.supExprNode.accept(this);
         nowIndentNum--;
     }
 
     @Override
-    public void visit(NewExpNode node) {
+    public void visit(NewExprNode node) {
         nowIndentNum++;
-        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- NewExpNode --- *\n");
+        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- NewExprNode --- *\n");
         ps.println("type: " + node.type);
         ps.println("NewType: " + node.type);
         // new exp type is determined in ASTBuilder
@@ -206,50 +206,50 @@ public class ASTPrinter implements ASTVisitor {
     }
 
     @Override
-    public void visit(PostfixExpNode node) {
+    public void visit(SuffixExprNode node) {
         nowIndentNum++;
-        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- PostfixExpNode --- *\n");
+        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- PostfixExprNode --- *\n");
         ps.println("type: " + node.type);
         ps.println("op: " + node.op);
-        if (node.selfExpNode != null) node.selfExpNode.accept(this);
+        if (node.exprNode!= null) node.exprNode.accept(this);
         nowIndentNum--;
     }
 
     @Override
-    public void visit(PrefixExpNode node) {
+    public void visit(PrefixExprNode node) {
         nowIndentNum++;
-        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- PrefixExpNode --- *\n");
+        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- PrefixExprNode --- *\n");
         ps.println("type: " + node.type);
         ps.println("op: " + node.op);
-        if (node.selfExpNode != null) node.selfExpNode.accept(this);
+        if (node.exprNode != null) node.exprNode.accept(this);
         nowIndentNum--;
     }
 
     @Override
-    public void visit(UnaryExpNode node) {
+    public void visit(UnaryExprNode node) {
         nowIndentNum++;
-        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- UnaryExpNode --- *\n");
+        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- UnaryExprNode --- *\n");
         ps.println("type: " + node.type);
         ps.println("op: " + node.op);
-        if (node.selfExpNode != null) node.selfExpNode.accept(this);
+        if (node.selfExprNode != null) node.selfExprNode.accept(this);
         nowIndentNum--;
     }
 
     @Override
-    public void visit(LambdaExpNode node) {
+    public void visit(LambdaExprNode node) {
         nowIndentNum++;
-        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- LambdaExpNode --- *\n");
+        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- LambdaExprNode --- *\n");
         ps.println(node.funcRegistry);
-        node.suiteNode.accept(this);
+        node.packNode.accept(this);
         ps.println("type: " + node.type);
-        node.callArgExpNodes.forEach(sonnode -> sonnode.accept(this));
+        node.callArgExprNodes.forEach(sonnode -> sonnode.accept(this));
         nowIndentNum--;
     }
 
     @Override
-    public void visit(AtomExpNode node) {
+    public void visit(AtomExprNode node) {
         nowIndentNum++;
-        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- AtomExpNode --- *\n");
+        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- AtomExprNode --- *\n");
         ps.println("type: " + node.type);
         ps.println("text: " + node.ctx.getText());
         nowIndentNum--;

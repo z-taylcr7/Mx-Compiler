@@ -1,22 +1,26 @@
-package undecimber.compiler.frontend.ast.nodes.StmtNode;
-import utility.Position;
-import undecimber.compiler.frontend.ast.ASTVisitor;
-import undecimber.compiler.frontend.ast.StmtNode;
-import undecimber.compiler.frontend.ast.ExprNode;
-import undecimber.compiler.frontend.scope.LoopScope;
+package undecimber.compiler.frontend.ast.nodes.stmtNode;
 
-public class ForStmtNode extends StmtNode{
+import undecimber.compiler.frontend.ast.nodes.BaseStmtNode;
+import undecimber.compiler.frontend.ast.ASTVisitor;
+import undecimber.compiler.frontend.ast.nodes.BaseStmtNode;
+
+import undecimber.compiler.frontend.ast.nodes.ExprNode;
+import undecimber.compiler.frontend.scope.LoopScope;
+import utility.Position;
+public class WhileStmtNode extends BaseStmtNode {
+
     public LoopScope scope;
-    public ExprNode  conditionExprNode;
-    public ArrayList<VarDefSingleNode> initVarDefSingleNodes;
-    public StmtNode bodyStmtNode;
-    public ForStmtNode(position pos){
+
+    public ExprNode conditionExprNode;
+    public BaseStmtNode bodyStmtNode;
+
+    public WhileStmtNode(Position pos, ExprNode conditionExprNode, BaseStmtNode bodyStmtNode) {
         super(pos);
-        this.scope=new LoopScope;
-        initVarDefSingleNodes= new ArrayList<VarDefSingleNode>();
-        this.conditionExprNode=null;
-        this.bodyStmtNode=null;
+        this.scope = new LoopScope();
+        this.conditionExprNode = conditionExprNode;
+        this.bodyStmtNode = bodyStmtNode;
     }
+
     @Override
     public void accept(ASTVisitor visitor) {
         visitor.visit(this);

@@ -17,7 +17,7 @@ public class ClassRegistry extends BaseRegistry {
         ret.append("\nscope:" + scope + " ");
         return ret.toString();
     }
-    public ClassRegistry(MxStarParser.ClassDefContext ctx) {
+    public ClassRegistry(MxParser.ClassDefContext ctx) {
         super(ctx.ID().toString(), ctx);
         this.scope = new ClassScope();
         memberVars = new ArrayList<>();

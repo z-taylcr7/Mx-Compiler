@@ -1,6 +1,6 @@
-package undecimber.compiler.frontend.ast.nodes.ExprNode;
+package undecimber.compiler.frontend.ast.nodes.exprNode;
 
-import undecimber.compiler.ast.ASTVisitor;
+import undecimber.compiler.frontend.ast.ASTVisitor;
 import undecimber.compiler.frontend.ast.nodes.*;
 import utility.Position;
 import utility.types.MxBaseType;
@@ -21,7 +21,6 @@ public class MemberExprNode extends ExprNode{
 
     @Override
     public boolean isLeftValue() {
-        return !this.type.match(MxBaseType.BuiltinType.FUNC);
+        return !this.type.match(MxBaseType.BasicType.FUNC);
     }
-}
 }

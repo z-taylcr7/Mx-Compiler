@@ -1,6 +1,6 @@
-package undecimber.compiler.frontend.ast.nodes.ExprNode;
+package undecimber.compiler.frontend.ast.nodes.exprNode;
 
-import undecimber.compiler.ast.ASTVisitor;
+import undecimber.compiler.frontend.ast.ASTVisitor;
 import undecimber.compiler.frontend.ast.nodes.*;
 import utility.Position;
 

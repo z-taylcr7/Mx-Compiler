@@ -4,11 +4,11 @@ import utility.Position;
 import undecimber.compiler.frontend.registry.VarRegistry;
 import undecimber.compiler.frontend.ast.ASTVisitor;
 
-public class VarDefSingleNode extends BaseNode {
+public class VarDefSingleNode extends ASTNode {
     public VarRegistry varRegistry;
     public ExprNode initExpNode;
 
-    public VarDefSingleNode(position pos) {
+    public VarDefSingleNode(Position pos) {
         super(pos);
     }
 

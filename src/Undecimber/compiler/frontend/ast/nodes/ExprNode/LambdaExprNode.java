@@ -1,6 +1,6 @@
-package undecimber.compiler.frontend.ast.nodes.ExprNode;
+package undecimber.compiler.frontend.ast.nodes.exprNode;
 
-import undecimber.compiler.ast.ASTVisitor;
+import undecimber.compiler.frontend.ast.ASTVisitor;
 import undecimber.compiler.frontend.ast.nodes.ExprNode;
 import utility.Position;
 
@@ -10,7 +10,7 @@ import undecimber.compiler.frontend.registry.FuncRegistry;
 
 import java.util.ArrayList;
 
-public class LambdaExprNode extends ExpBaseNode {
+public class LambdaExprNode extends ExprNode {
     public FuncRegistry funcRegistry;
     public PackNode packNode;
     public ArrayList<ExprNode> callArgExprNodes;

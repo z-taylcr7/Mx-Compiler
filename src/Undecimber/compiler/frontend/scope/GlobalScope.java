@@ -22,17 +22,17 @@ public class GlobalScope extends BaseScope {
     }
 
     @Override
-    public ClassRegistry queryClass(String name) {
+    public ClassRegistry getClass(String name) {
         return classTable.get(name);
     }
 
     @Override
-    public FuncRegistry queryFunc(String name) {
+    public FuncRegistry getFunc(String name) {
         return funcTable.get(name);
     }
 
     @Override
-    public VarRegistry queryVar(String name) {
+    public VarRegistry getVar(String name) {
         return varTable.get(name);
     }
 
@@ -53,7 +53,7 @@ public class GlobalScope extends BaseScope {
             if (funcTable.containsKey(name))
                 //throw new NameError(registry.pos, name);
             funcTable.put(name, (FuncRegistry) registry);
-            if (((FuncRegistry) registry).isBuiltin) {
+            if (((FuncRegistry) registry).isBasic) {
                 builtinFuncList.add((FuncRegistry) registry);
             }
         } else if (registry instanceof VarRegistry) {

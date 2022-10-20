@@ -1,6 +1,6 @@
-package undecimber.compiler.frontend.ast.nodes.ExprNode;
+package undecimber.compiler.frontend.ast.nodes.exprNode;
 
-import undecimber.compiler.ast.ASTVisitor;
+import undecimber.compiler.frontend.ast.ASTVisitor;
 import undecimber.compiler.frontend.ast.nodes.*;
 import utility.Position;
 
@@ -9,7 +9,7 @@ public class BinaryExprNode extends ExprNode {
     public String op;
     public String opType;
 
-    public BinaryExpNode(Position pos, ExprNode lhsExprNode, ExprNode rhsExprNode) {
+    public BinaryExprNode(Position pos, ExprNode lhsExprNode, ExprNode rhsExprNode) {
         super(pos);
         this.lhsExprNode = lhsExprNode;
         this.rhsExprNode = rhsExprNode;

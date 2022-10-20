@@ -1,10 +1,10 @@
-package Util.error;
-import Util.position;
+package utility.errors;
+import utility.Position;
 
 public class semanticError extends error {
 
-    public semanticError(String msg, position pos) {
-        super("Semantic Error: " + msg, pos);
+    public semanticError( Position pos ,String msg, String name) {
+        super("Semantic Error: <"+name+" > "+ msg, pos);
     }
 
 }

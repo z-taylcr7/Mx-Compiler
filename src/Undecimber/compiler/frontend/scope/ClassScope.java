@@ -37,7 +37,7 @@ public class ClassScope extends BaseScope {
             if (funcTable.containsKey(name))
                 //throw new NameError(registry.pos,  name);
             funcTable.put(name, (FuncRegistry) registry);
-            if (((FuncRegistry) registry).isBuiltin) {
+            if (((FuncRegistry) registry).isBasic) {
                 builtinFuncList.add((FuncRegistry) registry);
             }
         } else if (registry instanceof VarRegistry) {

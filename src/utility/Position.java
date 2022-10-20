@@ -5,7 +5,8 @@ import org.antlr.v4.runtime.Token;
 
 public class Position
 {
-    private int row, col;
+    private final int row;
+    private final int col;
     public Position(int Row, int Col)
     {
         this.row = Row;
@@ -17,6 +18,11 @@ public class Position
         this.row = start_token.getLine();
         this.col = start_token.getCharPositionInLine();
     }
+    public Position(Token token) {
+        this.row = token.getLine();
+        this.col = token.getCharPositionInLine();
+    }
+
     public int get_row()
     {
         return this.row;
@@ -25,4 +31,6 @@ public class Position
     {
         return this.col;
     }
+
+
 }

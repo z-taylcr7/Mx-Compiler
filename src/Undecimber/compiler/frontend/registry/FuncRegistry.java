@@ -14,7 +14,7 @@ public class FuncRegistry extends BaseRegistry {
     public FuncScope scope;
     public ArrayList<VarRegistry> funcArgs;
     //bulitin
-    public boolean isBuiltin;
+    public boolean isBasic;
 
     // default func
     public FuncRegistry(String name) {
@@ -22,21 +22,21 @@ public class FuncRegistry extends BaseRegistry {
 
         this.scope = new FuncScope();
         this.type = new MxFuncType();
-        this.isBuiltin = false;
+        this.isBasic = false;
 
-        type.retType = new VarType(MxBaseType.BuiltinType.VOID);
+        type.retType = new VarType(MxBaseType.BasicType.VOID);
         type.funcArgsType = new ArrayList<>();
 
         funcArgs = new ArrayList<>();
     }
 
-    // builtin function
-    public FuncRegistry(String name, MxBaseType.BuiltinType retType, VarRegistry... args) {
+    // Basic function
+    public FuncRegistry(String name, MxBaseType.BasicType retType, VarRegistry... args) {
         super(name);
 
         this.scope = new FuncScope();
         this.type = new MxFuncType();
-        this.isBuiltin = true;
+        this.isBasic = true;
 
         type.retType = new VarType(retType);
 
@@ -50,21 +50,21 @@ public class FuncRegistry extends BaseRegistry {
     }
 
     // lambda
-    public FuncRegistry(MxStarParser.LambdaExpContext ctx) {
+    public FuncRegistry(MxParser.LambdaExpContext ctx) {
         super("", ctx);
 
         this.scope = new FuncScope();
         this.type = new MxFuncType();
-        this.isBuiltin = false;
+        this.isBasic = false;
 
         type.funcArgsType = new ArrayList<>();
         funcArgs = new ArrayList<>();
 
-        MxStarParser.FuncDefArgsContext funcDefArgsContext = ctx.funcDefArgs();
+        MxParser.FuncDefArgsContext funcDefArgsContext = ctx.funcDefArgs();
 
         if (funcDefArgsContext != null) {
             for (int i = 0; i < funcDefArgsContext.varDefType().size(); ++i) {
-                VarRegistry varRegistry = new VarRegistry(funcDefArgsContext.Identifier(i).toString(), funcDefArgsContext.varDefType(i));
+                VarRegistry varRegistry = new VarRegistry(funcDefArgsContext.ID(i).toString(), funcDefArgsContext.varDefType(i));
                 funcArgs.add(varRegistry);
                 type.funcArgsType.add(varRegistry.type);
             }
@@ -72,22 +72,22 @@ public class FuncRegistry extends BaseRegistry {
     }
 
     // normal
-    public FuncRegistry(MxStarParser.FuncDefContext ctx) {
-        super(ctx.Identifier().toString(), ctx);
+    public FuncRegistry(MxParser.FuncDefContext ctx) {
+        super(ctx.ID().toString(), ctx);
 
         this.scope = new FuncScope();
         this.type = new MxFuncType();
-        this.isBuiltin = false;
+        this.isBasic = false;
 
         type.retType = new VarType(ctx.varDefType(), true);
         type.funcArgsType = new ArrayList<>();
         funcArgs = new ArrayList<>();
 
-        MxStarParser.FuncDefArgsContext funcDefArgsContext = ctx.funcDefArgs();
+        MxParser.FuncDefArgsContext funcDefArgsContext = ctx.funcDefArgs();
 
         if (funcDefArgsContext != null) {
             for (int i = 0; i < funcDefArgsContext.varDefType().size(); ++i) {
-                VarRegistry varRegistry = new VarRegistry(funcDefArgsContext.Identifier(i).toString(), funcDefArgsContext.varDefType(i));
+                VarRegistry varRegistry = new VarRegistry(funcDefArgsContext.ID(i).toString(), funcDefArgsContext.varDefType(i));
                 funcArgs.add(varRegistry);
                 type.funcArgsType.add(varRegistry.type);
             }
@@ -95,14 +95,14 @@ public class FuncRegistry extends BaseRegistry {
     }
 
     // constructor
-    public FuncRegistry(MxStarParser.ClassConstructorDefContext ctx) {
-        super(ctx.Identifier().toString(), ctx);
+    public FuncRegistry(MxParser.ClassConstructorDefContext ctx) {
+        super(ctx.ID().toString(), ctx);
 
         this.scope = new FuncScope();
         this.type = new MxFuncType();
-        this.isBuiltin = false;
+        this.isBasic = false;
 
-        type.retType = new VarType(MxBaseType.BuiltinType.VOID);
+        type.retType = new VarType(MxBaseType.BasicType.VOID);
 
         funcArgs = new ArrayList<>();
     }

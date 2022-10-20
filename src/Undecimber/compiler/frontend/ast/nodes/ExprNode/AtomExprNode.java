@@ -1,21 +1,21 @@
-package undecimber.compiler.frontend.ast.nodes.ExprNode;
+package undecimber.compiler.frontend.ast.nodes.exprNode;
 
-import undecimber.compiler.ast.ASTVisitor;
+import undecimber.compiler.frontend.ast.ASTVisitor;
 import undecimber.compiler.frontend.ast.nodes.ExprNode;
 import utility.Position;
 import undecimber.compiler.frontend.parser.MxParser;
 
 public class AtomExprNode extends ExprNode {
     // literal content
-    public MxParser.AtomContext ctx;
+    public MxParser.BasicExpContext ctx;
 
-    public AtomExprNode(Position pos, MxParser.AtomContext ctx) {
-        super(pos;
+    public AtomExprNode(Position pos, MxParser.BasicExpContext ctx) {
+        super(pos);
         this.ctx = ctx;
     }
 
     public String getStringLiteral() {
-        String rawString =  this.ctx.StringConstant().toString();
+        String rawString =  this.ctx.StringLiteral().toString();
         return rawString.substring(1, rawString.length()-1) // quote filter
                 .replace("\\\"","\"")
                 .replace("\\n","\n")
@@ -30,6 +30,6 @@ public class AtomExprNode extends ExprNode {
 
     @Override
     public boolean isLeftValue() {
-        return ctx.Identifier() != null;
+        return ctx.ID() != null;
     }
 }
