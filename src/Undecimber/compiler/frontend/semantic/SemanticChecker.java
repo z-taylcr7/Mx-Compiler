@@ -51,7 +51,7 @@ public class SemanticChecker implements ASTVisitor{
 
         if (node.funcRegistry.scope.catchedRetTypeList.isEmpty()) { //no return statement
             if (!node.isValidMainFunc() && !node.funcRegistry.type.retType.match(MxBaseType.BasicType.VOID)) {
-                throw new FuncReturnError(FuncReturnError.noReturn,node.pos );
+                throw new FuncReturnError(node.pos, FuncReturnError.noReturn);
             }
         }
         else {
@@ -60,7 +60,7 @@ public class SemanticChecker implements ASTVisitor{
                 // retType != null
                 assert node.funcRegistry.type.retType != null;
                 if (!node.funcRegistry.type.retType.match(catchedRetType)) {
-                    throw new FuncReturnError(FuncReturnError.retTypeNotMatch, node.pos);
+                    throw new FuncReturnError(node.pos, FuncReturnError.retTypeNotMatch);
                 }
             }
         }
@@ -224,7 +224,7 @@ public class SemanticChecker implements ASTVisitor{
         int result = ((MxFuncType) node.callExprNode.type).funcCallMatch(node.callArgExpNodes);
 
         if (result == -1) {
-            throw new FuncCallError(node.pos, FuncCallError.argcNotMatch);
+            throw new FuncCallError(node.pos, FuncCallError.argsNotMatch);
         } else if (result == -2) {
             throw new FuncCallError(node.pos, FuncCallError.argTypeNotMatch);
         }
@@ -285,12 +285,61 @@ public class SemanticChecker implements ASTVisitor{
 
     @Override
     public void visit(LambdaExprNode node) {
+        station.push(node.funcRegistry.scope);
+
+        for (VarRegistry funcArg : node.funcRegistry.funcArgs) {
+            if(funcArg.type.basicType==MxBaseType.BasicType.CLASS&&
+            station.getClass(funcArg.type.className)==null)
+                throw new NameError(node.pos,NameError.undefine,funcArg.type.className);
+            station.register(funcArg);
+        }
+
+        assert node.packNode!=null;
+        visit(node.packNode);
+
+        node.callArgExprNodes.forEach(sonnode->sonnode.accept(this));
+        int res=node.funcRegistry.type.funcCallMatch(node.callArgExprNodes);
+        if(res==-1)throw new FuncCallError(node.pos,FuncCallError.argsNotMatch);
+        else if (res==-2) {
+            throw new FuncCallError(node.pos,FuncCallError.argTypeNotMatch);
+        }
+
+        if(node.funcRegistry.scope.catchedRetTypeList.isEmpty())node.type=new VarType(MxBaseType.BasicType.VOID);
+        else{
+            for (VarType varType : node.funcRegistry.scope.catchedRetTypeList) {
+                if(node.type==null){
+                    node.type=varType;
+                    node.funcRegistry.type.retType=varType;
+                } else if (!node.type.match(varType)) {
+                    throw new FuncReturnError(node.pos,FuncReturnError.retTypeNotMatch);
+                }
+            }
+        }
 
     }
 
     @Override
     public void visit(MemberExprNode node) {
+        if(node.supExprNode!=null)node.supExprNode.accept(this);
+        assert node.supExprNode!=null;
+        //check builtinMethods
+        if(node.supExprNode.type.match(MxBaseType.BasicType.STRING)){
+            if(StringBuiltInMethods.scope.funcTable.containsKey(node.name))
+               node.type=StringBuiltInMethods.scope.getFunc(node.name).type.copy();return;
+        }
+        if(node.supExprNode.type.isArray()&&ArrayBuiltInMethods.scope.funcTable.containsKey(node.name)){
+            node.type=ArrayBuiltInMethods.scope.getFunc(node.name).type.copy();
+        }
+        TypeMatcher.match(node);
 
+        String className = ((VarType) node.supExprNode.type).className;
+        ClassRegistry classRegistry = station.getClass(className);
+        if (classRegistry == null) throw new NameError(node.pos, NameError.undefine, className);
+        if (classRegistry.scope.funcTable.containsKey(node.name))
+            node.type = classRegistry.scope.getFunc(node.name).type.copy();
+        else if (classRegistry.scope.varTable.containsKey(node.name))
+            node.type = classRegistry.scope.getVar(node.name).type.copy();
+        else throw new NameError(node.pos, NameError.undefine, node.name);
     }
 
 }

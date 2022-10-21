@@ -24,7 +24,7 @@ public class Undecimber {
 
         }
         catch (Exception e) {
-            errorHandle(e);
+            errorHandle(  e);
         }
         System.exit(0);
     }
