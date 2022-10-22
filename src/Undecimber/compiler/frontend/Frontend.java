@@ -1,5 +1,7 @@
 package undecimber.compiler.frontend;
 //import undecimber.compiler.frontend.ast.ASTPrinter;
+import undecimber.compiler.frontend.ast.ASTPrinter;
+import undecimber.compiler.frontend.scope.GlobalScope;
 import undecimber.compiler.frontend.semantic.SemanticChecker;
 import utility.errors.MxErrorListener;
 import utility.errors.*;
@@ -20,29 +22,29 @@ import undecimber.compiler.frontend.ast.nodes.RootNode;
 
 public class Frontend {
     public final RootNode ASTRoot;
-    private final MxLexer lexer;
-    private final MxParser parser;
-    private final ParseTree parseTreeRoot;
     public Frontend() throws Exception
     {
-        String name = "testcases/codegen/e10.mx";
+        String name = "testcases/codegen/test.mx";
         String name_= "test.out";
         InputStream input = new FileInputStream(name);
-        PrintStream output =new PrintStream(name_);
-        //InputStream input = System.in;
+        //PrintStream output =new PrintStream(name_);
+        // InputStream input = System.in;
         CharStream charstream = CharStreams.fromStream(input);
-            lexer = new MxLexer(charstream);
-            lexer.removeErrorListeners();
-            lexer.addErrorListener(new MxErrorListener());
 
-            parser = new MxParser(new CommonTokenStream(lexer));
-            parser.removeErrorListeners();
-            parser.addErrorListener(new MxErrorListener());
+        MxLexer lexer = new MxLexer(charstream);
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(new MxErrorListener());
 
-            parseTreeRoot = parser.mxCode();
-            this.ASTRoot=(RootNode)new ASTBuilder().visit(parseTreeRoot);
-            //new ASTPrinter(output).visit(this.ASTRoot);
-            new SemanticChecker().visit(ASTRoot);
+        MxParser parser = new MxParser(new CommonTokenStream(lexer));
+        parser.removeErrorListeners();
+        parser.addErrorListener(new MxErrorListener());
+
+        ParseTree parseTreeRoot = parser.mxCode();
+
+        this.ASTRoot = (RootNode) new ASTBuilder().visit(parseTreeRoot);
+
+        new SemanticChecker().visit(this.ASTRoot);
+        //new ASTPrinter().visit(this.ASTRoot);
 
         }
     }

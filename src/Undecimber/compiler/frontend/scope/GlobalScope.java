@@ -4,6 +4,7 @@ import undecimber.compiler.frontend.registry.ClassRegistry;
 import undecimber.compiler.frontend.registry.FuncRegistry;
 import undecimber.compiler.frontend.registry.BaseRegistry;
 import undecimber.compiler.frontend.registry.VarRegistry;
+import utility.errors.semantic.NameError;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,16 +43,16 @@ public class GlobalScope extends BaseScope {
         if (classTable.containsKey(name))
             //xc
 
-            //throw new NameError(registry.pos, name);
+            throw new NameError(registry.pos, NameError.redefine,name);
         if (registry instanceof ClassRegistry) {
             //cf cv
             if (funcTable.containsKey(name) || varTable.containsKey(name))
-                //throw new NameError(registry.pos,  name);
+                throw new NameError(registry.pos, NameError.redefine,name);
             classTable.put(name, (ClassRegistry) registry);
         } else if (registry instanceof FuncRegistry) {
             //ff
             if (funcTable.containsKey(name))
-                //throw new NameError(registry.pos, name);
+                throw new NameError(registry.pos, NameError.redefine,name);
             funcTable.put(name, (FuncRegistry) registry);
             if (((FuncRegistry) registry).isBasic) {
                 builtinFuncList.add((FuncRegistry) registry);
@@ -59,7 +60,7 @@ public class GlobalScope extends BaseScope {
         } else if (registry instanceof VarRegistry) {
             //vv
             if (varTable.containsKey(name))
-                //throw new NameError(registry.codePos, NameError.redefined , name);
+                throw new NameError(registry.pos, NameError.redefine,name);
             varTable.put(name, (VarRegistry) registry);
         }
     }

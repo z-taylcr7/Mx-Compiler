@@ -1,6 +1,7 @@
 package undecimber.compiler.frontend.scope;
 
 import undecimber.compiler.frontend.registry.*;
+import utility.errors.semantic.NameError;
 
 public class NormalScope extends BaseScope {
 
@@ -23,7 +24,7 @@ public class NormalScope extends BaseScope {
     public void register(BaseRegistry registry) {
         String name = registry.name;
         if (varTable.containsKey(name))
-            //throw new NameError(registry.pos,  name);
+            throw new NameError(registry.pos, NameError.redefine, name);
         varTable.put(name, (VarRegistry) registry);
     }
 

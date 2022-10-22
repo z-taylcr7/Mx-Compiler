@@ -166,6 +166,8 @@ public class SemanticChecker implements ASTVisitor{
         if(!station.isInFunc())throw new ScopeError(node.pos,ScopeError.wrongReturn);
         if(node.value!=null){
             node.value.accept(this);
+            station.stackReturn((VarType)node.value.type);
+        }else {
             station.stackReturn(new VarType(MxBaseType.BasicType.VOID));
         }
     }
@@ -274,11 +276,13 @@ public class SemanticChecker implements ASTVisitor{
     }
     @Override
     public void visit(IndexExprNode node) {
-        assert node.arrayExprNode!=null;
-        node.arrayExprNode.accept(this);
-        //todo:???
-        if(node.indexExprNode!=null)node.indexExprNode.accept(this);
+
+        if (node.arrayExprNode != null) node.arrayExprNode.accept(this);
+        if (node.indexExprNode != null) node.indexExprNode.accept(this);
+        assert node.arrayExprNode != null;
+
         TypeMatcher.match(node);
+
         node.type = node.arrayExprNode.type.copy();
         ((VarType) node.type).dimension--;
     }

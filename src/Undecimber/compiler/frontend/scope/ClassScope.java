@@ -1,8 +1,11 @@
 package undecimber.compiler.frontend.scope;
 
 import undecimber.compiler.frontend.registry.*;
+import utility.errors.semantic.NameError;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+
 
 public class ClassScope extends BaseScope {
 
@@ -35,14 +38,14 @@ public class ClassScope extends BaseScope {
         String name = registry.name;
         if (registry instanceof FuncRegistry) {
             if (funcTable.containsKey(name))
-                //throw new NameError(registry.pos,  name);
+                throw new NameError(registry.pos, NameError.redefine, name);
             funcTable.put(name, (FuncRegistry) registry);
             if (((FuncRegistry) registry).isBasic) {
                 builtinFuncList.add((FuncRegistry) registry);
             }
         } else if (registry instanceof VarRegistry) {
             if (varTable.containsKey(name))
-               // throw new NameError(registry.pos, name);
+               throw new NameError(registry.pos, NameError.redefine,name);
             varTable.put(name, (VarRegistry) registry);
         }
     }

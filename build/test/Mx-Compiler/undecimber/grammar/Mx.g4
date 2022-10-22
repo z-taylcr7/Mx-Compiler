@@ -1,15 +1,15 @@
 grammar Mx;
 // Add Package Automatically
 @header {
-    package Undecimber.Compiler.frontend.parser;
+    package undecimber.compiler.frontend.parser;
 }
 //parser
 
 //coding
-mxCode:(funcDef|classDef|varDefStmt)* EOF;
+mxCode:(classDef|funcDef|varDefStmt)* EOF;
 
 //class
-classDef:Class ID LBrace (varDefStmt|funcDef|classConstructorDef)* RBrace SemiColon;
+classDef:Class ID LBrace (classConstructorDef|varDefStmt|funcDef)* RBrace SemiColon;
 classConstructorDef:ID LParen RParen pack;
 
 //function
@@ -19,22 +19,25 @@ funcCallArgs: LParen (expression (Comma expression)*)? RParen;
 //variables
 basicType:BoolType|IntType|StringType|VoidType;
 //arraytype
-varDefType:basicType | ID |(basicType|ID)(LBracket RBracket)*;
-varDefObj:varDefType varDefSingle (Comma varDefSingle)*;
-varDefSingle:(basicType|ID) (Assign expression)?;
+varDefType:basicType | ID |(basicType|ID)(LBracket RBracket)+;
 newExpSizeDeclaration: LBracket expression? RBracket;
+varDefObj:varDefType varDefSingle (Comma varDefSingle)*;
+varDefSingle:ID (Assign expression)?;
 
 //Statements
 pack:LBrace statement* RBrace;
+varDefStmt:varDefObj SemiColon;
 ifStmt:If LParen expression RParen statement (Else statement)?;
 whileStmt: While LParen expression RParen (statement);
-varDefStmt:varDefObj SemiColon;
+
 forInit:(varDefObj|expression);
-returnStmt: Return expression? SemiColon;
 forStmt:For LParen forInit? SemiColon forCond=expression? SemiColon forIncr=expression? RParen (statement);
-packStmt:pack;
+returnStmt: Return expression? SemiColon;
 controlStmt:(Break|Continue) SemiColon;
 pureStmt:expression? SemiColon;
+packStmt:pack;
+
+
 statement
     :   packStmt
     |   ifStmt
@@ -57,56 +60,40 @@ statement
     infOps:Add|Minus;
     compareOps:Greater|Less|GEQ|LEQ;
     equalOps:NEQ|Equal;
-    bitOps:Or|Xor|And;
-    logicOps:LogicAnd|LogicOr;
 
     expression:
-            basicExp                                                                        //atomExp
-            |LParen expression RParen                                                       //parenExo
-            |New (ID|basicType) newExpSizeDeclaration* (LParen RParen)?                     //newExp
-            |expression LBracket expression RBracket                                        //ArrayExp
-            |expression Object ID                                                           //memberExp
-            |expression funcCallArgs                                                        //functionCallExp
+            basicExp                #atomExp
+            |LParen expression RParen                                                       #parenExp
+            |expression LBracket expression RBracket                                        #indexExp
+            |New (ID|basicType) newExpSizeDeclaration* (LParen RParen)?                     #newExp
+            |expression Object ID                                                           #memberExp
+            |expression funcCallArgs                                                        #functionCallExp
             |LambdaStart (LParen funcDefArgs? RParen)?
-             LambdaArrow pack funcCallArgs                                                  //lambdaExp
-            |expression suffixOps
-            |<assoc=right> prefixOps expression                                             //prefixExp
-            |<assoc=right> unaryOps expression                                              //unaryExp
+             LambdaArrow pack funcCallArgs                                                  #lambdaExp
 
-            |expression infOps expression
-            |expression supOps expression
-            |expression shiftOps expression
-            |expression compareOps expression
-            |expression equalOps expression
-            |expression logicOps expression
-            |expression bitOps expression                                                   //binaryExp
+            |expression suffixOps                                                           #suffixExp
+            |<assoc=right> prefixOps expression                                             #prefixExp
+            |<assoc=right> unaryOps expression                                              #unaryExp
 
-            |<assoc=right> expression Assign expression                                     //assignExp
+            |expression supOps expression                                                 # binaryExp//12
+            |expression infOps expression                                                # binaryExp  //11
+            |expression shiftOps expression                                                 # binaryExp//13
+            |expression compareOps expression                                                # binaryExp //14
+            |expression equalOps expression                                                 # binaryExp//15
+            |   expression And expression                                                  #binaryExp     // 8
+            |   expression Xor expression                                                  #binaryExp     // 9
+            |   expression Or expression                                                   #binaryExp     // 10
+            |   expression LogicAnd expression                                                #binaryExp     // 11
+            |   expression LogicOr expression                                                 #binaryExp     // 12
 
-            |expression Comma expression                                                    //commaExp
+
+
+            |<assoc=right> expression Assign expression                                     #assignExp
+
+            |expression Comma expression                                                    #commaExp
             ;
-    basicExp:ID|True|False|This|IntLiteral|StringLiteral|Null;
-    parenExp:LParen expression RParen;
-    newExp:New (ID|basicType) newExpSizeDeclaration* (LParen RParen)?;
-    arrayExp:expression LBracket expression RBracket   ;
-    memberExp:expression Object ID     ;
-    functionCallExp:expression funcCallArgs    ;
-    lambdaExp: LambdaStart (LParen funcDefArgs? RParen)?
-                            LambdaArrow pack funcCallArgs  ;
+    basicExp:ID|IntLiteral|StringLiteral|True|False|Null|This;
 
-    prefixExp: <assoc=right> prefixOps expression ;
-    suffixExp: expression suffixOps;
-    unaryExp:<assoc=right> unaryOps expression ;
-    binaryExp: expression infOps expression
-                          |expression supOps expression
-                          |expression shiftOps expression
-                          |expression compareOps expression
-                          |expression equalOps expression
-                          |expression logicOps expression
-                          |expression bitOps expression  ;
-
-    assignExp:<assoc=right> expression Assign expression  ;
-    commaExp:expression Comma expression  ;
 //lexer
 
 // Comments
@@ -116,46 +103,52 @@ Comment :   ( '//' ~[\r\n]* '\r'? '\n'
     ;
 
 //Symbols
-SelfAdd:'++';
 Add:'+';
-SelfMinus:'--';
 Minus:'-';
 Multiply:'*';
 Divide:'/';
 Mod:'%';
-LogicAnd:'&&';
-LogicOr:'||';
-LogicNegative:'!';
-LeftShift:'<<';
-RightShift:'>>';
 Greater:'>';
 Less:'<';
-Equal:'==';
 GEQ:'>=';
 LEQ:'<=';
 NEQ:'!=';
+Equal:'==';
+
+LogicAnd:'&&';
+LogicOr:'||';
+LogicNegative:'!';
+
+LeftShift:'<<';
+RightShift:'>>';
 And:'&';
 Or:'|';
 Xor:'^';
 Negative:'~';
+
 Assign:'=';
+
+SelfAdd:'++';
+SelfMinus:'--';
+
 Object:'.';
 LBracket:'[';
 RBracket:']';
 LParen:'(';
 RParen:')';
-LBrace:'{';
-RBrace:'}';
 SemiColon:';';
 Comma:',';
+LBrace:'{';
+RBrace:'}';
 LambdaStart:'[&]';
 LambdaArrow:'->';
 
 //keywords
 
 //basic type keywords
-BoolType:'bool';
+
 IntType:'int';
+BoolType:'bool';
 StringType:'string';
 VoidType:'void';
 //class keywords

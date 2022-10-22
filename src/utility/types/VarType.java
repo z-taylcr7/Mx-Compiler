@@ -111,6 +111,7 @@ public class VarType extends MxBaseType {
 
     @Override
     public boolean match(MxBaseType other) {
+
         if (other instanceof VarType) {
             if ((dimension > 0 || basicType == BasicType.CLASS) && other.basicType == BasicType.NULL) {
                 return true;

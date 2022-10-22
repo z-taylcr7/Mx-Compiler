@@ -18,6 +18,7 @@ import java.util.Objects;
 public class ASTBuilder extends MxBaseVisitor<ASTNode> {
 
     @Override public ASTNode visitMxCode(MxParser.MxCodeContext ctx) {
+        System.out.println("visit mx code.");
 
         RootNode ret = new RootNode(new Position(ctx));
 
@@ -207,6 +208,7 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
     }
 
     @Override public ASTNode visitIfStmt(MxParser.IfStmtContext ctx) {
+        ExprNode tmp=(ExprNode) visit(ctx.expression());
         IfStmtNode ret = new IfStmtNode(new Position(ctx),
                 (ExprNode) visit(ctx.expression()),
                 (BaseStmtNode) visit(ctx.statement(0)));
@@ -242,44 +244,34 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
         BinaryExprNode ret = new BinaryExprNode(new Position(ctx),
                 (ExprNode) visit(ctx.expression().get(0)), (ExprNode) visit(ctx.expression().get(1))
         );
-
-        if (ctx.logicOps().LogicOr() != null) {
+        if (ctx.LogicOr() != null) {
             ret.op = Mx.LogicOrOp;
             ret.opType = Mx.logicOpType;
-        }
-        else if (ctx.logicOps().LogicAnd() != null) {
+        } else if (ctx.LogicAnd() != null) {
             ret.op = Mx.LogicAndOp;
             ret.opType = Mx.logicOpType;
-        }
-        else if (ctx.bitOps().Xor() != null) {
+        } else if (ctx.Xor() != null) {
             ret.op = Mx.BitXorOp;
             ret.opType = Mx.arithOpType;
-        }
-        else if (ctx.bitOps().Or() != null) {
+        } else if (ctx.Or() != null) {
             ret.op = Mx.BitOrOp;
             ret.opType = Mx.arithOpType;
-        }
-        else if (ctx.bitOps().And()!= null) {
+        }else if (ctx.And()!= null) {
             ret.op = Mx.BitAndOp;
             ret.opType = Mx.arithOpType;
-        }
-        else if (ctx.equalOps() != null) {
+        } else if (ctx.equalOps() != null) {
             ret.op = ctx.equalOps().getText();
             ret.opType = Mx.equalOpType;
-        }
-        else if (ctx.compareOps() != null) {
-            ret.op = ctx.compareOps().getText();
-            ret.opType = Mx.compareOpType;
-        }
-        else if (ctx.infOps() != null) {
+        } else if (ctx.compareOps() != null) {
+        ret.op = ctx.compareOps().getText();
+        ret.opType = Mx.compareOpType;
+        } else if (ctx.infOps() != null) {
             ret.op = ctx.infOps().getText();
             ret.opType = Mx.arithOpType;
-        }
-        else if (ctx.supOps() != null) {
+        } else if (ctx.supOps() != null) {
             ret.op = ctx.supOps().getText();
             ret.opType = Mx.arithOpType;
-        }
-        else if (ctx.shiftOps() != null) {
+        } else if (ctx.shiftOps() != null) {
             ret.op = ctx.shiftOps().getText();
             ret.opType = Mx.arithOpType;
         }
@@ -298,11 +290,13 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
             ctx.funcCallArgs().expression().forEach(sonctx -> {
                 ret.callArgExpNodes.add((ExprNode) visit(sonctx));
             });
+
+
         }
         return ret;
     }
 
-    @Override public ASTNode visitArrayExp(MxParser.ArrayExpContext ctx) {
+    @Override public ASTNode visitIndexExp(MxParser.IndexExpContext ctx) {
         return new IndexExprNode(new Position(ctx),
                 (ExprNode) visit(ctx.expression(0)),
                 (ExprNode) visit(ctx.expression(1))

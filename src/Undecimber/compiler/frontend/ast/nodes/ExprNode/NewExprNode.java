@@ -11,7 +11,6 @@ public class NewExprNode extends ExprNode{
     public VarType type;
     public NewExprNode(Position pos, VarType type){
         super(pos);
-
         this.type=type;
         this.DimLengthExprNodes=new ArrayList<>();
     }

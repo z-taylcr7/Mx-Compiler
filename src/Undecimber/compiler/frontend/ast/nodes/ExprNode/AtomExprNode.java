@@ -14,15 +14,6 @@ public class AtomExprNode extends ExprNode {
         this.ctx = ctx;
     }
 
-    public String getStringLiteral() {
-        String rawString =  this.ctx.StringLiteral().toString();
-        return rawString.substring(1, rawString.length()-1) // quote filter
-                .replace("\\\"","\"")
-                .replace("\\n","\n")
-                .replace("\\t","\t")
-                .replace("\\\\","\\");
-    }
-
     @Override
     public void accept(ASTVisitor visitor) {
         visitor.visit(this);

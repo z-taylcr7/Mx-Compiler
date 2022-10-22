@@ -9,5 +9,8 @@ abstract public class error extends RuntimeException {
         this.pos = pos;
         this.message = msg;
     }
-    public void tell() {System.err.println("<compiler ERROR>: " + message);}
+    public void tell() {System.err.println("<COMPILER ERROR OCCURED>: " +message+" at row&col:");
+        System.err.println(pos.get_row());
+        System.err.println(pos.get_col());
+    }
 }

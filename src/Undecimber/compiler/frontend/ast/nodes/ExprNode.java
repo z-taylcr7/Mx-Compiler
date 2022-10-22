@@ -8,6 +8,7 @@ public abstract class ExprNode extends ASTNode {
 
     public ExprNode(Position pos) {
         super(pos);
+        this.type=null;
     }
 
     public boolean isLeftValue() {
