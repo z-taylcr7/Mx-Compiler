@@ -1,4 +1,3 @@
-package undecimber;
 import undecimber.compiler.frontend.semantic.SemanticChecker;
 import utility.errors.MxErrorListener;
 import utility.errors.*;
