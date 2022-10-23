@@ -6,8 +6,8 @@
         <PerGrammarGenerationSettings>
           <option name="fileName" value="$PROJECT_DIR$/src/undecimber/grammar/Mx.g4" />
           <option name="autoGen" value="true" />
-          <option name="outputDir" value="C:\Users\Cristiano\IdeaProjects\Mx-Compiler\src\undecimber\compiler\frontend\parser" />
-          <option name="libDir" value="C:\Users\Cristiano\IdeaProjects\Mx-Compiler\src\undecimber\grammar" />
+          <option name="outputDir" value="" />
+          <option name="libDir" value="" />
           <option name="encoding" value="" />
           <option name="pkg" value="" />
           <option name="language" value="Java" />

@@ -28,7 +28,7 @@ varDefSingle:ID (Assign expression)?;
 pack:LBrace statement* RBrace;
 varDefStmt:varDefObj SemiColon;
 ifStmt:If LParen expression RParen statement (Else statement)?;
-whileStmt: While LParen expression RParen (statement);
+whileStmt: While LParen expression RParen statement;
 
 forInit:(varDefObj|expression);
 forStmt:For LParen forInit? SemiColon forCond=expression? SemiColon forIncr=expression? RParen (statement);
@@ -62,7 +62,7 @@ statement
     equalOps:NEQ|Equal;
 
     expression:
-            basicExp                #atomExp
+    basicExp                                                                                 #atomExp
             |LParen expression RParen                                                       #parenExp
             |expression LBracket expression RBracket                                        #indexExp
             |New (ID|basicType) newExpSizeDeclaration* (LParen RParen)?                     #newExp
@@ -90,7 +90,7 @@ statement
 
             |<assoc=right> expression Assign expression                                     #assignExp
 
-            |expression Comma expression                                                    #commaExp
+           // |expression Comma expression                                                    #commaExp
             ;
     basicExp:ID|IntLiteral|StringLiteral|True|False|Null|This;
 

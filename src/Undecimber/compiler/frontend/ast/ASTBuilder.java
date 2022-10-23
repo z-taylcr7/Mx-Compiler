@@ -13,6 +13,7 @@ import utility.Position;
 import utility.errors.syntax.*;
 
 
+import java.util.List;
 import java.util.Objects;
 
 public class ASTBuilder extends MxBaseVisitor<ASTNode> {
@@ -202,13 +203,15 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
     }
 
     @Override public ASTNode visitWhileStmt(MxParser.WhileStmtContext ctx) {
-        return new WhileStmtNode(new Position(ctx),
+        WhileStmtNode x=new WhileStmtNode(new Position(ctx),
                 (ExprNode) visit(ctx.expression()),
                 (BaseStmtNode) visit(ctx.statement()));
+        return x;
+
     }
 
     @Override public ASTNode visitIfStmt(MxParser.IfStmtContext ctx) {
-        ExprNode tmp=(ExprNode) visit(ctx.expression());
+
         IfStmtNode ret = new IfStmtNode(new Position(ctx),
                 (ExprNode) visit(ctx.expression()),
                 (BaseStmtNode) visit(ctx.statement(0)));
@@ -286,12 +289,10 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
 
     @Override public ASTNode visitFunctionCallExp(MxParser.FunctionCallExpContext ctx) {
         FuncCallExprNode ret = new FuncCallExprNode(new Position(ctx), (ExprNode) visit(ctx.expression()));
-        if (ctx.funcCallArgs().expression() != null) {
+        if (ctx.funcCallArgs().expression() != null) {;
             ctx.funcCallArgs().expression().forEach(sonctx -> {
                 ret.callArgExpNodes.add((ExprNode) visit(sonctx));
             });
-
-
         }
         return ret;
     }
