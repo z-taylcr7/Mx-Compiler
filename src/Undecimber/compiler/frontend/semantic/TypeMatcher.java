@@ -78,7 +78,7 @@ public class TypeMatcher {
     // == !=: all
 
     public static void match(BinaryExprNode node) {
-        System.err.println(node.op);//todo
+        //System.err.println(node.op);
         //System.err.println(node.lhsExprNode.toString());
         //System.err.println(node.rhsExprNode.toString());
         if (!node.lhsExprNode.type.match(node.rhsExprNode.type)) {
