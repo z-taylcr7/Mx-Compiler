@@ -16,7 +16,7 @@ import undecimber.compiler.frontend.parser.MxParser;
 import undecimber.compiler.frontend.parser.MxLexer;
 import undecimber.compiler.frontend.ast.ASTBuilder;
 import undecimber.compiler.frontend.ast.nodes.RootNode;
-public class Undecimber {
+public class Compiler {
     public static void main(String[] args) throws Exception {
         try {
 
