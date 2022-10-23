@@ -30,19 +30,14 @@ public class Frontend {
         //PrintStream output =new PrintStream(name_);
         InputStream input = System.in;
         CharStream charstream = CharStreams.fromStream(input);
-
         MxLexer lexer = new MxLexer(charstream);
         lexer.removeErrorListeners();
         lexer.addErrorListener(new MxErrorListener());
-
         MxParser parser = new MxParser(new CommonTokenStream(lexer));
         parser.removeErrorListeners();
         parser.addErrorListener(new MxErrorListener());
-
         ParseTree parseTreeRoot = parser.mxCode();
-
         this.ASTRoot = (RootNode) new ASTBuilder().visit(parseTreeRoot);
-
         new SemanticChecker().visit(this.ASTRoot);
         //new ASTPrinter().visit(this.ASTRoot);
 
