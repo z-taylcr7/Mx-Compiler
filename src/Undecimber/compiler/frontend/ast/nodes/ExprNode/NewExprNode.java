@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 public class NewExprNode extends ExprNode{
     public ArrayList<ExprNode> DimLengthExprNodes;
-    public VarType type;
     public NewExprNode(Position pos, VarType type){
         super(pos);
         this.type=type;

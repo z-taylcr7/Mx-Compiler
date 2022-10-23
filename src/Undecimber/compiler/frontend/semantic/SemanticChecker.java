@@ -329,10 +329,12 @@ public class SemanticChecker implements ASTVisitor{
         //check builtinMethods
         if(node.supExprNode.type.match(MxBaseType.BasicType.STRING)){
             if(StringBuiltInMethods.scope.funcTable.containsKey(node.name))
-               node.type=StringBuiltInMethods.scope.getFunc(node.name).type.copy();return;
+               node.type=StringBuiltInMethods.scope.getFunc(node.name).type.copy();
+            return;
         }
         if(node.supExprNode.type.isArray()&&ArrayBuiltInMethods.scope.funcTable.containsKey(node.name)){
             node.type=ArrayBuiltInMethods.scope.getFunc(node.name).type.copy();
+            return;
         }
         TypeMatcher.match(node);
 
