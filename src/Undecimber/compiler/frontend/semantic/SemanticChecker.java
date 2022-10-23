@@ -320,6 +320,7 @@ public class SemanticChecker implements ASTVisitor{
                 }
             }
         }
+        station.pop();
 
     }
 
