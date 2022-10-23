@@ -97,7 +97,7 @@ statement
 //lexer
 
 // Comments
-Comment :   ( '//' ~[\r\n]* '\r'? '\n'
+Comment :   ( '//' ~[\r\n]* (('\r'? '\n')|EOF)
         | '/*' .*? '*/'
         ) -> skip
     ;

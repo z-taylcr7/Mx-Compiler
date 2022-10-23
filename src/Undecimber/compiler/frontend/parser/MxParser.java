@@ -1208,10 +1208,8 @@ public class MxParser extends Parser {
 			expression(0);
 			setState(186);
 			match(RParen);
-			{
 			setState(187);
 			statement();
-			}
 			}
 		}
 		catch (RecognitionException re) {
