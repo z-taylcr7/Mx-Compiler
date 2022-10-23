@@ -19,7 +19,7 @@ import java.util.Objects;
 public class ASTBuilder extends MxBaseVisitor<ASTNode> {
 
     @Override public ASTNode visitMxCode(MxParser.MxCodeContext ctx) {
-        System.out.println("visit mx code.");
+        //System.out.println("visit mx code.");
 
         RootNode ret = new RootNode(new Position(ctx));
 

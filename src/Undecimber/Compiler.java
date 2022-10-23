@@ -18,15 +18,11 @@ import undecimber.compiler.frontend.ast.ASTBuilder;
 import undecimber.compiler.frontend.ast.nodes.RootNode;
 public class Compiler {
     public static void main(String[] args) throws Exception {
-        try {
+
 
             Frontend frontend = new Frontend();
 
-        }
-        catch (Exception e) {
-            errorHandle(  e);
-        }
-        System.exit(0);
+
     }
     private static void errorHandle(Exception e) {
         if (e instanceof error) {
