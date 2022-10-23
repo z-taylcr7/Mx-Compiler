@@ -10,6 +10,7 @@ public class SuffixExprNode extends ExprNode{
 
     public SuffixExprNode(Position pos, String op, ExprNode exprNode){
         super(pos);
+        this.op=op;
         this.exprNode=exprNode;
 
     }
@@ -20,6 +21,6 @@ public class SuffixExprNode extends ExprNode{
 
     @Override
     public boolean isLeftValue() {
-        return true;
+        return false;
     }
 }
