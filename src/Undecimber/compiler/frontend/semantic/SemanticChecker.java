@@ -30,7 +30,8 @@ public class SemanticChecker implements ASTVisitor{
     @Override
     public void visit(ClassDefNode node){
         station.push(node.classRegistry);
-        assert node.constructorDefNode==null;
+        assert node.constructorDefNode!=null;
+        visit(node.constructorDefNode);
         node.varDefs.forEach(def->def.accept(this));
         node.funcDefs.forEach(def->def.accept(this));
         station.pop();
