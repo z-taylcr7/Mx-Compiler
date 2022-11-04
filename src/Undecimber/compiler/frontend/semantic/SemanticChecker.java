@@ -213,22 +213,7 @@ public class SemanticChecker implements ASTVisitor{
         node.callExprNode.accept(this);
         node.callArgExpNodes.forEach(son->son.accept(this));
 
-        if (!(node.callExprNode.type instanceof MxFuncType)) {
-            /*
-            if(!(node.callExprNode instanceof  AtomExprNode)){
-                throw new FuncCallError(node.pos,FuncCallError.expNotAFunc);
-            }
-             if(((AtomExprNode) node.callExprNode).ctx.ID()==null)
-             throw new FuncCallError(node.pos,FuncCallError.expNotAFunc);
-            FuncRegistry funcRegistry=station.getFuncInStack(((AtomExprNode)node.callExprNode).ctx.ID().getText());
-            if(funcRegistry!=null){
-                node.callExprNode.type=funcRegistry.type.copy();
-            }
-            else{
-                throw new FuncCallError(node.pos,FuncCallError.expNotAFunc);
-            }
-            */
-        }
+
         int result = ((MxFuncType) node.callExprNode.type).funcCallMatch(node.callArgExpNodes);
 
         if (result == -1) {
