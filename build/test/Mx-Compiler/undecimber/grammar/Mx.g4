@@ -141,6 +141,7 @@ Comma:',';
 LBrace:'{';
 RBrace:'}';
 LambdaStart:'[&]';
+//todo: Lambda nonGlobals
 LambdaArrow:'->';
 
 //keywords

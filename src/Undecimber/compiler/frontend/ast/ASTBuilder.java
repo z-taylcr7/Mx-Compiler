@@ -95,7 +95,6 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
             FuncDefNode constructorDefNode = (FuncDefNode) visit(sonctx);
 
             if (!Objects.equals(ret.classRegistry.name, constructorDefNode.funcRegistry.name)) {
-                //class already exist
                 throw new ClassDeclarationError(new Position(ctx), ClassDeclarationError.constructorNameWrong);
             }
 

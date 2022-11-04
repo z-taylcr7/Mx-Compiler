@@ -221,8 +221,10 @@ public class SemanticChecker implements ASTVisitor{
              throw new FuncCallError(node.pos,FuncCallError.expNotAFunc);
             FuncRegistry funcRegistry=station.getFuncInStack(((AtomExprNode)node.callExprNode).ctx.ID().getText());
             if(funcRegistry!=null)node.callExprNode.type=funcRegistry.type.copy();
-            else throw new FuncCallError(node.pos,FuncCallError.expNotAFunc);
+            else{
 
+                //throw new FuncCallError(node.pos,FuncCallError.expNotAFunc);
+            }
         }
         int result = ((MxFuncType) node.callExprNode.type).funcCallMatch(node.callArgExpNodes);
 
@@ -238,6 +240,7 @@ public class SemanticChecker implements ASTVisitor{
     @Override
     public void visit(NewExprNode node) {
         node.DimLengthExprNodes.forEach(sonnode -> sonnode.accept(this));
+
         TypeMatcher.match(node);
     }
 

@@ -27,8 +27,8 @@ public class MxFuncType extends MxBaseType {
 
     public int funcCallMatch(ArrayList<ExprNode> args) {
         if (funcArgsType.size() != args.size()) {
-            System.out.println(funcArgsType.size());
-            System.out.println(args.size());
+            //System.out.println(funcArgsType.size());
+            //System.out.println(args.size());
             return -1;
         }
         for (int i = 0; i < funcArgsType.size(); i++) {
