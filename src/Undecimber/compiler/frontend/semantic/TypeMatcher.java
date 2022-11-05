@@ -10,7 +10,7 @@ import utility.Mx;
 
 import java.util.Objects;
 
-//usage: check type errors.
+//check type errors.
 public class TypeMatcher {
 
     // unary:
@@ -82,7 +82,6 @@ public class TypeMatcher {
         //System.err.println(node.lhsExprNode.toString());
         //System.err.println(node.rhsExprNode.toString());
         if (!node.lhsExprNode.type.match(node.rhsExprNode.type)) {
-
 
             throw new TypeError(node.pos, node.lhsExprNode.type, node.rhsExprNode.type);
         }

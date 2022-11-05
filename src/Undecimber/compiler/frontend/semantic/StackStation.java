@@ -1,10 +1,7 @@
 package undecimber.compiler.frontend.semantic;
 
-import  undecimber.compiler.frontend.ast.nodes.ASTNode;
-import  undecimber.compiler.frontend.ast.*;
 import  undecimber.compiler.frontend.scope.*;
 import  undecimber.compiler.frontend.registry.*;
-import  utility.Position;
 import utility.types.VarType;
 
 
@@ -18,7 +15,8 @@ public class StackStation {
         this.scopeStack=new Stack<>();
     }
     public VarRegistry getVarInStack(String name) {
-        VarRegistry ret = null;boolean member=false;
+        VarRegistry ret = null;
+
         for (int i = scopeStack.size() - 1; i >= 0; i--) {
             ret = scopeStack.get(i).getVar(name);
             if (ret != null) {

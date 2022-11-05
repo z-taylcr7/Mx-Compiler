@@ -41,7 +41,7 @@ public class GlobalScope extends BaseScope {
     public void register(BaseRegistry registry) {
         String name = registry.name;
         if (classTable.containsKey(name))
-            //xc
+            //cc
 
             throw new NameError(registry.pos, NameError.redefine,name);
         if (registry instanceof ClassRegistry) {

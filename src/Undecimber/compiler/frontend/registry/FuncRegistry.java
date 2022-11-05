@@ -52,16 +52,28 @@ public class FuncRegistry extends BaseRegistry {
     // lambda
     public FuncRegistry(MxParser.LambdaExpContext ctx) {
         super("", ctx);
-
         this.scope = new FuncScope();
         this.type = new MxFuncType();
         this.isBasic = false;
-
         type.funcArgsType = new ArrayList<>();
         funcArgs = new ArrayList<>();
-
         MxParser.FuncDefArgsContext funcDefArgsContext = ctx.funcDefArgs();
-
+        if (funcDefArgsContext != null) {
+            for (int i = 0; i < funcDefArgsContext.varDefType().size(); ++i) {
+                VarRegistry varRegistry = new VarRegistry(funcDefArgsContext.ID(i).toString(), funcDefArgsContext.varDefType(i));
+                funcArgs.add(varRegistry);
+                type.funcArgsType.add(varRegistry.type);
+            }
+        }
+    }
+    public FuncRegistry(MxParser.LocallambdaExpContext ctx) {
+        super("", ctx);
+        this.scope = new FuncScope();
+        this.type = new MxFuncType();
+        this.isBasic = false;
+        type.funcArgsType = new ArrayList<>();
+        funcArgs = new ArrayList<>();
+        MxParser.FuncDefArgsContext funcDefArgsContext = ctx.funcDefArgs();
         if (funcDefArgsContext != null) {
             for (int i = 0; i < funcDefArgsContext.varDefType().size(); ++i) {
                 VarRegistry varRegistry = new VarRegistry(funcDefArgsContext.ID(i).toString(), funcDefArgsContext.varDefType(i));

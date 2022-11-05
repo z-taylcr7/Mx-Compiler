@@ -14,11 +14,11 @@ public class LambdaExprNode extends ExprNode {
     public FuncRegistry funcRegistry;
     public PackNode packNode;
     public ArrayList<ExprNode> callArgExprNodes;
-
     public LambdaExprNode(Position pos, PackNode packNode) {
         super(pos);
         this.packNode = packNode;
         callArgExprNodes = new ArrayList<>();
+
     }
 
     @Override

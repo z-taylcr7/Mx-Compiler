@@ -245,7 +245,16 @@ public class ASTPrinter implements ASTVisitor {
         node.callArgExprNodes.forEach(sonnode -> sonnode.accept(this));
         nowIndentNum--;
     }
-
+    @Override
+    public void visit(LocalLambdaExprNode node) {
+        nowIndentNum++;
+        ps.println("\n" + INDENT.repeat(nowIndentNum) +  "* --- LambdaExprNode --- *\n");
+        ps.println(node.funcRegistry);
+        node.packNode.accept(this);
+        ps.println("type: " + node.type);
+        node.callArgExprNodes.forEach(sonnode -> sonnode.accept(this));
+        nowIndentNum--;
+    }
     @Override
     public void visit(AtomExprNode node) {
         nowIndentNum++;

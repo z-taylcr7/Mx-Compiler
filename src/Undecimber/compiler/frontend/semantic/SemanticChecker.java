@@ -92,7 +92,7 @@ public class SemanticChecker implements ASTVisitor{
             VarRegistry varRegistry=station.getVarInStack(node.ctx.ID().getText());
             FuncRegistry funcRegistry=station.getFuncInStack(node.ctx.ID().getText());
             if(varRegistry!=null){
-                node.type=varRegistry.type.copy();
+                node.type = varRegistry.type.copy();
             } else if (funcRegistry!=null) {
                 node.type= funcRegistry.type.copy();
             }else{
@@ -102,7 +102,7 @@ public class SemanticChecker implements ASTVisitor{
     }
     @Override
     public void visit(VarDefSingleNode node) {
-        // from right to left, init first, register after
+        // init first, register after
         if (node.initExpNode != null) node.initExpNode.accept(this);
 
         if (node.varRegistry.type.basicType == MxBaseType.BasicType.CLASS &&
@@ -213,7 +213,22 @@ public class SemanticChecker implements ASTVisitor{
         node.callExprNode.accept(this);
         node.callArgExpNodes.forEach(son->son.accept(this));
 
-
+        if (!(node.callExprNode.type instanceof MxFuncType)) {
+            if(!(node.callExprNode instanceof  AtomExprNode)){
+                throw new FuncCallError(node.pos,FuncCallError.expNotAFunc);
+            }
+            if(((AtomExprNode) node.callExprNode).ctx.ID()==null)
+                throw new FuncCallError(node.pos,FuncCallError.expNotAFunc);
+            FuncRegistry funcRegistry=station.getFuncInStack(((AtomExprNode)node.callExprNode).ctx.ID().getText());
+            if(funcRegistry!=null){
+                node.callExprNode.type=funcRegistry.type.copy();
+                System.out.println(1111);
+            }
+            else{
+                System.out.println(1101);
+                throw new FuncCallError(node.pos,FuncCallError.expNotAFunc);
+            }
+        }
         int result = ((MxFuncType) node.callExprNode.type).funcCallMatch(node.callArgExpNodes);
 
         if (result == -1) {
@@ -283,6 +298,7 @@ public class SemanticChecker implements ASTVisitor{
     public void visit(LambdaExprNode node) {
         station.push(node.funcRegistry.scope);
 
+
         for (VarRegistry funcArg : node.funcRegistry.funcArgs) {
             if(funcArg.type.basicType==MxBaseType.BasicType.CLASS&&
             station.getClass(funcArg.type.className)==null)
@@ -312,7 +328,32 @@ public class SemanticChecker implements ASTVisitor{
             }
         }
         station.pop();
+    }
+    @Override
+    public void visit(LocalLambdaExprNode node) {
+        station.push(node.funcRegistry.scope);
+        assert node.packNode!=null;
+        visit(node.packNode);
 
+        node.callArgExprNodes.forEach(sonnode->sonnode.accept(this));
+        int res=node.funcRegistry.type.funcCallMatch(node.callArgExprNodes);
+        if(res==-1)throw new FuncCallError(node.pos,FuncCallError.argsNotMatch);
+        else if (res==-2) {
+            throw new FuncCallError(node.pos,FuncCallError.argTypeNotMatch);
+        }
+
+        if(node.funcRegistry.scope.catchedRetTypeList.isEmpty())node.type=new VarType(MxBaseType.BasicType.VOID);
+        else{
+            for (VarType varType : node.funcRegistry.scope.catchedRetTypeList) {
+                if(node.type==null){
+                    node.type=varType;
+                    node.funcRegistry.type.retType=varType;
+                } else if (!node.type.match(varType)) {
+                    throw new FuncReturnError(node.pos,FuncReturnError.retTypeNotMatch);
+                }
+            }
+        }
+        station.pop();
     }
 
     @Override

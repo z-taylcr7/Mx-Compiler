@@ -70,21 +70,24 @@ statement
             |expression funcCallArgs                                                        #functionCallExp
             |LambdaStart (LParen funcDefArgs? RParen)?
              LambdaArrow pack funcCallArgs                                                  #lambdaExp
+            |LocalLambdaStart (LParen funcDefArgs? RParen)?
+              LambdaArrow pack funcCallArgs                                                  #localLambdaExp
+
 
             |expression suffixOps                                                           #suffixExp
             |<assoc=right> prefixOps expression                                             #prefixExp
             |<assoc=right> unaryOps expression                                              #unaryExp
 
-            |expression supOps expression                                                 # binaryExp//12
-            |expression infOps expression                                                # binaryExp  //11
-            |expression shiftOps expression                                                 # binaryExp//13
-            |expression compareOps expression                                                # binaryExp //14
-            |expression equalOps expression                                                 # binaryExp//15
-            |   expression And expression                                                  #binaryExp     // 8
-            |   expression Xor expression                                                  #binaryExp     // 9
-            |   expression Or expression                                                   #binaryExp     // 10
-            |   expression LogicAnd expression                                                #binaryExp     // 11
-            |   expression LogicOr expression                                                 #binaryExp     // 12
+            |expression supOps expression                                                 # binaryExp
+            |expression infOps expression                                                # binaryExp
+            |expression shiftOps expression                                                 # binaryExp
+            |expression compareOps expression                                                # binaryExp
+            |expression equalOps expression                                                 # binaryExp
+            |   expression And expression                                                  #binaryExp
+            |   expression Xor expression                                                  #binaryExp
+            |   expression Or expression                                                   #binaryExp
+            |   expression LogicAnd expression                                                #binaryExp
+            |   expression LogicOr expression                                                 #binaryExp
 
 
 
@@ -141,7 +144,7 @@ Comma:',';
 LBrace:'{';
 RBrace:'}';
 LambdaStart:'[&]';
-//todo: Lambda nonGlobals
+LocalLambdaStart:'[]';
 LambdaArrow:'->';
 
 //keywords

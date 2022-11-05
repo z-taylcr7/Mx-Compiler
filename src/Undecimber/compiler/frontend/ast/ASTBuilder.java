@@ -305,9 +305,17 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
 
     @Override public ASTNode visitLambdaExp(MxParser.LambdaExpContext ctx) {
         LambdaExprNode ret = new LambdaExprNode(new Position(ctx), (PackNode) visit(ctx.pack()));
-
         ret.funcRegistry = new FuncRegistry(ctx);
-
+        if (ctx.funcCallArgs().expression() != null) {
+            ctx.funcCallArgs().expression().forEach(sonctx -> {
+                ret.callArgExprNodes.add((ExprNode) visit(sonctx));
+            });
+        }
+        return ret;
+    }
+    @Override public ASTNode visitLocallambdaExp(MxParser.LocallambdaExpContext ctx) {
+        LambdaExprNode ret = new LambdaExprNode(new Position(ctx), (PackNode) visit(ctx.pack()));
+        ret.funcRegistry = new FuncRegistry(ctx);
         if (ctx.funcCallArgs().expression() != null) {
             ctx.funcCallArgs().expression().forEach(sonctx -> {
                 ret.callArgExprNodes.add((ExprNode) visit(sonctx));
