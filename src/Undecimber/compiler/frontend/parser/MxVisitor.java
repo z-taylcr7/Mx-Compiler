@@ -193,6 +193,20 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitEqualOps(MxParser.EqualOpsContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code atomExp}
+	 * labeled alternative in {@link MxParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAtomExp(MxParser.AtomExpContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code prefixExp}
+	 * labeled alternative in {@link MxParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPrefixExp(MxParser.PrefixExpContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code binaryExp}
 	 * labeled alternative in {@link MxParser#expression}.
 	 * @param ctx the parse tree
@@ -214,6 +228,13 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMemberExp(MxParser.MemberExpContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code unaryExp}
+	 * labeled alternative in {@link MxParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitUnaryExp(MxParser.UnaryExpContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code functionCallExp}
 	 * labeled alternative in {@link MxParser#expression}.
 	 * @param ctx the parse tree
@@ -227,34 +248,6 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitNewExp(MxParser.NewExpContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code atomExp}
-	 * labeled alternative in {@link MxParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAtomExp(MxParser.AtomExpContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code prefixExp}
-	 * labeled alternative in {@link MxParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitPrefixExp(MxParser.PrefixExpContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code locallambdaExp}
-	 * labeled alternative in {@link MxParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLocallambdaExp(MxParser.LocallambdaExpContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code unaryExp}
-	 * labeled alternative in {@link MxParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitUnaryExp(MxParser.UnaryExpContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code lambdaExp}
 	 * labeled alternative in {@link MxParser#expression}.

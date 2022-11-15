@@ -164,6 +164,7 @@ public class TypeMatcher {
         for (ExprNode dimLengthExprNodes : node.DimLengthExprNodes) {
             if (!dimLengthExprNodes.type.match(MxBaseType.BasicType.INT)) {
                 throw new TypeError(node.pos, MxBaseType.BasicType.INT, dimLengthExprNodes.type);
+                //todo: int a[2][] is valid
             }
         }
     }

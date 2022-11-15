@@ -70,8 +70,7 @@ statement
             |expression funcCallArgs                                                        #functionCallExp
             |LambdaStart (LParen funcDefArgs? RParen)?
              LambdaArrow pack funcCallArgs                                                  #lambdaExp
-            |LocalLambdaStart (LParen funcDefArgs? RParen)?
-              LambdaArrow pack funcCallArgs                                                  #localLambdaExp
+
 
 
             |expression suffixOps                                                           #suffixExp
@@ -144,7 +143,6 @@ Comma:',';
 LBrace:'{';
 RBrace:'}';
 LambdaStart:'[&]';
-LocalLambdaStart:'[]';
 LambdaArrow:'->';
 
 //keywords

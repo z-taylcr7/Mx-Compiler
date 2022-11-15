@@ -1,6 +1,10 @@
 
-    int a=0;
     int main(){
-    int sum=[](int x)->{return x+a;}(1);
+
+    A b;
     return 0;
 }
+class A{
+int x=0;
+    A(){x=1;}
+};

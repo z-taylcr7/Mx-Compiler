@@ -222,10 +222,10 @@ public class SemanticChecker implements ASTVisitor{
             FuncRegistry funcRegistry=station.getFuncInStack(((AtomExprNode)node.callExprNode).ctx.ID().getText());
             if(funcRegistry!=null){
                 node.callExprNode.type=funcRegistry.type.copy();
-                System.out.println(1111);
+               //System.out.println(1111);
             }
             else{
-                System.out.println(1101);
+                //System.out.println(1101);
                 throw new FuncCallError(node.pos,FuncCallError.expNotAFunc);
             }
         }
