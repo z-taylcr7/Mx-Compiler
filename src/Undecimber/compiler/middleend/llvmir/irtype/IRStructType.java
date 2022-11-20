@@ -1,17 +1,19 @@
 package undecimber.compiler.middleend.llvmir.irtype;
+import undecimber.compiler.middleend.llvmir.StructProto;
 import utility.LLVM;
 import java.util.ArrayList;
 import java.util.Objects;
 public class IRStructType extends IRBaseType{
     public final String structName;
+    private final StructProto structProto;
     //public final StructProto structProto;
     public ArrayList<IRBaseType> memberVarTypes = new ArrayList<>();
 
     public IRStructType(String structName
-                        //,StructProto structProto
+                        , StructProto structProto
                             ) {
         this.structName = structName;
-        //this.structProto=structProto;
+        this.structProto=structProto;
 
     }
 

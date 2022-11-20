@@ -40,6 +40,12 @@ public class Value {
     public void addUser(User user) {
         users.add(user);
     }
+    public String identifier() {
+        return "%" + name;
+    }
+    public String typeIdentifier(){
+        return type+" "+this.identifier();
+    }
     public static String rename(String rawName) {
         if (!rename) return rawName;
         Integer renameCnt = renameTable.get(rawName);

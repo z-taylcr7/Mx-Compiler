@@ -1,23 +1,21 @@
-package undecimber.compiler.middleend.llvmir.inst;
+package undecimber.compiler.middleend.llvmir.irnode;
 import undecimber.compiler.middleend.llvmir.IRBlock;
-import undecimber.compiler.middleend.llvmir.InstVisitor;
+import undecimber.compiler.middleend.llvmir.IRVisitor;
 import undecimber.compiler.middleend.llvmir.User;
 import undecimber.compiler.middleend.llvmir.Value;
 import undecimber.compiler.middleend.llvmir.irtype.IRBaseType;
 
-import java.util.ArrayList;
-
-public class BaseInst extends User{
-    String instName;
+public abstract class IRBaseNode extends User{
+    String NodeName;
     public IRBlock parentBlock;
-    public BaseInst(String instName, IRBaseType type, IRBlock parentBlock){
-        super(instName,type);
+    public IRBaseNode(String NodeName, IRBaseType type, IRBlock parentBlock){
+        super(NodeName,type);
         this.parentBlock=parentBlock;
     }
 
-    public BaseInst(String name, IRBaseType type, IRBlock parentBlock, boolean frontInsert) {
+    public IRBaseNode(String name, IRBaseType type, IRBlock parentBlock, boolean frontInsert) {
         super(name, type);
-        this.instName = name; // instName is the same with value name before rename
+        this.NodeName = name; // NodeName is the same with value name before rename
         setParentBlockAtHead(parentBlock);
     }
 
@@ -31,7 +29,7 @@ public class BaseInst extends User{
         if (parentBlock != null) parentBlock.instructions.addFirst(this);
     }
 
-    // before an instruction removed/replaced, call it
+    // before an Noderuction removed/replaced, call it
     public void removedFromAllUsers() {
         for (Value value : operands) {
             if (value != null)
@@ -47,10 +45,10 @@ public class BaseInst extends User{
 
     public boolean isValueSelf() {return true;}
 
-    // copy method will create a copy of the original instruction
+    // copy method will create a copy of the original Instruction
     // the parentBlock will be set "null"
-    public abstract BaseInst copy();
+    public abstract IRBaseNode copy();
 
-    public abstract void accept(InstVisitor visitor);
+    public abstract void accept(IRVisitor visitor);
 
 }
