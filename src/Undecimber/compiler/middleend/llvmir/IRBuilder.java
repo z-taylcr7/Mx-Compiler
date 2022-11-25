@@ -4,8 +4,17 @@ import undecimber.compiler.frontend.ast.ASTVisitor;
 import undecimber.compiler.frontend.ast.nodes.*;
 import undecimber.compiler.frontend.ast.nodes.exprNode.*;
 import undecimber.compiler.frontend.ast.nodes.stmtNode.*;
+import undecimber.compiler.frontend.scope.ClassScope;
+import undecimber.compiler.frontend.semantic.StackStation;
+import undecimber.compiler.middleend.llvmir.irconst.GlobalVariable;
+import utility.LLVM;
+
+import java.util.Objects;
 
 public class IRBuilder implements ASTVisitor {
+    IRTranslator translator;
+    StackStation station;
+    CurrentInfo cur;
 
 
     /**
@@ -13,7 +22,7 @@ public class IRBuilder implements ASTVisitor {
      */
     @Override
     public void visit(RootNode node) {
-
+        this.visit(node);
     }
 
     /**
@@ -21,7 +30,17 @@ public class IRBuilder implements ASTVisitor {
      */
     @Override
     public void visit(ClassDefNode node) {
+        ClassScope tmpScope=node.classRegistry.scope;
+        station.push(tmpScope);
+          for (VarDefStmtNode varDefStmtNode : node.varDefs) {
+            varDefStmtNode.accept(this);
+        }
+          if(node.constructorDefNode!=null) this.visit(node.constructorDefNode);
 
+        for (FuncDefNode funcDefNode : node.funcDefs) {
+            funcDefNode.accept(this);
+        }
+        station.pop();
     }
 
     /**
@@ -93,7 +112,19 @@ public class IRBuilder implements ASTVisitor {
      */
     @Override
     public void visit(VarDefSingleNode node) {
+        Value allocaPtr;
 
+        // global variable
+        if (Objects.equals(cur.function.name, LLVM.InitFuncName)) {
+            if (cur.classRegistry != null) {
+                allocaPtr = new GlobalVariable(cur.classRegistry.name + LLVM.Splitter + node.varRegistry.name,
+                        translator.translateAllocaType(node.varRegistry.type));
+            }
+            else {
+                allocaPtr = new GlobalVariable(node.varRegistry.name,
+                        translator.translateAllocaType(node.varRegistry.type));
+            }
+        }
     }
 
     /**
