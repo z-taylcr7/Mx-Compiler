@@ -20,8 +20,6 @@ public class LLVM {
     public static final String ConstAnon = "anon" + Splitter + "const";
     public static final String StrConstAnon = "anon" + Splitter + "strconst";
 
-    // this appears in SCCP
-    public static final String UncertainConst = "internal" + Splitter + "uncertain";
 
     public static final String ThisArg = "internal" + Splitter + "this";
     public static final String RetReg = "internal" + Splitter + "ret";

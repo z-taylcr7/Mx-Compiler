@@ -13,7 +13,7 @@ public interface IRVisitor extends Pass {
     void visit(ZextNode Node);//ok
     void visit(RetNode Node);//ok
     void visit(TruncNode Node);//ok
-    void visit(StoreNode Node);
+    void visit(StoreNode Node);//ok
     void visit(PhiNode Node);//disposed
     void visit(MoveNode Node);//ok
     void visit(GetElementPtrNode Node);

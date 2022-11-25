@@ -54,8 +54,5 @@ else         return "return " +type+" "+retValue().identifier()  ;
         visitor.visit(this);
     }
 
-    @Override
-    public boolean mayHaveSideEffects() {
-        return true;
-    }
+    //may have side effects
 }
