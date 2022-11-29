@@ -37,7 +37,6 @@ public abstract class IRBaseNode extends User{
         }
     }
 
-    public boolean mayHaveSideEffects() {return false;}
 
     public abstract String format();
 

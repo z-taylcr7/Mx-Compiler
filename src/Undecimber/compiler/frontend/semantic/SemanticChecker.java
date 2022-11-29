@@ -135,7 +135,6 @@ public class SemanticChecker implements ASTVisitor{
     @Override
     public void visit(IfStmtNode node) {
         node.condition.accept(this);
-
         TypeMatcher.match(node);
 
         station.push(node.thenScope);

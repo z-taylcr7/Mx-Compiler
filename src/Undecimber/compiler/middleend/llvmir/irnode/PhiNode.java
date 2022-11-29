@@ -2,16 +2,28 @@ package undecimber.compiler.middleend.llvmir.irnode;
 
 import undecimber.compiler.middleend.llvmir.IRBlock;
 import undecimber.compiler.middleend.llvmir.IRVisitor;
+import undecimber.compiler.middleend.llvmir.Value;
 import undecimber.compiler.middleend.llvmir.irtype.IRBaseType;
+import utility.LLVM;
 
 public class PhiNode extends IRBaseNode{
-    public PhiNode(String NodeName, IRBaseType type, IRBlock parentBlock) {
-        super(NodeName, type, parentBlock);
+    public PhiNode(IRBaseType type,IRBlock parentBlock, Value... args) {
+        super(LLVM.PhiInst, type, parentBlock);
+        for (Value op:operands)this.addOperand(op);
+        assert this.getOperandSize()%2==0;
     }
-
+    public void addBranch(Value branchData, IRBlock prevBlock) {
+        this.addOperand(branchData);
+        this.addOperand(prevBlock);
+    }
     @Override
     public String format() {
-        return null;
+        String ret = this.identifier() + " = " + LLVM.PhiInst + " " + this.type + " ";
+        for (int i = 0; i < this.getOperandSize(); i += 2) {
+            ret += "[" + this.getOperand(i).identifier() + ", " + this.getOperand(i+1).identifier() + "]";
+            if (i < this.getOperandSize() - 2) ret += ", ";
+        }
+        return ret;
     }
 
     @Override
@@ -21,6 +33,7 @@ public class PhiNode extends IRBaseNode{
 
     @Override
     public void accept(IRVisitor visitor) {
-
+        visitor.visit(this
+        );
     }
 }

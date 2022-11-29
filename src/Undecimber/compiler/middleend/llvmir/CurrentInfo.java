@@ -21,13 +21,17 @@ public class CurrentInfo {
         breakTargets.pop();
     }
     public void getControlNode(String x){
-        if(x== Mx.continueStr) {
+        if(x.equals( Mx.continueStr)) {
             new BrNode(continueTargets.peek(),block);
         }else if(x == Mx.breakStr){
             new BrNode(breakTargets.peek(),block);
         }else{
             throw new InternalError(x);
         }
+    }
+    public void TerminateAll(){
+        for (IRBlock block : this.function.blockList)
+            if (!block.isTerminatedNode) new BrNode(this.function.exitBlock, block);
     }
     public Value getThis() {
         if (this.classRegistry == null || this.function == null) throw new InternalError("IR this doesn't appear in a class");

@@ -8,6 +8,7 @@ import utility.LLVM;
 import java.util.ArrayList;
 
 public class IRFunction extends GlobalValue {
+    public IRModule parentModule;
     public IRBlock entryBlock, exitBlock;
     public ArrayList<IRBlock> blockList;
     public Value returnAddress; // returnType == void ? null : valid_address;
@@ -27,6 +28,18 @@ public class IRFunction extends GlobalValue {
     public IRFunction(String name, IRBaseType retType, IRBaseType... argTypes) {
         super(name, new IRFuncType(retType, null));
         for (IRBaseType argType : argTypes) ((IRFuncType) this.type).argTypes.add(argType);
+    }
+
+    public IRFunction(String name, IRBaseType translateFuncType, IRModule module) {
+        super(name,translateFuncType);
+        entryBlock = new IRBlock(LLVM.EntryBlockLabel, this);
+        exitBlock = new IRBlock(LLVM.ExitBlockLabel, this);
+        entryBlock.parentFunction = this;
+
+        // remember: here we place exit in second, not the logic order
+        exitBlock.parentFunction = this;
+
+        this.parentModule = module;
     }
 
     public void addBlock(IRBlock x){
