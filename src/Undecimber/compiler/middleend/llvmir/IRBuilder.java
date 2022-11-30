@@ -135,6 +135,11 @@ public IRBuilder(RootNode node){
      */
     @Override
     public void visit(AssignExprNode node) {
+        node.lhs.accept(this);
+        node.rhs.accept(this);
+        memStore(node.lhs.value.resolveFrom,node.rhs.value);//l <= r
+        node.value=node.rhs.value;
+        node.value.resolveFrom=node.lhs.value.resolveFrom;
 
     }
 
@@ -232,7 +237,7 @@ public IRBuilder(RootNode node){
      */
     @Override
     public void visit(ControlStmtNode node) {
-
+        cur.getControlNode(node.controlKey);
     }
 
     /**
@@ -240,6 +245,36 @@ public IRBuilder(RootNode node){
      */
     @Override
     public void visit(ForStmtNode node) {
+        IRBlock incrBlock=new IRBlock(LLVM.ForIncrBlockLabel,cur.function);
+        IRBlock condBlock=new IRBlock(LLVM.ForCondBlockLabel,cur.function);
+        IRBlock bodyBlock=new IRBlock(LLVM.ForBodyBlockLabel,cur.function);
+        IRBlock exitBlock=new IRBlock(LLVM.ForExitBlockLabel,cur.function);
+        station.push(node.scope);
+        if(node.initExprNode!=null){
+            node.initExprNode.accept(this);
+            for (VarDefSingleNode varDefSingleNode : node.initVarDefSingleNodes) {
+                varDefSingleNode.accept(this);
+            }
+        }
+        cur.block=condBlock;
+
+        new BrNode(bodyBlock,cur.block);
+        node.conditionExprNode.accept(this);
+        new BrNode(node.conditionExprNode.value,bodyBlock,exitBlock,cur.block);
+
+        cur.block=incrBlock;
+        if(node.incrExprNode!=null)node.incrExprNode.accept(this);
+        new BrNode(condBlock,cur.block);
+
+        cur.block=bodyBlock;
+        cur.addControlTarget(bodyBlock,exitBlock);
+        node.bodyStmtNode.accept(this);
+        new BrNode(incrBlock,cur.block);
+        cur.deleteControlTarget();
+
+        cur.block=exitBlock;
+
+        station.pop();
 
     }
 
@@ -313,7 +348,18 @@ public IRBuilder(RootNode node){
      */
     @Override
     public void visit(UnaryExprNode node) {
-
+        node.selfExprNode.accept(this);
+        switch (node.op) {
+            case Mx.AddOp:
+                node.value = node.selfExprNode.value;break;
+            case Mx.SubOp:
+                node.value = new BinNode(LLVM.SubInst, IRTranslator.i32Type ,new IntConst(0), node.selfExprNode.value, cur.block);break;
+            case Mx.BitNotOp:
+                node.value = new BinNode(LLVM.XorInst, IRTranslator.i32Type, node.selfExprNode.value, new IntConst(-1), cur.block);break;
+            case Mx.LogicNotOp:
+                node.value = new BinNode(LLVM.XorInst, IRTranslator.boolType, node.selfExprNode.value, new BoolConst(true), cur.block);break;
+            default: throw new InternalError("what's the fucking unary op you typed~");
+        }
     }
 
     /**
@@ -321,6 +367,25 @@ public IRBuilder(RootNode node){
      */
     @Override
     public void visit(WhileStmtNode node) {
+        IRBlock condBlock = new IRBlock(LLVM.WhCondBlockLabel,cur.function);
+        IRBlock bodyBlock = new IRBlock(LLVM.WhBodyBlockLabel,cur.function);
+        IRBlock exitBlock = new IRBlock(LLVM.WhExitBlockLabel,cur.function);
+        new BrNode(condBlock,cur.block);
+
+        cur.block=condBlock;
+        station.push(node.scope);
+        node.conditionExprNode.accept(this);Value condRes=node.conditionExprNode.value;
+        new BrNode(condRes,bodyBlock,exitBlock,cur.block);
+        cur.addControlTarget(bodyBlock,exitBlock);
+
+        cur.block=bodyBlock;
+        node.bodyStmtNode.accept(this);
+        new BrNode(condBlock,cur.block);
+        cur.block=exitBlock;
+        cur.deleteControlTarget();
+
+        station.pop();
+
 
     }
     //Into Bottom
