@@ -1,6 +1,6 @@
 package undecimber.compiler.middleend.llvmir;
 
-import undecimber.compiler.frontend.ast.Pass;
+import utility.pass.Pass;
 import undecimber.compiler.middleend.llvmir.irnode.*;
 public interface IRVisitor extends Pass {
     void visit(AllocaNode Node);//ok

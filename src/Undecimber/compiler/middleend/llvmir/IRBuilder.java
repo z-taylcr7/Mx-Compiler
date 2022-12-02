@@ -16,6 +16,8 @@ import undecimber.compiler.middleend.llvmir.irtype.*;
 import utility.LLVM;
 import utility.Mx;
 import utility.types.MxBaseType;
+import utility.types.MxFuncType;
+import utility.types.VarType;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -156,6 +158,22 @@ public IRBuilder(RootNode node){
      */
     @Override
     public void visit(AtomExprNode node) {
+        //constants
+        if(node.ctx.IntLiteral()!=null)node.value=new IntConst(Integer.parseInt(node.ctx.IntLiteral().toString()));
+        else if (node.ctx.True()!=null) {node.value=new BoolConst(true);}
+        else if (node.ctx.False()!=null) node.value=new BoolConst(false);
+        else if (node.ctx.Null()!=null) {node.value=new NullConst();}
+        else if(node.ctx.This()!=null)node.value=cur.getThis();
+        else if(node.ctx.StringLiteral()!=null)node.value=new StringConst(node.ctx.StringLiteral().toString());
+        else if(node.ctx.ID()!=null){
+            if(node.type instanceof MxFuncType){
+                node.value=station.getFuncInStack(node.ctx.ID().getText()).value;
+            }else if(node.type instanceof VarType){
+                node.value=station.getVarInStack(node.ctx.ID().getText()).value;
+                //todo
+            }
+        }
+
 
     }
 
@@ -291,7 +309,17 @@ public IRBuilder(RootNode node){
      */
     @Override
     public void visit(IndexExprNode node) {
-
+        node.arrayExprNode.accept(this);
+        node.indexExprNode.accept(this);
+        node.value=memLoad(
+                new GetElementPtrNode(
+                    node.arrayExprNode.value.name+LLVM.ArrayElementSuffix,
+                    node.arrayExprNode.value,
+                    node.value.type,
+                    cur.block,
+                    node.indexExprNode.value
+                ),
+            cur.block);
     }
 
     /**

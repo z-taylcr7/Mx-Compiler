@@ -2,6 +2,7 @@ package undecimber.compiler.middleend.llvmir;
 
 
 import undecimber.compiler.middleend.llvmir.irnode.IRBaseNode;
+import undecimber.compiler.middleend.llvmir.irnode.PhiNode;
 import undecimber.compiler.middleend.llvmir.irtype.IRLabelType;
 import utility.errors.internalError;
 
@@ -13,6 +14,7 @@ public class IRBlock extends Value {
 
 
     public LinkedList<IRBaseNode> instructions;
+    public ArrayList<PhiNode> PhiInstructions;
 
     public boolean isTerminatedNode;
     public IRFunction parentFunction;
@@ -31,8 +33,12 @@ public class IRBlock extends Value {
         if (irBaseNode.isTerminator()) isTerminatedNode = true;
         instructions.addLast(irBaseNode);
     }
+    public void addPhiInst(PhiNode phiNode){
+        phiNode.parentBlock=this;
+        PhiInstructions.add(phiNode);
+    }
     public IRBaseNode terminator() {
-        if (instructions.isEmpty()) throw new internalError("empty IRBLock! no terminator! " + this.name);
+        if (instructions.isEmpty()) throw new RuntimeException("empty IRBLock! no terminator! " + this.name);
         return instructions.getLast();
     }
 
