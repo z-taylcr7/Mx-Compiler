@@ -10,7 +10,7 @@ public abstract class IRBaseNode extends User{
     public IRBlock parentBlock;
     public IRBaseNode(String NodeName, IRBaseType type, IRBlock parentBlock){
         super(NodeName,type);
-        this.parentBlock=parentBlock;
+        setParentBlock(parentBlock);
     }
 
     public IRBaseNode(String name, IRBaseType type, IRBlock parentBlock, boolean frontInsert) {

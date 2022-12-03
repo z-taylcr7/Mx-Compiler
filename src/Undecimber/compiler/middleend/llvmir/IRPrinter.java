@@ -16,6 +16,11 @@ public class IRPrinter implements ModulePass, BlockPass, FunctionPass {
     public PrintStream out;
     public String TAB=" ";
     public String mx_file_name;
+
+    public IRPrinter(PrintStream _ps,String mx_file_name_){
+        this.out=_ps;
+        this.mx_file_name=mx_file_name_;
+    }
     /**
      * @param block
      */
@@ -37,9 +42,9 @@ public class IRPrinter implements ModulePass, BlockPass, FunctionPass {
     public void runFunction(IRFunction func) {
         out.println(func.name);
         out.print('\n');
-        for (IRBlock irBlock : func.blockList) {
-            runBlock(irBlock);
-            out.print('\n');
+        for (int i = 0; i < func.blockList.size(); i++) {
+            runBlock(func.blockList.get(i));
+            out.print("\n");
         }
         out.println("}\n");
 

@@ -1,5 +1,6 @@
 package undecimber.compiler.frontend.semantic;
 
+import org.antlr.v4.runtime.misc.Pair;
 import  undecimber.compiler.frontend.scope.*;
 import  undecimber.compiler.frontend.registry.*;
 import utility.types.VarType;
@@ -25,6 +26,19 @@ public class StackStation {
         }
         return ret;
     }
+    public Pair<VarRegistry, Boolean> getVarInStack_IR(String name) {
+        VarRegistry ret = null;
+        boolean isMember = false;
+        for (int i = scopeStack.size() - 1; i >= 0; i--) {
+            ret = scopeStack.get(i).getVar(name);
+            if (ret != null && ret.value != null) {
+                if (scopeStack.get(i) instanceof ClassScope) isMember = true;
+                break;
+            }
+        }
+        return new Pair<>(ret, isMember);
+    }
+
     public ClassRegistry getClass(String name) {
         return scopeStack.get(0).getClass(name);
     }
@@ -37,6 +51,7 @@ public class StackStation {
         }
         return ret;
     }
+
     public void push(BaseScope scope) {
         assert scope != null;
         this.scopeStack.push(scope);

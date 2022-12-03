@@ -1,4 +1,5 @@
 import undecimber.compiler.frontend.semantic.SemanticChecker;
+import undecimber.compiler.middleend.llvmir.MiddleEnd;
 import utility.errors.MxErrorListener;
 import utility.errors.*;
 import org.antlr.v4.runtime.CharStream;
@@ -19,6 +20,7 @@ public class Compiler {
     public static void main(String[] args) throws Exception {
         try {
             Frontend frontend = new Frontend();
+            MiddleEnd middleEnd=new MiddleEnd(frontend);
         }
         catch (Exception e) {
             errorHandle(  e);

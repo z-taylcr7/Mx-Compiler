@@ -50,7 +50,7 @@ public class CallNode extends IRBaseNode{
         //%ZZ = call zeroext i32 @bar()                     ; Return value is %zero extended
         StringBuilder ret = new StringBuilder((this.type.match(new IRVoidType())) ? "" : this.identifier() + " = ");
         ret.append(LLVM.CallInst + " (");
-        for (int i = 1; i < this.getOperandSize()+1; i++) {
+        for (int i = 0; i < this.getOperandSize(); i++) {
             ret.append(this.getOperand(i).typeIdentifier()+" , ");
         }
         ret.append(")");

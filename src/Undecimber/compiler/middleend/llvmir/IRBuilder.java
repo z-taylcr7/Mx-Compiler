@@ -1,5 +1,6 @@
 package undecimber.compiler.middleend.llvmir;
 
+import org.antlr.v4.runtime.misc.Pair;
 import undecimber.compiler.frontend.ast.ASTVisitor;
 import undecimber.compiler.frontend.ast.nodes.*;
 import undecimber.compiler.frontend.ast.nodes.exprNode.*;
@@ -23,10 +24,10 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class IRBuilder implements ASTVisitor {
-    IRTranslator translator;
-    StackStation station;
-    CurrentInfo cur;
-    IRModule module;
+    IRTranslator translator=new IRTranslator();
+    StackStation station=new StackStation();
+    CurrentInfo cur=new CurrentInfo();
+    IRModule module=new IRModule();
 
 public IRBuilder(RootNode node){
     node.accept(this);
@@ -149,42 +150,9 @@ public IRBuilder(RootNode node){
      * @param node
      */
     @Override
-    public void visit(BinaryExprNode node) {
-
-    }
-
-    /**
-     * @param node
-     */
-    @Override
-    public void visit(AtomExprNode node) {
-        //constants
-        if(node.ctx.IntLiteral()!=null)node.value=new IntConst(Integer.parseInt(node.ctx.IntLiteral().toString()));
-        else if (node.ctx.True()!=null) {node.value=new BoolConst(true);}
-        else if (node.ctx.False()!=null) node.value=new BoolConst(false);
-        else if (node.ctx.Null()!=null) {node.value=new NullConst();}
-        else if(node.ctx.This()!=null)node.value=cur.getThis();
-        else if(node.ctx.StringLiteral()!=null)node.value=new StringConst(node.ctx.StringLiteral().toString());
-        else if(node.ctx.ID()!=null){
-            if(node.type instanceof MxFuncType){
-                node.value=station.getFuncInStack(node.ctx.ID().getText()).value;
-            }else if(node.type instanceof VarType){
-                node.value=station.getVarInStack(node.ctx.ID().getText()).value;
-                //todo
-            }
-        }
-
-
-    }
-
-    /**
-     * @param node
-     */
-    @Override
     public void visit(VarDefSingleNode node) {
         Value allocaPtr;
-
-        // global variable
+        // global variables
         if (Objects.equals(cur.function.name, LLVM.InitFuncName)) {
             if (cur.classRegistry != null) {
                 allocaPtr = new GlobalVariable(cur.classRegistry.name + LLVM.Splitter + node.varRegistry.name,
@@ -193,6 +161,31 @@ public IRBuilder(RootNode node){
             else {
                 allocaPtr = new GlobalVariable(node.varRegistry.name,
                         translator.translateAllocaType(node.varRegistry.type));
+            }
+        }else{
+            allocaPtr= memAlloca(node.varRegistry.name,translator.translateVarType(node.varRegistry.type));
+        }
+        //normal int,bool,etc
+        if (node.initExpNode != null) {
+            //have init values
+            node.initExpNode.accept(this);
+            Value _value= node.initExpNode.value;
+            memStore(allocaPtr,_value);
+
+            if (allocaPtr instanceof GlobalVariable && (node.initExpNode.value instanceof IntConst || node.initExpNode.value instanceof BoolConst))
+                ((GlobalVariable) allocaPtr).val = node.initExpNode.value;
+        }
+        else if (node.varRegistry.type.match(MxBaseType.BasicType.CLASS) || node.varRegistry.type.isArray()) {
+            // array and class should init nullptr, string doesn't need init values
+            memStore(allocaPtr, new NullConst());
+        }
+        else {
+            //have no init values, init 0
+            if (allocaPtr instanceof GlobalVariable) {
+                if (((GlobalVariable) allocaPtr).PointedType().match(IRTranslator.i32Type))
+                    ((GlobalVariable) allocaPtr).val = new IntConst(0);
+                else if (((GlobalVariable) allocaPtr).PointedType().match(IRTranslator.boolType))
+                    ((GlobalVariable) allocaPtr).val = new BoolConst(false);
             }
         }
     }
@@ -296,11 +289,31 @@ public IRBuilder(RootNode node){
 
     }
 
+
     /**
      * @param node
      */
     @Override
-    public void visit(FuncCallExprNode node) {
+    public void visit(WhileStmtNode node) {
+        IRBlock condBlock = new IRBlock(LLVM.WhCondBlockLabel,cur.function);
+        IRBlock bodyBlock = new IRBlock(LLVM.WhBodyBlockLabel,cur.function);
+        IRBlock exitBlock = new IRBlock(LLVM.WhExitBlockLabel,cur.function);
+        new BrNode(condBlock,cur.block);
+
+        cur.block=condBlock;
+        station.push(node.scope);
+        node.conditionExprNode.accept(this);Value condRes=node.conditionExprNode.value;
+        new BrNode(condRes,bodyBlock,exitBlock,cur.block);
+        cur.addControlTarget(bodyBlock,exitBlock);
+
+        cur.block=bodyBlock;
+        node.bodyStmtNode.accept(this);
+        new BrNode(condBlock,cur.block);
+        cur.block=exitBlock;
+        cur.deleteControlTarget();
+
+        station.pop();
+
 
     }
 
@@ -326,18 +339,100 @@ public IRBuilder(RootNode node){
      * @param node
      */
     @Override
-    public void visit(LambdaExprNode node) {
-        //undefined behavior
+    public void visit(UnaryExprNode node) {
+        node.selfExprNode.accept(this);
+        switch (node.op) {
+            case Mx.AddOp:
+                node.value = node.selfExprNode.value;break;
+            case Mx.SubOp:
+                node.value = new BinNode(LLVM.SubInst, IRTranslator.i32Type ,new IntConst(0), node.selfExprNode.value, cur.block);break;
+            case Mx.BitNotOp:
+                node.value = new BinNode(LLVM.XorInst, IRTranslator.i32Type, node.selfExprNode.value, new IntConst(-1), cur.block);break;
+            case Mx.LogicNotOp:
+                node.value = new BinNode(LLVM.XorInst, IRTranslator.boolType, node.selfExprNode.value, new BoolConst(true), cur.block);break;
+            default: throw new InternalError("what's the fucking unary op you typed~");
+        }
     }
 
     /**
      * @param node
      */
     @Override
-    public void visit(LocalLambdaExprNode node) {
-        //nothing
+    public void visit(BinaryExprNode node) {
+        node.lhsExprNode.accept(this);
+        node.rhsExprNode.accept(this);
+        String _op=node.op;
+        switch (_op){
+            //shortcutNotYet
+            //compare ops(bool)
+            case Mx.EqualOp:case Mx.GreaterOp:case Mx.GreaterEqualOp:case Mx.LessEqualOp:case Mx.LessOp: case Mx.NotEqualOp:
+
+                node.value=new ICmpNode(IRTranslator.translateOp(_op),node.lhsExprNode.value,node.rhsExprNode.value,cur.block);break;
+            //int ops
+            default: node.value=new BinNode(IRTranslator.translateOp(_op),IRTranslator.i32Type,node.lhsExprNode.value,node.rhsExprNode.value,cur.block);
+        }
     }
 
+    /**
+     * @param node
+     */
+    @Override
+    public void visit(AtomExprNode node) {
+        //constants
+        if(node.ctx.IntLiteral()!=null)node.value=new IntConst(Integer.parseInt(node.ctx.IntLiteral().toString()));
+        else if (node.ctx.True()!=null) {node.value=new BoolConst(true);}
+        else if (node.ctx.False()!=null) node.value=new BoolConst(false);
+        else if (node.ctx.Null()!=null) {node.value=new NullConst();}
+        else if(node.ctx.This()!=null)node.value=cur.getThis();
+        else if(node.ctx.StringLiteral()!=null)node.value=new StringConst(node.ctx.StringLiteral().toString());
+        else if(node.ctx.ID()!=null){
+            if(node.type instanceof MxFuncType){
+                node.value=station.getFuncInStack(node.ctx.ID().getText()).value;
+            }else if(node.type instanceof VarType){
+
+                Value val_addr;
+                Pair<VarRegistry,Boolean> res=station.getVarInStack_IR(node.ctx.getText().toString());
+                VarRegistry var=res.a;
+                int index=-1;
+                if (cur.classRegistry != null && res.b)
+                    index = cur.classRegistry.getMemberVarIndex(var.name);
+                Value varAddr=index>=0?
+                        new GetElementPtrNode(var.name, cur.getThis(),
+                            new IRPointerType(translator.translateAllocaType(var.type)),
+                            cur.block, new IntConst(0), new IntConst(index))
+                        :var.value;
+
+            // variable resolve
+            node.value = memLoad(varAddr, cur.block);
+            }
+        }
+
+
+    }
+
+    /**
+     * @param node
+     */
+    @Override
+    public void visit(FuncCallExprNode node) {
+        node.callExprNode.accept(this);
+        if(node.callExprNode.value instanceof IRFunction){
+            ArrayList<Value>argV=new ArrayList<>();
+            //this.function
+            if((((IRFuncType)node.callExprNode.value.type).memberOf!=null)){
+                if(node.callExprNode instanceof MemberExprNode)argV.add(((MemberExprNode)node.callExprNode).supExprNode.value);
+            }else {
+                //call in class(other function)
+                assert cur.classRegistry!=null;
+                argV.add(cur.getThis());
+            }
+            for (ExprNode callArgExpNode : node.callArgExpNodes) {
+                callArgExpNode.accept(this);
+                argV.add(callArgExpNode.value);
+            }
+            node.value=new CallNode((IRFunction) node.callExprNode.value,cur.block,argV);
+        }else node.value=node.callExprNode.value;
+    }
 
     /**
      * @param node
@@ -368,54 +463,35 @@ public IRBuilder(RootNode node){
      */
     @Override
     public void visit(PrefixExprNode node) {
-
-    }
-
-    /**
-     * @param node
-     */
-    @Override
-    public void visit(UnaryExprNode node) {
-        node.selfExprNode.accept(this);
-        switch (node.op) {
-            case Mx.AddOp:
-                node.value = node.selfExprNode.value;break;
-            case Mx.SubOp:
-                node.value = new BinNode(LLVM.SubInst, IRTranslator.i32Type ,new IntConst(0), node.selfExprNode.value, cur.block);break;
-            case Mx.BitNotOp:
-                node.value = new BinNode(LLVM.XorInst, IRTranslator.i32Type, node.selfExprNode.value, new IntConst(-1), cur.block);break;
-            case Mx.LogicNotOp:
-                node.value = new BinNode(LLVM.XorInst, IRTranslator.boolType, node.selfExprNode.value, new BoolConst(true), cur.block);break;
-            default: throw new InternalError("what's the fucking unary op you typed~");
+        node.exprNode.accept(this);
+        String _op=node.op;
+        Value _val=node.exprNode.value;
+        switch (_op){
+            case Mx.DecrementOp :node.value= new BinNode(Mx.AddOp,new IRIntType(32) , _val,new IntConst(-1),cur.block);break;
+            case Mx.IncrementOp :node.value= new BinNode(Mx.AddOp,new IRIntType(32), _val,new IntConst(+1),cur.block);break;
         }
+        node.value.resolveFrom=node.exprNode.value.resolveFrom;
+        memStore(node.value.resolveFrom, node.value);
     }
 
     /**
      * @param node
      */
     @Override
-    public void visit(WhileStmtNode node) {
-        IRBlock condBlock = new IRBlock(LLVM.WhCondBlockLabel,cur.function);
-        IRBlock bodyBlock = new IRBlock(LLVM.WhBodyBlockLabel,cur.function);
-        IRBlock exitBlock = new IRBlock(LLVM.WhExitBlockLabel,cur.function);
-        new BrNode(condBlock,cur.block);
-
-        cur.block=condBlock;
-        station.push(node.scope);
-        node.conditionExprNode.accept(this);Value condRes=node.conditionExprNode.value;
-        new BrNode(condRes,bodyBlock,exitBlock,cur.block);
-        cur.addControlTarget(bodyBlock,exitBlock);
-
-        cur.block=bodyBlock;
-        node.bodyStmtNode.accept(this);
-        new BrNode(condBlock,cur.block);
-        cur.block=exitBlock;
-        cur.deleteControlTarget();
-
-        station.pop();
-
-
+    public void visit(LambdaExprNode node) {
+        //undefined behavior
     }
+
+    /**
+     * @param node
+     */
+    @Override
+    public void visit(LocalLambdaExprNode node) {
+        //nothing
+    }
+
+
+
     //Into Bottom
     private Value memAlloca(String allocaName, IRBaseType allocaType) {
         return new AllocaNode(allocaName, allocaType, cur.function.entryBlock);

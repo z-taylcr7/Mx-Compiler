@@ -80,7 +80,7 @@ public class IRTranslator {
         return ret;
     }
     public IRBaseType translateFuncType(MxFuncType type,IRBaseType origin){
-        IRFuncType ret= new IRFuncType(translateVarType(type),origin);
+        IRFuncType ret= new IRFuncType(translateVarType(type.retType),origin);
         if(origin!=null)ret.argTypes.add(origin);
         for (VarType varType : type.funcArgsType) {
             ret.argTypes.add(translateVarType(varType));

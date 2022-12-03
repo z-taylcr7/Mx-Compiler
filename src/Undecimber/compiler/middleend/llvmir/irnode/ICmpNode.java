@@ -1,15 +1,17 @@
 package undecimber.compiler.middleend.llvmir.irnode;
 
 import undecimber.compiler.middleend.llvmir.IRBlock;
+import undecimber.compiler.middleend.llvmir.IRTranslator;
 import undecimber.compiler.middleend.llvmir.IRVisitor;
 import undecimber.compiler.middleend.llvmir.Value;
 import undecimber.compiler.middleend.llvmir.irtype.IRBaseType;
+import undecimber.compiler.middleend.llvmir.irtype.IRBoolType;
 
 public class ICmpNode extends IRBaseNode {
     public String cmp;
 
-    public ICmpNode(String cmp, IRBaseType type, Value lhs,Value rhs, IRBlock parentBlock) {
-        super(cmp, type, parentBlock);
+    public ICmpNode(String cmp,  Value lhs,Value rhs, IRBlock parentBlock) {
+        super(cmp, IRTranslator.boolType, parentBlock);
         this.addOperand(lhs);
         this.addOperand(rhs);
     }

@@ -6,17 +6,17 @@ import undecimber.compiler.middleend.llvmir.irtype.IRFuncType;
 import utility.LLVM;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class IRFunction extends GlobalValue {
     public IRModule parentModule;
     public IRBlock entryBlock, exitBlock;
-    public ArrayList<IRBlock> blockList;
+    public LinkedList<IRBlock> blockList=new LinkedList<>();
     public Value returnAddress; // returnType == void ? null : valid_address;
     public boolean isBuiltin = false;
     public boolean isUsed = false;
     public IRFunction(String name, IRBaseType type) {
         super(name, type);
-        this.blockList = new ArrayList<>();
         this.returnAddress = null;
         entryBlock = new IRBlock(LLVM.EntryBlockLabel, this);
         exitBlock = new IRBlock(LLVM.ExitBlockLabel, this);
@@ -32,11 +32,11 @@ public class IRFunction extends GlobalValue {
 
     public IRFunction(String name, IRBaseType translateFuncType, IRModule module) {
         super(name,translateFuncType);
+        blockList=new LinkedList<>();
         entryBlock = new IRBlock(LLVM.EntryBlockLabel, this);
         exitBlock = new IRBlock(LLVM.ExitBlockLabel, this);
         entryBlock.parentFunction = this;
 
-        // remember: here we place exit in second, not the logic order
         exitBlock.parentFunction = this;
 
         this.parentModule = module;

@@ -13,8 +13,8 @@ import java.util.LinkedList;
 public class IRBlock extends Value {
 
 
-    public LinkedList<IRBaseNode> instructions;
-    public ArrayList<PhiNode> PhiInstructions;
+    public LinkedList<IRBaseNode> instructions=new LinkedList<>();
+    public ArrayList<PhiNode> PhiInstructions=new ArrayList<>();
 
     public boolean isTerminatedNode;
     public IRFunction parentFunction;
@@ -31,7 +31,8 @@ public class IRBlock extends Value {
     public void addInst(IRBaseNode irBaseNode) {
         if (isTerminatedNode) return;
         if (irBaseNode.isTerminator()) isTerminatedNode = true;
-        instructions.addLast(irBaseNode);
+        if(irBaseNode instanceof PhiNode)PhiInstructions.add((PhiNode) irBaseNode);
+        else instructions.addLast(irBaseNode);
     }
     public void addPhiInst(PhiNode phiNode){
         phiNode.parentBlock=this;
