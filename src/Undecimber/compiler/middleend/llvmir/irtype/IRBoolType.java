@@ -13,6 +13,6 @@ public class IRBoolType  extends IRBaseType{
 
     @Override
     public String toString() {
-        return "{i1}";
+        return "i1";
     }
 }

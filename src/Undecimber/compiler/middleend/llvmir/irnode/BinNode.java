@@ -1,6 +1,7 @@
 package undecimber.compiler.middleend.llvmir.irnode;
 
 import undecimber.compiler.middleend.llvmir.IRBlock;
+import undecimber.compiler.middleend.llvmir.IRTranslator;
 import undecimber.compiler.middleend.llvmir.IRVisitor;
 import undecimber.compiler.middleend.llvmir.Value;
 import undecimber.compiler.middleend.llvmir.irtype.IRBaseType;
@@ -8,8 +9,8 @@ import undecimber.compiler.middleend.llvmir.irtype.IRBaseType;
 public class BinNode extends IRBaseNode{
     public String op;
     public BinNode(String op, IRBaseType type,Value lhs,Value rhs, IRBlock parentBlock) {
-        super(op, type, parentBlock);
-        this.op=op;
+        super(IRTranslator.translateOp(op), type, parentBlock);
+        this.op= IRTranslator.translateOp(op);
         this.addOperand(lhs);
         this.addOperand(rhs);
     }

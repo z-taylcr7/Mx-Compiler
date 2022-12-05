@@ -21,9 +21,6 @@ public class IRStringType extends IRBaseType {
 
     @Override
     public String toString() {
-        return "IRStringType{" +
-                "elementType=" + elementType +
-                ", length=" + length +
-                '}';
+        return " [ " + elementType + " x " + length + " ] ";
     }
 }

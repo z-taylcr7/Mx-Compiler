@@ -12,7 +12,7 @@ import utility.LLVM;
 import java.util.ArrayList;
 
 public class CallNode extends IRBaseNode{
-
+    public boolean noaliasFlag;
     public CallNode(IRFunction func, IRBlock parentBlock, ArrayList<Value>args) {
         super(func.name + LLVM.CallSuffix, ((IRFuncType) func.type).retType, parentBlock);
         this.addOperand(func);
@@ -49,7 +49,10 @@ public class CallNode extends IRBaseNode{
         //%Z = call void @foo() noreturn                    ; indicates that %foo never returns normally
         //%ZZ = call zeroext i32 @bar()                     ; Return value is %zero extended
         StringBuilder ret = new StringBuilder((this.type.match(new IRVoidType())) ? "" : this.identifier() + " = ");
-        ret.append(LLVM.CallInst + " (");
+        ret.append(LLVM.CallInst + " ");
+
+        if (noaliasFlag) ret.append("noalias ");
+        ret.append(this.callFunc().typeIdentifier()).append("(");
         for (int i = 0; i < this.getOperandSize(); i++) {
             ret.append(this.getOperand(i).typeIdentifier()+" , ");
         }

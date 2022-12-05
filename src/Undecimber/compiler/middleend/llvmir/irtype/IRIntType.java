@@ -22,7 +22,6 @@ public class IRIntType extends IRBaseType {
 
     @Override
     public String toString() {
-        return "{i" +width +
-                '}';
+        return "i" +width;
     }
 }

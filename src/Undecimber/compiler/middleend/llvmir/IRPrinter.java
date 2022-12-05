@@ -6,6 +6,7 @@ import undecimber.compiler.middleend.llvmir.irnode.IRBaseNode;
 import undecimber.compiler.middleend.llvmir.irnode.PhiNode;
 import undecimber.compiler.middleend.llvmir.irtype.IRFuncType;
 import undecimber.compiler.middleend.llvmir.irtype.IRPointerType;
+import utility.LLVM;
 import utility.pass.BlockPass;
 import utility.pass.FunctionPass;
 import utility.pass.ModulePass;
@@ -27,7 +28,7 @@ public class IRPrinter implements ModulePass, BlockPass, FunctionPass {
     @Override
     public void runBlock(IRBlock block) {
         block.setComment();
-        out.println(block.name+":"+block.comment);
+        out.println(block.name+":"+ "                       "+block.comment);
         for (PhiNode phiNode : block.PhiInstructions) {
             out.println(TAB+phiNode.format());
         }
@@ -41,7 +42,8 @@ public class IRPrinter implements ModulePass, BlockPass, FunctionPass {
      */
     @Override
     public void runFunction(IRFunction func) {
-        out.println(func.name);out.println('{');
+
+        out.println(funcDefFormat(func));out.println('{');
         out.print('\n');
 
         for (int i = 0; i < func.blockList.size(); i++) {

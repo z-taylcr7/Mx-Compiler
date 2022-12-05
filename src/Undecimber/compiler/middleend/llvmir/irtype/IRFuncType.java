@@ -24,8 +24,6 @@ public class IRFuncType extends IRBaseType{
 
     @Override
     public String toString() {
-        return "IRFuncType{" +
-                "retType=" + retType +
-                '}';
+        return retType.toString() ;
     }
 }

@@ -1,5 +1,5 @@
 import undecimber.compiler.frontend.semantic.SemanticChecker;
-import undecimber.compiler.middleend.llvmir.MiddleEnd;
+import undecimber.compiler.middleend.MiddleEnd;
 import utility.errors.MxErrorListener;
 import utility.errors.*;
 import org.antlr.v4.runtime.CharStream;
