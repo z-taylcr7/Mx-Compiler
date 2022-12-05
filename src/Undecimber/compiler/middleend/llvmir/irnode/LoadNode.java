@@ -4,12 +4,13 @@ import undecimber.compiler.middleend.llvmir.IRBlock;
 import undecimber.compiler.middleend.llvmir.IRVisitor;
 import undecimber.compiler.middleend.llvmir.Value;
 import undecimber.compiler.middleend.llvmir.irtype.IRBaseType;
+import undecimber.compiler.middleend.llvmir.irtype.IRPointerType;
 
 public class LoadNode extends IRBaseNode{
 
 
     public LoadNode(Value loadAddr, IRBlock parentBlock) {
-        super(loadAddr.name, loadAddr.type, parentBlock);
+        super(loadAddr.name, ((IRPointerType)loadAddr.type).pointedType, parentBlock);
         this.addOperand(loadAddr);
     }
     public Value getLoadAddr(){
@@ -23,7 +24,7 @@ public class LoadNode extends IRBaseNode{
     @Override
     public String format() {
         //<result> = load [volatile] <ty>, ptr <pointer>[, align <alignment>]
-        return  name=" = load "+ this.type + ", " +
+        return  this.identifier()+" = load "+ this.type + ", " +
                 this.getLoadAddr().typeIdentifier() + ", align " + this.type.size();
     }
 

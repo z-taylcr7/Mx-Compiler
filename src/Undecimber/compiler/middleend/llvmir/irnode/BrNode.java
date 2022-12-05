@@ -8,7 +8,7 @@ import undecimber.compiler.middleend.llvmir.irtype.IRVoidType;
 import utility.LLVM;
 
 public class BrNode extends IRBaseNode{
-    public final boolean isJump=false;
+
     public BrNode(IRBlock block, IRBlock parentBlock) {
         super(LLVM.BrInst,new IRVoidType(), parentBlock);
         this.addOperand(block);
@@ -47,8 +47,8 @@ public class BrNode extends IRBaseNode{
         int x=1;
         //br i1 <cond>, label <then>, label <else>
         //br label <then>          ; Unconditional branch
-        if (IsJump())return LLVM.BrInst+" "+this.Dest().typeIdentifier();
-        else return LLVM.BrInst+" "+this.Cond().type+" , "+this.Then().typeIdentifier()+" , "+this.Else().typeIdentifier();
+        if (this.IsJump())return LLVM.BrInst+" "+this.Dest().typeIdentifier();
+        else return LLVM.BrInst+" "+this.Cond().typeIdentifier()+" , "+this.Then().typeIdentifier()+" , "+this.Else().typeIdentifier();
     }
 
     /**
@@ -56,7 +56,7 @@ public class BrNode extends IRBaseNode{
      */
     @Override
     public IRBaseNode copy() {
-        if(isJump)return new BrNode(this.Dest(),this.parentBlock);
+        if(this.IsJump())return new BrNode(this.Dest(),this.parentBlock);
         else return new BrNode(this.Cond(),this.Then(),this.Else(),this.parentBlock);
     }
 

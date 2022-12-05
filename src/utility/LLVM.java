@@ -2,7 +2,7 @@ package utility;
 
 public class LLVM {
 
-    public static final int PointerSize = 4;
+    public static final int PointerSize = 8;
 
     // --- Splitter --
 

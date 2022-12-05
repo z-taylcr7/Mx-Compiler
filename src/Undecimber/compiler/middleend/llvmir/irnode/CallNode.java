@@ -53,6 +53,7 @@ public class CallNode extends IRBaseNode{
         for (int i = 0; i < this.getOperandSize(); i++) {
             ret.append(this.getOperand(i).typeIdentifier()+" , ");
         }
+        ret.delete(ret.length()-2,ret.length()-1);
         ret.append(")");
         return ret.toString();
     }

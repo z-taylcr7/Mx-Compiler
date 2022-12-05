@@ -31,7 +31,8 @@ public class CurrentInfo {
     }
     public void TerminateAll(){
         for (IRBlock block : this.function.blockList)
-            if (!block.isTerminatedNode) new BrNode(this.function.exitBlock, block);
+            if (!block.isTerminatedNode)
+                new BrNode(this.function.exitBlock, block);
     }
     public Value getThis() {
         if (this.classRegistry == null || this.function == null) throw new InternalError("IR this doesn't appear in a class");

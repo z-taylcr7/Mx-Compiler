@@ -6,7 +6,6 @@ import utility.Position;
 
 public abstract class ExprNode extends ASTNode {
     public MxBaseType type;
-    public Value value;
 
     public ExprNode(Position pos) {
         super(pos);

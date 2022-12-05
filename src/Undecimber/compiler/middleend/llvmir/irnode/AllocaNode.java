@@ -20,7 +20,7 @@ public class AllocaNode extends IRBaseNode {
 
     @Override
     public String format(){
-        return this.name+" = " + LLVM.AllocaInst+"  "+ this.allocaType;
+        return this.name+" = " + LLVM.AllocaInst+"  "+ this.allocaType+", align "+this.allocaType.size();
         //name = alloca <type>
     }
 

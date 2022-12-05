@@ -5,7 +5,7 @@ import undecimber.compiler.middleend.llvmir.irtype.IRBaseType;
 import java.util.ArrayList;
 
 public class User extends Value{
-    public static final ArrayList<Value> operands=new ArrayList<Value>();
+    public ArrayList<Value> operands=new ArrayList<Value>();
 
     public User(IRBaseType type) {
         super(type);

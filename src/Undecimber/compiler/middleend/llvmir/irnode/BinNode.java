@@ -9,6 +9,7 @@ public class BinNode extends IRBaseNode{
     public String op;
     public BinNode(String op, IRBaseType type,Value lhs,Value rhs, IRBlock parentBlock) {
         super(op, type, parentBlock);
+        this.op=op;
         this.addOperand(lhs);
         this.addOperand(rhs);
     }

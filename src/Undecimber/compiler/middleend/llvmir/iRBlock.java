@@ -16,7 +16,7 @@ public class IRBlock extends Value {
     public LinkedList<IRBaseNode> instructions=new LinkedList<>();
     public ArrayList<PhiNode> PhiInstructions=new ArrayList<>();
 
-    public boolean isTerminatedNode;
+    public boolean isTerminatedNode=false;
     public IRFunction parentFunction;
     //control flow graph
     public ArrayList<IRBlock>prevs=new ArrayList<>(),nexts=new ArrayList<>();
@@ -27,7 +27,17 @@ public class IRBlock extends Value {
         this.parentFunction = parentFunction;
         if (parentFunction != null) parentFunction.blockList.add(this);
     }
-
+    public void setComment() {
+        StringBuilder ret = new StringBuilder("prevs = ");
+        if (!prevs.isEmpty()) {
+            prevs.forEach(prev -> ret.append(prev==null?"NULL":prev.identifier()).append(", "));
+        }
+        if (!nexts.isEmpty()) {
+            ret.append(" | nexts = ");
+            nexts.forEach(next -> ret.append(next==null?"NULL":next.identifier()).append(", "));
+        }
+        comment = ret.toString();
+    }
     public void addInst(IRBaseNode irBaseNode) {
         if (isTerminatedNode) return;
         if (irBaseNode.isTerminator()) isTerminatedNode = true;

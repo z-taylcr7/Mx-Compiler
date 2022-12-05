@@ -26,12 +26,13 @@ public class IRPrinter implements ModulePass, BlockPass, FunctionPass {
      */
     @Override
     public void runBlock(IRBlock block) {
+        block.setComment();
         out.println(block.name+":"+block.comment);
         for (PhiNode phiNode : block.PhiInstructions) {
-            out.println(phiNode.format());
+            out.println(TAB+phiNode.format());
         }
         for (IRBaseNode instruction : block.instructions) {
-            out.println(instruction.format());
+            out.println(TAB+instruction.format());
         }
     }
 
@@ -40,8 +41,9 @@ public class IRPrinter implements ModulePass, BlockPass, FunctionPass {
      */
     @Override
     public void runFunction(IRFunction func) {
-        out.println(func.name);
+        out.println(func.name);out.println('{');
         out.print('\n');
+
         for (int i = 0; i < func.blockList.size(); i++) {
             runBlock(func.blockList.get(i));
             out.print("\n");

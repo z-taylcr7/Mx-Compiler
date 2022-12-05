@@ -12,6 +12,7 @@ public class ICmpNode extends IRBaseNode {
 
     public ICmpNode(String cmp,  Value lhs,Value rhs, IRBlock parentBlock) {
         super(cmp, IRTranslator.boolType, parentBlock);
+        this.cmp=cmp;
         this.addOperand(lhs);
         this.addOperand(rhs);
     }

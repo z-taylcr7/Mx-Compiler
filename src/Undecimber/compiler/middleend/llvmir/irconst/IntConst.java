@@ -11,7 +11,7 @@ public class IntConst extends IRConst{
     int data;
 
     public IntConst(int _data) {
-        super(LLVM.ConstAnon, IRTranslator.intType);
+        super(LLVM.ConstAnon, IRTranslator.i32Type);
         data=_data;
 
     }

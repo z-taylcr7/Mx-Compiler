@@ -1,6 +1,12 @@
-
+int aruba=233;
+string ava="Avava AvA";
 int main(){
-    int a=1;
-    int b=2;
+    int a=666;
+    int b=a+1;
+    int c=-33;
+    string str="hello";
+    for(c;c<0;c++){
+        aruba=aruba*2;
+    }
     return 0;
 }

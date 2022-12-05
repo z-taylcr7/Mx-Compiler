@@ -1,6 +1,10 @@
-package undecimber.compiler.middleend.llvmir;
+package undecimber.compiler.middleend;
 
 import undecimber.compiler.frontend.Frontend;
+import undecimber.compiler.middleend.llvmir.IRBuilder;
+import undecimber.compiler.middleend.llvmir.IRModule;
+import undecimber.compiler.middleend.llvmir.IRPrinter;
+import undecimber.compiler.middleend.llvmir.Value;
 
 import java.io.PrintStream;
 
