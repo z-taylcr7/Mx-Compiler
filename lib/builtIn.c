@@ -62,7 +62,9 @@ char* toString(int i) {
     res[len + neg] = '\0';
     return res;
 }
-
+char* _bot_malloc(int mallocSize) {
+    return malloc(mallocSize);
+}
 char* _bot_str_cat(char* str1, char* str2) {
     int len1 = strlen(str1);
     int len2 = strlen(str2);

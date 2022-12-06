@@ -14,6 +14,6 @@ public class IRLabelType extends IRBaseType{
 
     @Override
     public String toString() {
-        return "Label";
+        return "label";
     }
 }

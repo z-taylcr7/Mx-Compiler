@@ -28,7 +28,7 @@ public class IRBlock extends Value {
         if (parentFunction != null) parentFunction.blockList.add(this);
     }
     public void setComment() {
-        StringBuilder ret = new StringBuilder("prevs = ");
+        StringBuilder ret = new StringBuilder(";prevs = ");
         if (!prevs.isEmpty()) {
             prevs.forEach(prev -> ret.append(prev==null?"NULL":prev.identifier()).append(", "));
         }

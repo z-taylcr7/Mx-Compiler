@@ -12,7 +12,7 @@ public class AllocaNode extends IRBaseNode {
 
 
     public AllocaNode(String NodeName, IRBaseType type, IRBlock parentBlock) {
-        super(rename(NodeName), new IRPointerType(type), parentBlock,true);
+        super(parentBlock.renameAddress(NodeName), new IRPointerType(type), parentBlock,true);
         allocaName=NodeName;
         allocaType=type;
     }

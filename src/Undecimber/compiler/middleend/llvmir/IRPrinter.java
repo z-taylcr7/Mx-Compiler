@@ -60,7 +60,7 @@ public class IRPrinter implements ModulePass, BlockPass, FunctionPass {
     @Override
     public void runModule(IRModule module) {
         out.printf("; Module = '%s'%n", mx_file_name);
-        out.printf("src_file_name = \"%s\"%n", mx_file_name);
+        out.printf(";src_file_name = \"%s\"%n", mx_file_name);
         for (IRFunction func : module.builtinFunctions) out.println(funcDeclFormat(func));
         out.print('\n');
         for (GlobalVariable globalVar : module.globalVarArray) out.println(globalVarInitFormat(globalVar));

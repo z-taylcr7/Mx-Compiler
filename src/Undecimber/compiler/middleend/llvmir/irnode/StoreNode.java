@@ -21,9 +21,11 @@ public class StoreNode extends IRBaseNode{
     @Override
     public String format() {
         //store [volatile] <ty> <value>, ptr <pointer>[, align <alignment>]
-        if(this.getStoreData() instanceof NullConst)return  LLVM.StoreInst + " " + ((IRPointerType) this.getStoreData().type).pointedType + " " +
-                this.getStoreData().identifier() + ", " + this.getStoreData().typeIdentifier() + ", align " + this.type.size();
-        return  name="store " +this.getStoreData().typeIdentifier()+" "+
+        if (this.getStoreData() instanceof NullConst)
+            return LLVM.StoreInst + " " + ((IRPointerType) this.getStorePtr().type).pointedType + " " +
+                    this.getStoreData().identifier() + ", " + this.getStorePtr().typeIdentifier() + ", align " + this.type.size();
+
+        return name = "store " + this.getStoreData().typeIdentifier() + "," +
                 this.getStorePtr().typeIdentifier() + ", align " + this.type.size();
     }
 

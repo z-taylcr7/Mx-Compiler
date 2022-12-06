@@ -33,9 +33,6 @@ public class IRStructType extends IRBaseType{
     }
     @Override
     public String toString() {
-        return "IRStructType{" +
-                "structName='" + structName + '\'' +
-                ", memberVarTypes=" + memberVarTypes +
-                '}';
+        return structProto.identifier();
     }
 }

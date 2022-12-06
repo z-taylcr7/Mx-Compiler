@@ -219,6 +219,16 @@ define dso_local i8* @toString(i32 %0) #0 {
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
+define dso_local i8* @_bot_malloc(i32 %0) #0 {
+  %2 = alloca i32, align 4
+  store i32 %0, i32* %2, align 4
+  %3 = load i32, i32* %2, align 4
+  %4 = sext i32 %3 to i64
+  %5 = call noalias i8* @malloc(i64 %4) #4
+  ret i8* %5
+}
+
+; Function Attrs: noinline nounwind optnone uwtable
 define dso_local i8* @_bot_str_cat(i8* %0, i8* %1) #0 {
   %3 = alloca i8*, align 8
   %4 = alloca i8*, align 8

@@ -46,6 +46,7 @@ public class Value {
         return "%" + name;
     }
     public String typeIdentifier(){
+        if(type.match(IRTranslator.voidType))return "";
         return type+" "+this.identifier();
     }
     public static String rename(String rawName) {
@@ -55,6 +56,17 @@ public class Value {
         renameTable.put(rawName, renameCnt+1);
         if (renameCnt == 0) return rawName;
         return rawName + LLVM.Splitter + renameCnt;
+    }
+    public static String getRawName(String name) {
+        int lastSuffixIndex = name.lastIndexOf(LLVM.Splitter);
+        if (lastSuffixIndex < 0) return name;
+        return name.substring(0, lastSuffixIndex);
+    }
+
+    public static String resolveRename(String rawName) {
+        int lastAddrSuffixIndex = rawName.lastIndexOf(LLVM.AddrSuffix);
+        if (lastAddrSuffixIndex < 0) return rawName + LLVM.ResolveSuffix;
+        return rawName.substring(0, lastAddrSuffixIndex) + LLVM.ResolveSuffix;
     }
 
     public String renameAddress(String rawName){

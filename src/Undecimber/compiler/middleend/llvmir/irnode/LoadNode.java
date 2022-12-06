@@ -10,7 +10,7 @@ public class LoadNode extends IRBaseNode{
 
 
     public LoadNode(Value loadAddr, IRBlock parentBlock) {
-        super(loadAddr.name, ((IRPointerType)loadAddr.type).pointedType, parentBlock);
+        super(resolveRename(loadAddr.name), ((IRPointerType)loadAddr.type).pointedType, parentBlock);
         this.addOperand(loadAddr);
     }
     public Value getLoadAddr(){

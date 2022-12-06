@@ -27,7 +27,10 @@ public class IRFunction extends GlobalValue {
     }
     public IRFunction(String name, IRBaseType retType, IRBaseType... argTypes) {
         super(name, new IRFuncType(retType, null));
-        for (IRBaseType argType : argTypes) ((IRFuncType) this.type).argTypes.add(argType);
+        for (IRBaseType argType : argTypes) {
+
+            ((IRFuncType) this.type).argTypes.add(argType);
+        }
     }
 
     public IRFunction(String name, IRBaseType translateFuncType, IRModule module) {
@@ -69,6 +72,8 @@ public class IRFunction extends GlobalValue {
 
 
     public int getArgNum() {
+
+
         return ((IRFuncType)this.type).argTypes.size();
     }
     public Value getArg(int index) {

@@ -23,7 +23,7 @@ public class BinNode extends IRBaseNode{
 
     @Override
     public String format() {
-        return this.identifier()+" = "+this.op+" "+lhs().identifier()+" , "+rhs().identifier();
+        return this.identifier()+" = "+this.op+" "+this.type+ " "+lhs().identifier()+" , "+rhs().identifier();
         //<result> = add i32 4, %var          ; yields i32:result = 4 + %var
     }
 

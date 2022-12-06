@@ -10,6 +10,7 @@ public class PrefixExprNode extends ExprNode{
 
     public PrefixExprNode(Position pos,String op, ExprNode exprNode){
         super(pos);
+        this.op=op;
         this.exprNode=exprNode;
 
     }

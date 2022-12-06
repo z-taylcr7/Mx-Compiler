@@ -63,10 +63,11 @@ public class IRBuilder implements ASTVisitor {
     public void visit(ClassDefNode node) {
         ClassScope tmpScope = node.classRegistry.scope;
         station.push(tmpScope);
+        cur.classRegistry=node.classRegistry;
         for (VarDefStmtNode varDefStmtNode : node.varDefs) {
             varDefStmtNode.accept(this);
         }
-        if (node.constructorDefNode != null) this.visit(node.constructorDefNode);
+        if (node.constructorDefNode != null) node.constructorDefNode.accept(this);
 
         for (FuncDefNode funcDefNode : node.funcDefs) {
             funcDefNode.accept(this);
@@ -99,7 +100,7 @@ public class IRBuilder implements ASTVisitor {
             } else {
                 allocaPtr = new GlobalVariable(node.varRegistry.name,
                         translator.translateAllocaType(node.varRegistry.type));
-                module.globalVarArray.add(new GlobalVariable(node.varRegistry.name, translator.translateVarType(node.varRegistry.type)));
+                module.globalVarArray.add((GlobalVariable) allocaPtr);
             }
         } else {
             allocaPtr = memAlloca(node.varRegistry.name, translator.translateAllocaType(node.varRegistry.type));
@@ -221,7 +222,7 @@ public class IRBuilder implements ASTVisitor {
 
         for (int i = 0; i < cur.function.getArgNum(); i++) {
             VarRegistry varRegistry;
-            if (cur.classRegistry == null) varRegistry = node.funcRegistry.funcArgs.get(1);
+            if (cur.classRegistry == null) varRegistry = node.funcRegistry.funcArgs.get(i);
             else {
                 if (i == 0) {
                     cur.function.addArg(new Value(LLVM.ThisArg, new IRPointerType(cur.classRegistry.value.type)));
@@ -341,7 +342,7 @@ public class IRBuilder implements ASTVisitor {
                 new GetElementPtrNode(
                         node.arrayExprNode.value.name + LLVM.ArrayElementSuffix,
                         node.arrayExprNode.value,
-                        node.value.type,
+                        node.arrayExprNode.value.type,
                         cur.block,
                         node.indexExprNode.value
                 ),
@@ -378,10 +379,16 @@ public class IRBuilder implements ASTVisitor {
     @Override
     public void visit(BinaryExprNode node) {
         node.lhsExprNode.accept(this);
+
         node.rhsExprNode.accept(this);
         String _op = node.op;
         switch (_op) {
             //todo:shortcutNotYet
+            //logic ops
+            case Mx.LogicAndOp:
+
+            case Mx.LogicOrOp:
+                node.value = new BinNode(IRTranslator.logic_2Bit(_op), IRTranslator.boolType,node.lhsExprNode.value, node.rhsExprNode.value, cur.block);break;
             //compare ops(bool)
             case Mx.EqualOp:
             case Mx.GreaterOp:
@@ -389,8 +396,7 @@ public class IRBuilder implements ASTVisitor {
             case Mx.LessEqualOp:
             case Mx.LessOp:
             case Mx.NotEqualOp:
-
-                node.value = new ICmpNode(IRTranslator.translateOp(_op), node.lhsExprNode.value, node.rhsExprNode.value, cur.block);
+                node.value = new ICmpNode(IRTranslator.translateOp(_op), node.lhsExprNode.value, node.rhsExprNode.value, cur.block);break;
                 //int ops
             default:
                 node.value = new BinNode(_op, IRTranslator.i32Type, node.lhsExprNode.value, node.rhsExprNode.value, cur.block);
@@ -507,7 +513,7 @@ public class IRBuilder implements ASTVisitor {
             //non array
             if (node.type.match(MxBaseType.BasicType.CLASS)) {
                 ClassRegistry classRegistry = station.getClass(((VarType) node.type).className);
-                node.value = classMalloc(new IRStructType(((VarType) node.type).className));
+                node.value = classMalloc((IRStructType)classRegistry.value.type);
                 new CallNode((IRFunction) classRegistry.scope.getFunc(((VarType) node.type).className).value,
                         cur.block, node.value);//construct
             } else throw new RuntimeException("UB");
@@ -519,7 +525,7 @@ public class IRBuilder implements ASTVisitor {
                 DimLengths.add(exprNode.value);
             }
             if (DimLengths.size() == 0) node.value = new NullConst();
-            else node.value = arrayMalloc(DimLengths, 0, translator.translateAllocaType(node.type));
+            else node.value = arrayMalloc(DimLengths, 0, ((IRPointerType)translator.translateAllocaType(node.type)).pointedType);
         }
 
 
@@ -605,62 +611,6 @@ public class IRBuilder implements ASTVisitor {
         new StoreNode(destPtr, assignData, cur.block);
     }
 
-    private Value arrayMalloc(ArrayList<Value> eachDimLengths, int curDim, IRBaseType elementType) {
-        // int[][][] a = new int [3][4][5];
-        // curDim: from 0 to 2
-        // elementType: now dim element. e.g. curDim = 0, elementType = i32**
-
-        // step 1. malloc this dim.
-        // size = (curDim+1) * elementTypeSize
-        Value curDimSize = new BinNode(LLVM.MulInst, IRTranslator.i32Type,
-                eachDimLengths.get(curDim), new IntConst(elementType.size()), cur.block);
-        Value mallocSize = new BinNode(LLVM.AddInst, IRTranslator.i32Type, curDimSize, new IntConst(IRTranslator.i32Type.size()), cur.block);
-        Value mallocPtr = new CallNode(module.getMalloc(), cur.block, mallocSize);//
-
-        // step 2. store length at the before the array
-        Value lengthDestPtr = new BitCastNode(mallocPtr, IRTranslator.i32PointerType, cur.block);
-        memStore(lengthDestPtr, eachDimLengths.get(curDim));
-
-        // step 3. get array head pointer and cast it to element type
-        Value arrHeadPointer = new BitCastNode(
-                new GetElementPtrNode(lengthDestPtr, IRTranslator.i32PointerType, cur.block, new IntConst(1)),
-                new IRPointerType(elementType), cur.block);
-        if (curDim < eachDimLengths.size() - 1) {
-            // int* curDimPtr = 0; while (curDimPtr != tailDimPtr) {curDimPtr++;}
-            IRBlock condBlock = new IRBlock(LLVM.WhCondBlockLabel, cur.function),
-                    bodyBlock = new IRBlock(LLVM.WhBodyBlockLabel, cur.function),
-                    exitBlock = new IRBlock(LLVM.WhExitBlockLabel, cur.function);
-
-            PhiNode curDimPtr = new PhiNode(arrHeadPointer.type, null);
-            curDimPtr.addBranch(arrHeadPointer, cur.block); // initial branch
-
-            Value tailDimPtr = new GetElementPtrNode(arrHeadPointer, arrHeadPointer.type, cur.block, eachDimLengths.get(curDim));
-            IRBaseNode incrPtr = new GetElementPtrNode(curDimPtr, curDimPtr.type, null, new IntConst(1));
-
-            new BrNode(condBlock, cur.block);
-
-            cur.block = condBlock;
-            curDimPtr.setParentBlock(condBlock);
-            Value condValue = new ICmpNode(LLVM.NotEqualArg, curDimPtr, tailDimPtr, cur.block);
-            new BrNode(condValue, bodyBlock, exitBlock, cur.block);
-
-            cur.block = bodyBlock;
-            Value subMallocPtr = arrayMalloc(eachDimLengths, curDim + 1, ((IRPointerType) elementType).pointedType);
-            memStore(curDimPtr, subMallocPtr);
-            incrPtr.setParentBlock(cur.block);
-            curDimPtr.addBranch(incrPtr, cur.block);
-            new BrNode(condBlock, cur.block);
-
-            cur.block = exitBlock;
-        }
-        return arrHeadPointer;
-    }
-
-    private Value classMalloc(IRStructType classType) {
-        Value mallocPtr = new CallNode(module.getMalloc(), cur.block, new IntConst(classType.size()));
-        return new BitCastNode(mallocPtr, new IRPointerType(classType), cur.block);
-    }
-
     private void createInitFunc() {
         FuncRegistry initRegistry = new FuncRegistry(LLVM.InitFuncName, MxBaseType.BasicType.VOID);
         initRegistry.isBasic = false;
@@ -723,6 +673,62 @@ public class IRBuilder implements ASTVisitor {
                 memberFunc.value = declareMemberFunc;
             }
         }
+    }
+
+    private Value arrayMalloc(ArrayList<Value> eachDimLengths, int curDim, IRBaseType elementType) {
+        // int[][][] a = new int [3][4][5];
+        // curDim: from 0 to 2
+        // elementType: now dim element. e.g. curDim = 0, elementType = i32**
+
+        // step 1. malloc this dim.
+        // size = (curDim+1) * elementTypeSize
+        Value curDimSize = new BinNode(LLVM.MulInst, IRTranslator.i32Type,
+                eachDimLengths.get(curDim), new IntConst(elementType.size()), cur.block);
+        Value mallocSize = new BinNode(LLVM.AddInst, IRTranslator.i32Type, curDimSize, new IntConst(IRTranslator.i32Type.size()), cur.block);
+        Value mallocPtr = new CallNode(module.getMalloc(), cur.block, mallocSize).noAlias();
+
+        // step 2. store length at the before the array
+        Value lengthDestPtr = new BitCastNode(mallocPtr, IRTranslator.i32PointerType, cur.block);
+        memStore(lengthDestPtr, eachDimLengths.get(curDim));
+
+        // step 3. get array head pointer and cast it to element type
+        Value arrHeadPointer = new BitCastNode(
+                new GetElementPtrNode(lengthDestPtr, IRTranslator.i32PointerType, cur.block, new IntConst(1)),
+                new IRPointerType(elementType), cur.block);
+        if (curDim < eachDimLengths.size() - 1) {
+            // int* curDimPtr = 0; while (curDimPtr != tailDimPtr) {curDimPtr++;}
+            IRBlock condBlock = new IRBlock(LLVM.WhCondBlockLabel, cur.function),
+                    bodyBlock = new IRBlock(LLVM.WhBodyBlockLabel, cur.function),
+                    exitBlock = new IRBlock(LLVM.WhExitBlockLabel, cur.function);
+
+            PhiNode curDimPtr = new PhiNode(arrHeadPointer.type, null);
+            curDimPtr.addBranch(arrHeadPointer, cur.block); // initial branch
+
+            Value tailDimPtr = new GetElementPtrNode(arrHeadPointer, arrHeadPointer.type, cur.block, eachDimLengths.get(curDim));
+            IRBaseNode incrPtr = new GetElementPtrNode(curDimPtr, curDimPtr.type, null, new IntConst(1));
+
+            new BrNode(condBlock, cur.block);
+
+            cur.block = condBlock;
+            curDimPtr.setParentBlock(condBlock);
+            Value condValue = new ICmpNode(LLVM.NotEqualArg, curDimPtr, tailDimPtr, cur.block);
+            new BrNode(condValue, bodyBlock, exitBlock, cur.block);
+
+            cur.block = bodyBlock;
+            Value subMallocPtr = arrayMalloc(eachDimLengths, curDim + 1, ((IRPointerType) elementType).pointedType);
+            memStore(curDimPtr, subMallocPtr);
+            incrPtr.setParentBlock(cur.block);
+            curDimPtr.addBranch(incrPtr, cur.block);
+            new BrNode(condBlock, cur.block);
+
+            cur.block = exitBlock;
+        }
+        return arrHeadPointer;
+    }
+
+    private Value classMalloc(IRStructType classType) {
+        Value mallocPtr = new CallNode(module.getMalloc(), cur.block, new IntConst(classType.size())).noAlias();
+        return new BitCastNode(mallocPtr, new IRPointerType(classType), cur.block);
     }
 
 }

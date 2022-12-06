@@ -11,6 +11,7 @@ import utility.types.VarType;
 import java.util.Objects;
 
 public class IRTranslator {
+    //tyypes
     public static final IRBaseType stringType=new IRPointerType(new IRIntType(8)),
                                     boolType=new IRBoolType(),memBoolType=new IRMemBoolType(),
                                     intType=new IRIntType(8),
@@ -37,7 +38,7 @@ public class IRTranslator {
             case Mx.LessEqualOp -> LLVM.LessEqualArg;
             case Mx.EqualOp -> LLVM.EqualArg;
             case Mx.NotEqualOp -> LLVM.NotEqualArg;
-            default -> "not a symbol";
+            default -> mxOp;
         };
 
     }

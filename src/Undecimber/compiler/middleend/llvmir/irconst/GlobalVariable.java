@@ -6,7 +6,6 @@ import undecimber.compiler.middleend.llvmir.irtype.IRPointerType;
 
 public class GlobalVariable extends GlobalValue{
     public Value val;
-    public int dim=0;
     public GlobalVariable(String name, IRBaseType type) {
         super(name,new IRPointerType(type));
     }

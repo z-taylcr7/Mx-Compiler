@@ -39,8 +39,8 @@ public class RetNode extends IRBaseNode{
         //ret <type> <value>       ; Return a value from a non-void function
         //ret void                 ; Return from void function
         if(isVoid())
-            return "return void" ;
-else         return "return " +type+" "+retValue().identifier()  ;
+            return "ret void" ;
+else         return "ret " +type+" "+retValue().identifier()  ;
     }
 
     @Override

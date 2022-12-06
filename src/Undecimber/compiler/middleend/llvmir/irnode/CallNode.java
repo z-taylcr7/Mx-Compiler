@@ -12,7 +12,7 @@ import utility.LLVM;
 import java.util.ArrayList;
 
 public class CallNode extends IRBaseNode{
-    public boolean noaliasFlag;
+    public boolean noaliasFlag=false;
     public CallNode(IRFunction func, IRBlock parentBlock, ArrayList<Value>args) {
         super(func.name + LLVM.CallSuffix, ((IRFuncType) func.type).retType, parentBlock);
         this.addOperand(func);
@@ -50,13 +50,13 @@ public class CallNode extends IRBaseNode{
         //%ZZ = call zeroext i32 @bar()                     ; Return value is %zero extended
         StringBuilder ret = new StringBuilder((this.type.match(new IRVoidType())) ? "" : this.identifier() + " = ");
         ret.append(LLVM.CallInst + " ");
-
         if (noaliasFlag) ret.append("noalias ");
         ret.append(this.callFunc().typeIdentifier()).append("(");
-        for (int i = 0; i < this.getOperandSize(); i++) {
-            ret.append(this.getOperand(i).typeIdentifier()+" , ");
+        // func arg arg arg arg ...
+        for (int i = 0; i < this.callFunc().getArgNum(); i++) {
+            ret.append(this.callFunc().getArgType(i)).append(" ").append(this.getOperand(1+i).identifier());
+            if (i != this.callFunc().getArgNum() - 1) ret.append(", ");
         }
-        ret.delete(ret.length()-2,ret.length()-1);
         ret.append(")");
         return ret.toString();
     }
@@ -70,6 +70,10 @@ public class CallNode extends IRBaseNode{
         for (int i = 1; i < this.callFunc().getArgNum(); i++)
             args.add(this.callFunc().getArg(i));
         return new CallNode(callFunc(), null, args);
+    }
+    public CallNode noAlias(){
+        this.noaliasFlag=true;
+        return this;
     }
 
     /**
