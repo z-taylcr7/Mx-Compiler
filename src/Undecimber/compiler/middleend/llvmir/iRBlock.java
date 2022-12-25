@@ -21,7 +21,9 @@ public class IRBlock extends Value {
     //control flow graph
     public ArrayList<IRBlock>prevs=new ArrayList<>(),nexts=new ArrayList<>();
 
-
+    // info in Loop
+    public int loopDepth = 0;
+    //public Loop belongLoop = null;
     public IRBlock(String label, IRFunction parentFunction) {
         super(label, new IRLabelType());
         this.parentFunction = parentFunction;
@@ -40,17 +42,14 @@ public class IRBlock extends Value {
     }
     public void addInst(IRBaseNode irBaseNode) {
         if (isTerminatedNode) return;
-        if (irBaseNode.isTerminator()) isTerminatedNode = true;
         if(irBaseNode instanceof PhiNode)PhiInstructions.add((PhiNode) irBaseNode);
         else instructions.addLast(irBaseNode);
+        if (irBaseNode.isTerminator()) isTerminatedNode = true;
     }
     public void addPhiInst(PhiNode phiNode){
         phiNode.parentBlock=this;
         PhiInstructions.add(phiNode);
     }
-    public IRBaseNode terminator() {
-        if (instructions.isEmpty()) throw new RuntimeException("empty IRBLock! no terminator! " + this.name);
-        return instructions.getLast();
-    }
+
 
 }

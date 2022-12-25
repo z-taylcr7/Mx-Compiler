@@ -24,11 +24,11 @@ public class Frontend {
     public final RootNode ASTRoot;
     public Frontend() throws Exception
     {
-        String name = "testcases/aruba.mx";
+
         String name_= "test.out";
-        InputStream input = new FileInputStream(name);
+        //InputStream input = new FileInputStream(name);
         //PrintStream output =new PrintStream(name_);
-        //InputStream input = System.in;
+        InputStream input = System.in;
         CharStream charstream = CharStreams.fromStream(input);
         MxLexer lexer = new MxLexer(charstream);
         lexer.removeErrorListeners();//

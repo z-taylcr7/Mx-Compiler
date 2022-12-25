@@ -36,7 +36,12 @@ public class IRModule {
         stringConstArray.add(xstr);
         return xstr;
     }
-
+    public IRFunction getStrMethod(String op) {
+        for (IRFunction builtinFunction : builtinFunctions) {
+            if (Objects.equals(builtinFunction.name, LLVM.BottomStrFuncPrefix + op)) return builtinFunction;
+        }
+        throw new InternalError(op);
+    }
     public void setBottomFunctions() {
         builtinFunctions.add(new IRFunction(LLVM.BottomPrefix + "malloc",
                 IRTranslator.heapPointerType, IRTranslator.i32Type));

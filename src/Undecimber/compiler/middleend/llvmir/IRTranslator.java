@@ -13,7 +13,8 @@ import java.util.Objects;
 public class IRTranslator {
     //tyypes
     public static final IRBaseType stringType=new IRPointerType(new IRIntType(8)),
-                                    boolType=new IRBoolType(),memBoolType=new IRMemBoolType(),
+                                    boolType=new IRBoolType(),
+                                    memBoolType=new IRMemBoolType(),
                                     intType=new IRIntType(8),
                                     i32Type = new IRIntType(32),
                                     i32PointerType = new IRPointerType(i32Type),

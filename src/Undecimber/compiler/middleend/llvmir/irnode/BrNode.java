@@ -13,17 +13,17 @@ public class BrNode extends IRBaseNode{
         super(LLVM.BrInst,new IRVoidType(), parentBlock);
         this.addOperand(block);
     }
-
-    public boolean IsJump() {
-        return this.getOperandSize()==1;
-    }
-
     public BrNode(Value cond, IRBlock thenBlock, IRBlock elseBlock, IRBlock parentBlock){
         super(LLVM.BrInst,new IRVoidType(), parentBlock);
         this.addOperand(cond);
         this.addOperand(thenBlock);
         this.addOperand(elseBlock);
     }
+    public boolean IsJump() {
+        return this.getOperandSize()==1;
+    }
+
+
     @Override
     public boolean isTerminator() {return true;}
 

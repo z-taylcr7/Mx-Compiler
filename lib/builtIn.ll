@@ -49,7 +49,7 @@ define dso_local void @printlnInt(i32 %0) #0 {
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local i8* @getString() #0 {
   %1 = alloca i8*, align 8
-  %2 = call noalias i8* @malloc(i64 257) #4
+  %2 = call noalias i8* @malloc(i64 256) #4
   store i8* %2, i8** %1, align 8
   %3 = load i8*, i8** %1, align 8
   %4 = call i32 (i8*, ...) @__isoc99_scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str, i64 0, i64 0), i8* %3)
@@ -373,7 +373,7 @@ define dso_local i32 @_str_length(i8* %0) #0 {
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define dso_local i8* @__str_substring(i8* %0, i32 %1, i32 %2) #0 {
+define dso_local i8* @_str_substring(i8* %0, i32 %1, i32 %2) #0 {
   %4 = alloca i8*, align 8
   %5 = alloca i32, align 4
   %6 = alloca i32, align 4
@@ -496,7 +496,7 @@ define dso_local i32 @_str_parseInt(i8* %0) #0 {
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define dso_local i32 @__str_ord(i8* %0, i32 %1) #0 {
+define dso_local i32 @_str_ord(i8* %0, i32 %1) #0 {
   %3 = alloca i8*, align 8
   %4 = alloca i32, align 4
   store i8* %0, i8** %3, align 8

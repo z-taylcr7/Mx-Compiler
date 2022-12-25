@@ -19,7 +19,7 @@ void printlnInt(int n) {
 }
 
 char* getString() {
-    char* buffer = (char*)malloc(sizeof(char) * 257);
+    char* buffer = malloc(256);
     scanf("%s", buffer);
     return buffer;
 }
@@ -102,7 +102,7 @@ int _str_length(char* str) {
     return strlen(str);
 }
 
-char* __str_substring(char* str, int left, int right) {
+char* _str_substring(char* str, int left, int right) {
     int len = right - left;
     char* res = (char*)malloc(sizeof(char) * (len + 1));
     int p = 0;
@@ -121,7 +121,7 @@ int _str_parseInt(char* str) {
     return res;
 }
 
-int __str_ord(char* str, int pos) {
+int _str_ord(char* str, int pos) {
     return str[pos];
 }
 

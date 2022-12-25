@@ -13,10 +13,11 @@ import java.io.PrintStream;
 public class MiddleEnd {
     public final IRModule module;
     public MiddleEnd (Frontend frontend) throws Exception {
-        PrintStream ps= new PrintStream("testcases/aruba.ll");
+//        PrintStream ps= new PrintStream("testcases/aruba.ll");
+        PrintStream ps= System.out;
         Value.rename=true;
         this.module=new IRBuilder(frontend.ASTRoot).module;
-        new IRPrinter(ps,"testcases/aruba.mx").runModule(this.module);
+        new IRPrinter(ps,"test.mx").runModule(this.module);
     }
 
 }

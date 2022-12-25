@@ -28,6 +28,6 @@ public class TruncNode extends IRBaseNode {
 
     @Override
     public void accept(IRVisitor visitor) {
-
+            visitor.visit(this);
     }
 }

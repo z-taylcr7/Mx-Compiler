@@ -1,5 +1,7 @@
 package undecimber.compiler.middleend.llvmir;
 
+import undecimber.compiler.backend.asm.operands.BasicOperand;
+import undecimber.compiler.backend.asm.operands.Register;
 import undecimber.compiler.middleend.llvmir.irtype.IRBaseType;
 import utility.LLVM;
 
@@ -15,7 +17,7 @@ public class Value {
     public Value resolveFrom = null;
     public String name;
     public String comment = null;
-
+    public BasicOperand asmOperand;
 
 
     public Value(IRBaseType type) {

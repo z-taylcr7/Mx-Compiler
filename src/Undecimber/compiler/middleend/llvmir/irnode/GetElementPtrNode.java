@@ -21,12 +21,7 @@ public class GetElementPtrNode extends IRBaseNode {
         this.elementName = elementName;
     }
 
-    public GetElementPtrNode(Value headPointer, IRBaseType yieldType, IRBlock parentBlock, ArrayList<Value> indices) {
-        super(LLVM.GetElementPtrInst, yieldType, parentBlock);
-        assert headPointer.type instanceof IRPointerType;
-        this.addOperand(headPointer);
-        for (Value index : indices) this.addOperand(index);
-    }
+
 
     public GetElementPtrNode(Value headPointer, IRBaseType yieldType, IRBlock parentBlock, Value... indices) {
         super(LLVM.GetElementPtrInst, yieldType, parentBlock);

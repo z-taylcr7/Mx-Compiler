@@ -8,7 +8,7 @@ import utility.LLVM;
 import java.util.Objects;
 
 public class IntConst extends IRConst{
-    int data;
+    public int data;
 
     public IntConst(int _data) {
         super(LLVM.ConstAnon, IRTranslator.i32Type);

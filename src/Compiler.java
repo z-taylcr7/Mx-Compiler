@@ -1,4 +1,3 @@
-import undecimber.compiler.frontend.semantic.SemanticChecker;
 import undecimber.compiler.middleend.MiddleEnd;
 import utility.errors.MxErrorListener;
 import utility.errors.*;
@@ -26,6 +25,8 @@ public class Compiler {
             errorHandle(  e);
         }
     }
+
+
     private static void errorHandle(Exception e) {
         if (e instanceof error) {
             ((error) e).tell();

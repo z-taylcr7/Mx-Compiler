@@ -5,7 +5,7 @@ import undecimber.compiler.middleend.llvmir.irtype.IRBoolType;
 import utility.LLVM;
 
 public class BoolConst extends IRConst{
-    boolean flag;
+   public boolean flag;
 
     public BoolConst(boolean _flag) {
         super(LLVM.ConstAnon,new IRBoolType());

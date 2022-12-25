@@ -16,16 +16,16 @@ public class LLVM {
     public static final String Anon = "anon";
     public static final String Nullptr = "null";
 
-    public static final String TypeAnon = "anon" + Splitter + "type";
-    public static final String ConstAnon = "anon" + Splitter + "const";
-    public static final String StrConstAnon = "anon" + Splitter + "strconst";
+    public static final String TypeAnon = "anonym" + Splitter + "type";
+    public static final String ConstAnon = "anonym" + Splitter + "const";
+    public static final String StrConstAnon = "anonym" + Splitter + "strconst";
 
 
     public static final String ThisArg = "internal" + Splitter + "this";
     public static final String RetReg = "internal" + Splitter + "ret";
     public static final String TParaReg = "internal" + Splitter + "tpara";
 
-    public static final String InitFuncName = FuncNameSplitter + "glb" + FuncNameSplitter + "init";
+    public static final String InitFuncName = FuncNameSplitter + "global" + FuncNameSplitter + "init";
 
     public static final String EntryBlockLabel = "entry";
     public static final String ExitBlockLabel = "exit";
@@ -44,8 +44,8 @@ public class LLVM {
     public static final String WhBodyBlockLabel = "wh" + Splitter + "body";
     public static final String WhExitBlockLabel = "wh" + Splitter + "exit";
 
-    public static final String LogicNoCutBlockLabel = "lg" + Splitter + "nocut";
-    public static final String LogicExitBlockLabel = "lg" + Splitter + "exit";
+    public static final String LogicUncutBlockLabel = "logic" + Splitter + "uncut";
+    public static final String LogicExitBlockLabel = "logic" + Splitter + "exit";
 
     public static final String SplitBlockLabel = "split";
     public static final String PreHeaderBlockLabel = "ph";

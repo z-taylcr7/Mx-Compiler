@@ -112,7 +112,7 @@ getString:                              # @getString
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register %rbp
 	subq	$16, %rsp
-	movl	$257, %edi              # imm = 0x101
+	movl	$256, %edi              # imm = 0x100
 	callq	malloc
 	movq	%rax, -8(%rbp)
 	movq	-8(%rbp), %rsi
@@ -560,10 +560,10 @@ _str_length:                            # @_str_length
 	.size	_str_length, .Lfunc_end15-_str_length
 	.cfi_endproc
                                         # -- End function
-	.globl	__str_substring         # -- Begin function __str_substring
+	.globl	_str_substring          # -- Begin function _str_substring
 	.p2align	4, 0x90
-	.type	__str_substring,@function
-__str_substring:                        # @__str_substring
+	.type	_str_substring,@function
+_str_substring:                         # @_str_substring
 	.cfi_startproc
 # %bb.0:
 	pushq	%rbp
@@ -613,7 +613,7 @@ __str_substring:                        # @__str_substring
 	.cfi_def_cfa %rsp, 8
 	retq
 .Lfunc_end16:
-	.size	__str_substring, .Lfunc_end16-__str_substring
+	.size	_str_substring, .Lfunc_end16-_str_substring
 	.cfi_endproc
                                         # -- End function
 	.globl	_str_parseInt           # -- Begin function _str_parseInt
@@ -682,10 +682,10 @@ _str_parseInt:                          # @_str_parseInt
 	.size	_str_parseInt, .Lfunc_end17-_str_parseInt
 	.cfi_endproc
                                         # -- End function
-	.globl	__str_ord               # -- Begin function __str_ord
+	.globl	_str_ord                # -- Begin function _str_ord
 	.p2align	4, 0x90
-	.type	__str_ord,@function
-__str_ord:                              # @__str_ord
+	.type	_str_ord,@function
+_str_ord:                               # @_str_ord
 	.cfi_startproc
 # %bb.0:
 	pushq	%rbp
@@ -702,7 +702,7 @@ __str_ord:                              # @__str_ord
 	.cfi_def_cfa %rsp, 8
 	retq
 .Lfunc_end18:
-	.size	__str_ord, .Lfunc_end18-__str_ord
+	.size	_str_ord, .Lfunc_end18-_str_ord
 	.cfi_endproc
                                         # -- End function
 	.globl	_array_size             # -- Begin function _array_size

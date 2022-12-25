@@ -8,8 +8,8 @@ import java.util.Stack;
 
 public class CurrentInfo {
     public ClassRegistry classRegistry;
-    public IRBlock block;
-    public IRFunction function;
+    public IRBlock block=null;
+    public IRFunction function=null;
     private final Stack<IRBlock> continueTargets=new Stack<>(),breakTargets=new Stack<>();
 
     public void addControlTarget(IRBlock _continue,IRBlock _break){
@@ -23,7 +23,7 @@ public class CurrentInfo {
     public void getControlNode(String x){
         if(x.equals( Mx.continueStr)) {
             new BrNode(continueTargets.peek(),block);
-        }else if(x == Mx.breakStr){
+        }else if(x.equals( Mx.breakStr)){
             new BrNode(breakTargets.peek(),block);
         }else{
             throw new InternalError(x);

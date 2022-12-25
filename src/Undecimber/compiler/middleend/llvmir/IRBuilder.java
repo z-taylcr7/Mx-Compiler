@@ -169,29 +169,26 @@ public class IRBuilder implements ASTVisitor {
         IRBlock exitBlock = new IRBlock(LLVM.IfExitBlockLabel, cur.function);
         node.condition.accept(this);
         new BrNode(node.condition.value, thenBlock, elseBlock, cur.block);
+        cur.block = elseBlock;
         if (node.elseStmt != null) {
-            cur.block = elseBlock;
             station.push(node.elseScope);
             node.elseStmt.accept(this);
             station.pop();
         }
-        new BrNode(exitBlock, elseBlock);
+        new BrNode(exitBlock, cur.block);
         cur.block = thenBlock;
         station.push(node.thenScope);
         node.thenStmt.accept(this);
-        new BrNode(exitBlock, thenBlock);
+        new BrNode(exitBlock, cur.block);
         station.pop();
-
         cur.block = exitBlock;
-
-
     }
 
     /**
      * @param node
      */
     @Override
-    public void visit(AssignExprNode node) {
+    public void visit(AssignExprNode node) {;
         node.lhs.accept(this);
         node.rhs.accept(this);
         memStore(node.lhs.value.resolveFrom, node.rhs.value);//l <= r
@@ -231,8 +228,8 @@ public class IRBuilder implements ASTVisitor {
                     varRegistry = node.funcRegistry.funcArgs.get(i - 1);
                 }
             }
-            Value data = new Value(varRegistry.name, translator.translateVarType(varRegistry.type));
             Value ptr = memAlloca(varRegistry.name, translator.translateAllocaType(varRegistry.type));
+            Value data = new Value(varRegistry.name, translator.translateVarType(varRegistry.type));
             varRegistry.value = ptr;
             cur.function.addArg(data);
             memStore(ptr, data);
@@ -268,8 +265,8 @@ public class IRBuilder implements ASTVisitor {
      */
     @Override
     public void visit(ForStmtNode node) {
-        IRBlock incrBlock = new IRBlock(LLVM.ForIncrBlockLabel, cur.function);
         IRBlock condBlock = new IRBlock(LLVM.ForCondBlockLabel, cur.function);
+        IRBlock incrBlock = new IRBlock(LLVM.ForIncrBlockLabel, cur.function);
         IRBlock bodyBlock = new IRBlock(LLVM.ForBodyBlockLabel, cur.function);
         IRBlock exitBlock = new IRBlock(LLVM.ForExitBlockLabel, cur.function);
         station.push(node.scope);
@@ -282,16 +279,17 @@ public class IRBuilder implements ASTVisitor {
         new BrNode(condBlock, cur.block);
         cur.block = condBlock;
 
-        new BrNode(bodyBlock, cur.block);
-        node.conditionExprNode.accept(this);
-        new BrNode(node.conditionExprNode.value, bodyBlock, exitBlock, cur.block);
-
+        if(node.conditionExprNode==null)new BrNode(bodyBlock,cur.block);
+        else{
+            node.conditionExprNode.accept(this);
+            new BrNode(node.conditionExprNode.value, bodyBlock, exitBlock, cur.block);
+        }
         cur.block = incrBlock;
         if (node.incrExprNode != null) node.incrExprNode.accept(this);
         new BrNode(condBlock, cur.block);
 
         cur.block = bodyBlock;
-        cur.addControlTarget(bodyBlock, exitBlock);
+        cur.addControlTarget(incrBlock, exitBlock);
         node.bodyStmtNode.accept(this);
         new BrNode(incrBlock, cur.block);
         cur.deleteControlTarget();
@@ -312,20 +310,22 @@ public class IRBuilder implements ASTVisitor {
         IRBlock bodyBlock = new IRBlock(LLVM.WhBodyBlockLabel, cur.function);
         IRBlock exitBlock = new IRBlock(LLVM.WhExitBlockLabel, cur.function);
         new BrNode(condBlock, cur.block);
+        station.push(node.scope);
+
 
         cur.block = condBlock;
-        station.push(node.scope);
         node.conditionExprNode.accept(this);
         Value condRes = node.conditionExprNode.value;
         new BrNode(condRes, bodyBlock, exitBlock, cur.block);
-        cur.addControlTarget(bodyBlock, exitBlock);
+
 
         cur.block = bodyBlock;
+        cur.addControlTarget(condBlock, exitBlock);
         node.bodyStmtNode.accept(this);
         new BrNode(condBlock, cur.block);
-        cur.block = exitBlock;
-        cur.deleteControlTarget();
 
+        cur.deleteControlTarget();
+        cur.block = exitBlock;
         station.pop();
 
 
@@ -336,8 +336,8 @@ public class IRBuilder implements ASTVisitor {
      */
     @Override
     public void visit(IndexExprNode node) {
-        node.arrayExprNode.accept(this);
         node.indexExprNode.accept(this);
+        node.arrayExprNode.accept(this);
         node.value = memLoad(
                 new GetElementPtrNode(
                         node.arrayExprNode.value.name + LLVM.ArrayElementSuffix,
@@ -356,20 +356,14 @@ public class IRBuilder implements ASTVisitor {
     public void visit(UnaryExprNode node) {
         node.selfExprNode.accept(this);
         switch (node.op) {
-            case Mx.AddOp:
-                node.value = node.selfExprNode.value;
-                break;
-            case Mx.SubOp:
-                node.value = new BinNode(node.op, IRTranslator.i32Type, new IntConst(0), node.selfExprNode.value, cur.block);
-                break;
-            case Mx.BitNotOp:
-                node.value = new BinNode(node.op, IRTranslator.i32Type, node.selfExprNode.value, new IntConst(-1), cur.block);
-                break;
-            case Mx.LogicNotOp:
-                node.value = new BinNode(node.op, IRTranslator.boolType, node.selfExprNode.value, new BoolConst(true), cur.block);
-                break;
-            default:
-                throw new InternalError("what's the fucking unary op you typed~");
+            case Mx.AddOp -> node.value = node.selfExprNode.value;
+            case Mx.SubOp ->
+                    node.value = new BinNode(LLVM.SubInst, IRTranslator.i32Type, new IntConst(0), node.selfExprNode.value, cur.block);
+            case Mx.BitNotOp ->
+                    node.value = new BinNode(LLVM.XorInst, IRTranslator.i32Type, node.selfExprNode.value, new IntConst(-1), cur.block);
+            case Mx.LogicNotOp ->
+                    node.value = new BinNode(LLVM.XorInst, IRTranslator.boolType, node.selfExprNode.value, new BoolConst(true), cur.block);
+            default -> throw new InternalError("what's the fucking unary op you typed~");
         }
     }
 
@@ -380,27 +374,78 @@ public class IRBuilder implements ASTVisitor {
     public void visit(BinaryExprNode node) {
         node.lhsExprNode.accept(this);
 
+        if(node.opType.equals(Mx.logicOpType)){
+            IRBlock tempBlock=cur.block;
+
+
+            if (funcDetect(node)) {
+                node.rhsExprNode.accept(this);
+                node.value = new BinNode(IRTranslator.logic_2Bit(node.op),
+                        IRTranslator.boolType,
+                        node.lhsExprNode.value,
+                        node.rhsExprNode.value, cur.block);
+            }else {
+                if(node.op.equals(Mx.LogicAndOp)) {
+                    IRBlock uncutBlock = new IRBlock(LLVM.LogicUncutBlockLabel, cur.function),
+                            exitBlock = new IRBlock(LLVM.LogicExitBlockLabel, cur.function);
+
+                    // a && b = if(a)b else a;
+                    new BrNode(node.lhsExprNode.value, uncutBlock, exitBlock, cur.block);
+                    cur.block = uncutBlock;
+                    node.rhsExprNode.accept(this);
+                    new BrNode(exitBlock, cur.block);
+                    node.value = new PhiNode(IRTranslator.boolType, exitBlock, node.lhsExprNode.value, tempBlock, node.rhsExprNode.value, cur.block);
+                    cur.block=exitBlock;
+                } else if (node.op.equals(Mx.LogicOrOp)) {
+                        IRBlock uncutBlock = new IRBlock(LLVM.LogicUncutBlockLabel, cur.function),
+                                exitBlock = new IRBlock(LLVM.LogicExitBlockLabel, cur.function);
+
+                        // a || b = if(!a) b else a;
+                        new BrNode(node.lhsExprNode.value,exitBlock,uncutBlock,cur.block);
+                        cur.block=uncutBlock;
+                        node.rhsExprNode.accept(this);
+                        new BrNode(exitBlock,cur.block);
+                        node.value=new PhiNode(IRTranslator.boolType,exitBlock,node.lhsExprNode.value,tempBlock,node.rhsExprNode.value,cur.block);
+
+                    cur.block=exitBlock;
+                }
+
+
+            }
+            return;
+        }
+
         node.rhsExprNode.accept(this);
         String _op = node.op;
+
+        //string cat
+        if (node.lhsExprNode.type.match(MxBaseType.BasicType.STRING)) {
+            node.value = new CallNode(module.getStrMethod(IRTranslator.translateStrOp(node.op)), cur.block, node.lhsExprNode.value, node.rhsExprNode.value);
+            return;
+        }
+
         switch (_op) {
             //todo:shortcutNotYet
-            //logic ops
-            case Mx.LogicAndOp:
 
-            case Mx.LogicOrOp:
-                node.value = new BinNode(IRTranslator.logic_2Bit(_op), IRTranslator.boolType,node.lhsExprNode.value, node.rhsExprNode.value, cur.block);break;
             //compare ops(bool)
-            case Mx.EqualOp:
-            case Mx.GreaterOp:
-            case Mx.GreaterEqualOp:
-            case Mx.LessEqualOp:
-            case Mx.LessOp:
-            case Mx.NotEqualOp:
-                node.value = new ICmpNode(IRTranslator.translateOp(_op), node.lhsExprNode.value, node.rhsExprNode.value, cur.block);break;
-                //int ops
-            default:
-                node.value = new BinNode(_op, IRTranslator.i32Type, node.lhsExprNode.value, node.rhsExprNode.value, cur.block);
+            case Mx.EqualOp, Mx.GreaterOp, Mx.GreaterEqualOp, Mx.LessEqualOp, Mx.LessOp, Mx.NotEqualOp ->
+                    node.value = new ICmpNode(IRTranslator.translateOp(_op), node.lhsExprNode.value, node.rhsExprNode.value, cur.block);
+            //arithmetic ops
+            case Mx.BitAndOp,Mx.BitOrOp,Mx.BitXorOp ->
+                node.value=new BinNode(IRTranslator.translateOp(_op),IRTranslator.i32Type,node.lhsExprNode.value,node.rhsExprNode.value,cur.block);
+
+            //int ops
+            default ->
+                    node.value = new BinNode(_op, IRTranslator.i32Type, node.lhsExprNode.value, node.rhsExprNode.value, cur.block);
         }
+    }
+
+    private boolean funcDetect(ExprNode node) {
+        if(node instanceof AtomExprNode){
+            return ! (node.type instanceof MxFuncType);
+        }else if(node instanceof BinaryExprNode){
+            return funcDetect(((BinaryExprNode)node).lhsExprNode) && funcDetect(((BinaryExprNode)node).rhsExprNode);
+        }else return false;
     }
 
     /**
@@ -431,21 +476,21 @@ public class IRBuilder implements ASTVisitor {
                 node.value = station.getFuncInStack(node.ctx.ID().getText()).value;
             } else if (node.type instanceof VarType) {
 
-                Value val_addr;
+                Value valAddr;
                 String name = node.ctx.ID().getText();
                 Pair<VarRegistry, Boolean> res = station.getVarInStack_IR(name);
                 VarRegistry var = res.a;
                 int index = -1;
                 if (cur.classRegistry != null && res.b)
                     index = cur.classRegistry.getMemberVarIndex(var.name);
-                Value varAddr = index >= 0 ?
+                valAddr = (index >= 0) ?
                         new GetElementPtrNode(var.name, cur.getThis(),
                                 new IRPointerType(translator.translateAllocaType(var.type)),
                                 cur.block, new IntConst(0), new IntConst(index))
                         : var.value;
 
                 // variable resolve
-                node.value = memLoad(varAddr, cur.block);
+                node.value = memLoad(valAddr, cur.block);
             }
         }
 
@@ -486,6 +531,7 @@ public class IRBuilder implements ASTVisitor {
         node.supExprNode.accept(this);
         if (node.supExprNode.type.isArray()) {
             Value _ptr = new BitCastNode(node.supExprNode.value, IRTranslator.i32PointerType, cur.block);
+            node.value=memLoad(new GetElementPtrNode(_ptr, IRTranslator.i32PointerType, cur.block, new IntConst(-1)),cur.block);
 
         } else if (node.supExprNode.type.match(MxBaseType.BasicType.STRING)) {
             node.value = StringBuiltInMethods.scope.getFunc(node.name).value;
@@ -496,7 +542,7 @@ public class IRBuilder implements ASTVisitor {
                 node.value = myClass.scope.getFunc(node.name).value;
             } else {
                 VarRegistry reg = myClass.scope.getVar(node.name);
-                Value addr = new GetElementPtrNode(node.name, node.supExprNode.value, new IRPointerType(translator.translateVarType(node.type)), cur.block, new IntConst(0), new IntConst(myClass.getMemberVarIndex(reg.name)));
+                Value addr = new GetElementPtrNode(node.name, node.supExprNode.value, new IRPointerType(translator.translateAllocaType(reg.type)), cur.block, new IntConst(0), new IntConst(myClass.getMemberVarIndex(reg.name)));
                 node.value = memLoad(addr, cur.block);
             }
         }
