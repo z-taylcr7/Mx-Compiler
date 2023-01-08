@@ -8,7 +8,7 @@ import utility.LLVM;
 import java.util.Objects;
 
 public class StringConst extends GlobalValue{
-    String str;
+    public String str;
     public StringConst(String _str){
         super(LLVM.StrConstAnon,new IRPointerType(new IRStringType(new IRIntType(8), _str.length()+1)));
         str=_str;

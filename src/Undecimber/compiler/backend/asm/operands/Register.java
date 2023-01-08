@@ -1,6 +1,7 @@
 package undecimber.compiler.backend.asm.operands;
 
 
+import undecimber.compiler.backend.regalloc.InterferenceGraph;
 
 public abstract class Register extends BasicOperand {
 
@@ -11,7 +12,7 @@ public abstract class Register extends BasicOperand {
     public RawStackOffset stackOffset;
 
     // info in InterferenceGraph, used in RegAlloc
-    // public InterferenceGraph.Node node = new InterferenceGraph.Node();
+     public InterferenceGraph.node node = new InterferenceGraph.node();
 
     public Register(String identifier) { super(identifier);}
 

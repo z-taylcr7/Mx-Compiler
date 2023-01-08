@@ -5,6 +5,7 @@ import undecimber.compiler.middleend.llvmir.IRVisitor;
 import undecimber.compiler.middleend.llvmir.Value;
 import undecimber.compiler.middleend.llvmir.irtype.IRBaseType;
 import undecimber.compiler.middleend.llvmir.irtype.IRPointerType;
+import undecimber.compiler.middleend.llvmir.irtype.IRStructType;
 import utility.LLVM;
 
 import java.util.ArrayList;
@@ -42,7 +43,9 @@ public class GetElementPtrNode extends IRBaseNode {
     public Value headPointer() {
         return this.getOperand(0);
     }
-
+    public boolean isGetMember() {
+        return ((IRPointerType) headPointer().type).pointedType instanceof IRStructType && indicesNum() == 2;
+    }
     @Override
     public String format() {
         // %t4 = getelementptr [10 x [20 x i32]], [10 x [20 x i32]]* %t3, i32 0, i32 5

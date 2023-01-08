@@ -5,12 +5,12 @@ package undecimber.compiler.backend.asm.operands;
 // lw	a0, %lo(glb)(a0)
 
 public class GlobalAddr extends Immediate {
-    public enum HiLo {hi, lo};
+    public enum status {head, offset};
 
     public GlobalReg reg;
 
-    public GlobalAddr(GlobalReg reg, HiLo hilo) {
-        super("%"+String.format("%s(%s)", hilo, reg));
+    public GlobalAddr(GlobalReg reg, status s) {
+        super("%"+String.format("%s(%s)", s, reg));
         this.reg = reg;
     }
 }

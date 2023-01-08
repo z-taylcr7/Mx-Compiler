@@ -13,7 +13,11 @@ public class AsmCallInst extends AsmBaseInst {
     public final AsmFunction callFunc;
 
     public boolean isTailCall;
-
+    public AsmCallInst(AsmFunction callFunc, AsmBlock parentBlock) {
+        super(null, null, null, null, parentBlock);
+        this.callFunc = callFunc;
+        this.isTailCall = false;
+    }
     public AsmCallInst(AsmFunction callFunc, AsmBlock parentBlock, boolean isTailCall) {
         super(null, null, null, null, parentBlock);
         this.callFunc = callFunc;

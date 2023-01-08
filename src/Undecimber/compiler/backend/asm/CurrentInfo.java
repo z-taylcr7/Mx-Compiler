@@ -14,7 +14,10 @@ import java.util.HashMap;
 public class CurrentInfo {
     public AsmBlock block;
     public AsmFunction function;
-    HashMap<Integer,Register>LiMap;
+    HashMap<Integer,Register>LiMap=new HashMap<>(
+
+    );
+    //allocate Reg
     public Register toReg(Value value) {
         if (value.asmOperand != null) {
             return (Register) value.asmOperand;
@@ -42,11 +45,10 @@ public class CurrentInfo {
             }
         }
 
-        // const info is memorized by Li
         if (!(value instanceof IntConst || value instanceof BoolConst)) value.asmOperand = ret;
         return ret;
     }
-
+    //allocate imm
     public Immediate toImm(int value) {
         if (value < -1 * RV32I.ImmBound || value > RV32I.ImmBound) throw new InternalError("invalid immediate detected");
         return new Immediate(value);

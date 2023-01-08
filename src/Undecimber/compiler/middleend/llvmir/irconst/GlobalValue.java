@@ -4,7 +4,7 @@ import undecimber.compiler.middleend.llvmir.Value;
 import undecimber.compiler.middleend.llvmir.irtype.IRBaseType;
 
 public class GlobalValue extends IRConst{
-    Value constVal;
+    public boolean isGlbPointer=false;
     public GlobalValue(Value val) {
         super(val.name, val.type);
     }

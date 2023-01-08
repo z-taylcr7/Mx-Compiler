@@ -18,10 +18,10 @@ public class MoveNode extends IRBaseNode{
         return LLVM.MoveInst + " " + this.getTo().identifier() + " from " + this.getFrom().identifier();
     }
 
-    private Value getTo() {
+    public Value getTo() {
         return this.getOperand(0);
     }
-    private Value getFrom() {
+    public Value getFrom() {
         return this.getOperand(1);
     }
 

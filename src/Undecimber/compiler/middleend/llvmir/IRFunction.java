@@ -72,8 +72,6 @@ public class IRFunction extends GlobalValue {
 
 
     public int getArgNum() {
-
-
         return ((IRFuncType)this.type).argTypes.size();
     }
     public Value getArg(int index) {

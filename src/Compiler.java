@@ -1,3 +1,4 @@
+import undecimber.compiler.backend.BackEnd;
 import undecimber.compiler.middleend.MiddleEnd;
 import utility.errors.MxErrorListener;
 import utility.errors.*;
@@ -20,6 +21,7 @@ public class Compiler {
         try {
             Frontend frontend = new Frontend();
             MiddleEnd middleEnd=new MiddleEnd(frontend);
+            BackEnd backEnd=new BackEnd(middleEnd);
         }
         catch (Exception e) {
             errorHandle(  e);

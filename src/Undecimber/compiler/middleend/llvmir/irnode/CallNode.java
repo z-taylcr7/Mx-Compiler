@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 public class CallNode extends IRBaseNode{
     public boolean noaliasFlag=false;
+    public boolean isTailCall=false;
     public CallNode(IRFunction func, IRBlock parentBlock, ArrayList<Value>args) {
         super(func.name + LLVM.CallSuffix, ((IRFuncType) func.type).retType, parentBlock);
         this.addOperand(func);
@@ -27,7 +28,7 @@ public class CallNode extends IRBaseNode{
             this.addOperand(arg);
         }
     }
-    IRFunction callFunc(){
+    public IRFunction callFunc(){
         return (IRFunction) this.getOperand(0);
     }
 
@@ -76,6 +77,9 @@ public class CallNode extends IRBaseNode{
         return this;
     }
 
+    public boolean isTailRecursive() {
+        return isTailCall && callFunc() == this.parentBlock.parentFunction;
+    }
     /**
      * @param visitor
      */

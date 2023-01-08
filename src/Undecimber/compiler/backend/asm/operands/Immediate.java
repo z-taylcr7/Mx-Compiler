@@ -3,7 +3,7 @@ package undecimber.compiler.backend.asm.operands;
 import utility.RV32I;
 
 public class Immediate extends BasicOperand{
-    int imm;
+   public int imm;
 
     public Immediate(int _imm) {
         super(String.valueOf(_imm));

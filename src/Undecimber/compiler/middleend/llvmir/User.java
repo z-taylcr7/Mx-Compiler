@@ -17,6 +17,9 @@ public class User extends Value{
     public Value getOperand(int index){
         return operands.get(index);
     }
+    public Value getArg(int i){
+        return getOperand(i+1);
+    }
     public void setOperand(int index, Value value){
         operands.get(index).users.remove(this);
         operands.set(index, value);
