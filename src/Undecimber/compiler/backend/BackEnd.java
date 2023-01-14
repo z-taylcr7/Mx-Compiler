@@ -41,7 +41,7 @@ public class BackEnd {
 
         new AsmPrinter(ps,"ssss.s"  ).runModule(this.module);
         PrintStream bps=new PrintStream("builtIn.s");
-         CopyFile.copy("builtInSrc.s","builtIn.s");
+         CopyFile.copy("builtInSrc.s","builtin.s");
 
     }
 }
