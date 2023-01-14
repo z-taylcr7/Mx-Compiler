@@ -9,7 +9,8 @@ public abstract class Register extends BasicOperand {
     public PhysicalReg color;
 
     // location in stack, only spill registers have (graphColor spill & function call spill)
-    public RawStackOffset stackOffset;
+    public StackOffset stackOffset;
+//    public RawStackOffset stackOffset;
 
     // info in InterferenceGraph, used in RegAlloc
      public InterferenceGraph.node node = new InterferenceGraph.node();
@@ -20,9 +21,7 @@ public abstract class Register extends BasicOperand {
     public String toString() {
         if (color == null) {
             return id;
-            // throw new InternalError(this);
         }
         return color.id;
-        // return identifier;
     }
 }

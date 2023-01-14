@@ -11,7 +11,10 @@ public class AsmFunction extends BasicOperand {
 
     public AsmBlock entryBlock, exitBlock;
 
-    public int callerArgStackUse = 0,
+    public int
+            callerArgStackUse = 0,
+            callStackUse=0,
+            virtualStackUse=0,
             calleeArgStackUse = 0,
             allocaStackUse = 0,
             spillStackUse = 0,

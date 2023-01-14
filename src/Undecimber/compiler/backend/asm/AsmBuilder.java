@@ -1,5 +1,5 @@
 package undecimber.compiler.backend.asm;
-
+//rollback to:2023/1/12
 import org.antlr.v4.runtime.misc.Pair;
 import undecimber.compiler.backend.asm.insts.*;
 import undecimber.compiler.backend.asm.operands.*;
@@ -32,7 +32,7 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
      */
     @Override
     public void visit(AllocaNode Node) {
-        Node.asmOperand=new RawStackOffset(cur.function.allocaStackUse, RawStackOffset.RawType.alloca);
+        Node.asmOperand=new StackOffset(cur.function.allocaStackUse, 1,cur.function);
         cur.function.allocaStackUse+= RV32I.I32Unit;
 
     }
@@ -109,11 +109,13 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
                     Node.getArg(i).type.size(),
                     PhysicalReg.reg("sp"),
                     cur.toReg(Node.getArg(i)),
-                   new  RawStackOffset(asmFunction.arguments.get(i).stackOffset.imm, RawStackOffset.RawType.callerArg),
+//                   new  RawStackOffset(asmFunction.arguments.get(i).stackOffset.imm, RawStackOffset.RawType.callerArg),
+              asmFunction.arguments.get(i).stackOffset,
                     cur.block
             );
         }
-        cur.function.callerArgStackUse = max(cur.function.callerArgStackUse, asmFunction.calleeArgStackUse);
+//        cur.function.callerArgStackUse = max(cur.function.callerArgStackUse, asmFunction.calleeArgStackUse);
+        cur.function.callStackUse = max(cur.function.callStackUse, asmFunction.callStackUse);
 
         new AsmCallInst(asmFunction, cur.block);
         //return if non-void
@@ -164,22 +166,23 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
      */
     @Override
     public void visit(LoadNode Node) {
+        Register reg=cur.toReg(Node);
         if(Node.getLoadAddr() instanceof GlobalValue){
             if(((GlobalValue)Node.getLoadAddr()).isGlbPointer){
-                new AsmMvInst(cur.toReg(Node), PhysicalReg.reg("gp"), cur.block);
+                new AsmMvInst(reg, PhysicalReg.reg("gp"), cur.block);
             }else {
                 VirtualReg vr=new VirtualReg();
 
                 GlobalReg glb= (GlobalReg) cur.toReg(Node.getLoadAddr());
-                new AsmLuiInst(vr,new GlobalAddr(glb, GlobalAddr.status.head),cur.block);
-                new AsmLoadInst(Node.type.size(),cur.toReg(Node),vr,new GlobalAddr(glb, GlobalAddr.status.offset),cur.block);
+                new AsmLuiInst(vr,new GlobalAddr(glb, GlobalAddr.status.hi),cur.block);
+                new AsmLoadInst(Node.type.size(),reg,vr,new GlobalAddr(glb, GlobalAddr.status.lo),cur.block);
             }
         }else {//at stack
-            if (Node.getLoadAddr().asmOperand instanceof RawStackOffset) {
-                new AsmLoadInst(Node.type.size(), cur.toReg(Node), PhysicalReg.reg("sp"), cur.toImm(Node.getLoadAddr()), cur.block);
-            }else if (Node.getLoadAddr().asmOperand instanceof RawMemOffset){
-                new AsmLoadInst(Node.type.size(),cur.toReg(Node),null,(Immediate)(Node.getLoadAddr().asmOperand),cur.block);
-            }else new AsmLoadInst(Node.type.size(),cur.toReg(Node),null,cur.toImm(Node.getLoadAddr()),cur.block);
+            if (Node.getLoadAddr().asmOperand instanceof StackOffset) {
+                new AsmLoadInst(Node.type.size(),reg, PhysicalReg.reg("sp"), cur.toImm(Node.getLoadAddr()), cur.block);
+//            }else if (Node.getLoadAddr().asmOperand instanceof RawMemOffset){
+//                new AsmLoadInst(Node.type.size(),reg,null,(Immediate)(Node.getLoadAddr().asmOperand),cur.block);
+            }else new AsmLoadInst(Node.type.size(),reg,cur.toReg(Node.getLoadAddr()),cur.toImm(0),cur.block);
         }
     }
 
@@ -218,7 +221,7 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
      */
     @Override
     public void visit(TruncNode Node) {
-        if (cur.toImm(Node.getOperand(0)).isValidImm()) {
+        if (validImm(Node.getOperand(0))) {
             new AsmLiInst(cur.toReg(Node), cur.toImm(Node.getOperand(0)), cur.block);
         }
         else {
@@ -231,21 +234,21 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
      */
     @Override
     public void visit(StoreNode Node) {
-        if(Node.getStoreData() instanceof GlobalValue){
-            if(((GlobalValue)Node.getStoreData()).isGlbPointer){
+        if(Node.getStorePtr() instanceof GlobalValue){
+            if(((GlobalValue)Node.getStorePtr()).isGlbPointer){
                 new AsmMvInst( PhysicalReg.reg("gp"),cur.toReg(Node.getStoreData()), cur.block);
             }else {
                 VirtualReg vr=new VirtualReg();
 
-                GlobalReg glb= (GlobalReg) cur.toReg(Node.getStoreData());
-                new AsmLuiInst(vr,new GlobalAddr(glb, GlobalAddr.status.head),cur.block);
-                new AsmStoreInst(Node.getStoreData().type.size(),cur.toReg(Node),vr,new GlobalAddr(glb, GlobalAddr.status.offset),cur.block);
+                GlobalReg glb= (GlobalReg) cur.toReg(Node.getStorePtr());
+                new AsmLuiInst(vr,new GlobalAddr(glb, GlobalAddr.status.hi),cur.block);
+                new AsmStoreInst(Node.getStoreData().type.size(),vr,cur.toReg(Node.getStoreData()),new GlobalAddr(glb, GlobalAddr.status.lo),cur.block);
             }
         }else {
-            if (Node.getStorePtr().asmOperand instanceof RawStackOffset) {
+            if (Node.getStorePtr().asmOperand instanceof StackOffset) {
                 new AsmStoreInst(Node.getStoreData().type.size(),  PhysicalReg.reg("sp"), cur.toReg(Node.getStoreData()),cur.toImm(Node.getStorePtr()), cur.block);
-            }else if (Node.getStorePtr().asmOperand instanceof RawMemOffset){
-                new AsmStoreInst(Node.getStoreData().type.size(),null,cur.toReg(Node.getStoreData()),(Immediate)(Node.getStorePtr().asmOperand),cur.block);
+//            }else if (Node.getStorePtr().asmOperand instanceof RawMemOffset){
+//                new AsmStoreInst(Node.getStoreData().type.size(),null,cur.toReg(Node.getStoreData()),(Immediate)(Node.getStorePtr().asmOperand),cur.block);
             }else new AsmStoreInst(Node.getStoreData().type.size(),cur.toReg(Node.getStorePtr()),cur.toReg(Node.getStoreData()),cur.toImm(0),cur.block);
         }
 
@@ -278,28 +281,33 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
     @Override
     public void visit(GetElementPtrNode Node) {
         Value index=Node.isGetMember()? Node.getIndex(1):Node.getIndex(0);
-        IRStructType classType=Node.isGetMember() ? (IRStructType) ((IRPointerType) Node.headPointer().type).pointedType : null;
-        int elemSize=((IRPointerType) Node.headPointer().type).pointedType.size();
-        if (index instanceof IntConst && !(Node.headPointer() instanceof GlobalValue) ) {
-            int offset = 0;
-            if (classType != null) {
-                offset = classType.memberOffset(((IntConst) index).data);
-            }
-            else {
-                offset = ((IntConst) index).data * elemSize;
-            }
-            Node.asmOperand = new RawMemOffset(cur.toReg(Node.headPointer()), offset);
-            return;
-        }
+//        IRStructType classType=Node.isGetMember() ? (IRStructType) ((IRPointerType) Node.headPointer().type).pointedType : null;
+//        int elemSize=((IRPointerType) Node.headPointer().type).pointedType.size();
+//        if (index instanceof IntConst && !(Node.headPointer() instanceof GlobalValue) ) {
+//            int offset = 0;
+//            if (classType != null) {
+//                offset = classType.memberOffset(((IntConst) index).data);
+//            }
+//            else {
+//                offset = ((IntConst) index).data * elemSize;
+//            }
+//            Node.asmOperand = new RawMemOffset(cur.toReg(Node.headPointer()), offset);
+//            return;
+//        }
+//
+//        Register instReg = cur.toReg(Node);
 
         Register instReg = cur.toReg(Node);
+        IRStructType classType = Node.isGetMember() ? (IRStructType) ((IRPointerType) Node.headPointer().type).pointedType : null;
+        int elemSize = ((IRPointerType) Node.headPointer().type).pointedType.size(); // well... quite interesting
+        Register ptr = cur.toReg(Node.headPointer());
         VirtualReg gep= new VirtualReg();
         if(classType==null){
             if(index instanceof IntConst){
                 if(equalZero(index)){
-                    Register ptr = cur.toReg(Node.headPointer());
-                   // get headptr
-                    if (Node.headPointer() instanceof GlobalValue) {
+//                    Register ptr = cur.toReg(Node.headPointer());
+                    // get headptr
+                    if (ptr instanceof GlobalReg) {
                         if (((GlobalValue) Node.headPointer()).isGlbPointer) {
                             new AsmMvInst(gep, PhysicalReg.reg("gp"), cur.block);
                         }
@@ -307,7 +315,9 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
                             new AsmLaInst(gep, ptr.id, cur.block);
                         }
                     }
-                    else new AsmMvInst(gep, ptr, cur.block);
+//                    else new AsmMvInst(gep, ptr, cur.block);
+                    else new AsmALUInst(RV32I.AddInst, gep, ptr, cur.toImm(((IntConst) index).data * elemSize), cur.block);
+
                 }else{
                     int sumOffset=elemSize*((IntConst) index).data;
                     new AsmALUInst(RV32I.AddInst,gep,cur.toReg(Node.headPointer()),cur.toReg(new IntConst(sumOffset)),cur.block);
@@ -320,7 +330,7 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
             }
         }else{
             if(equalZero(index)){
-                Register ptr = cur.toReg(Node.headPointer());
+//                Register ptr = cur.toReg(Node.headPointer());
                 // get headptr
                 if (Node.headPointer() instanceof GlobalValue) {
                     if (((GlobalValue) Node.headPointer()).isGlbPointer) {
@@ -337,7 +347,6 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
                 new AsmALUInst(RV32I.AddInst,gep,cur.toReg(Node.headPointer()),cur.toReg(new IntConst(memberOffset)),cur.block);
             }
         }
-
         new AsmMvInst(instReg, gep, cur.block);
     }
 
@@ -347,28 +356,40 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
             AsmFunction func = new AsmFunction(function.name);
             function.asmOperand = func;
             for (int i = 0; i < ((IRFuncType) function.type).argTypes.size(); i++) {
-                VirtualReg vr=new VirtualReg(function.getArgType(i).size());
-                func.arguments.add(vr);
-                if(i>= RV32I.MaxArgRegNum){
-                    vr.stackOffset=new RawStackOffset(func.calleeArgStackUse, RawStackOffset.RawType.calleeArg);
-                    func.calleeArgStackUse+=RV32I.I32Unit;
-                }
+//                VirtualReg vr=new VirtualReg(function.getArgType(i).size());
+//                func.arguments.add(vr);
+////                if(i>= RV32I.MaxArgRegNum){
+//                    vr.stackOffset=new StackOffset(func.calleeArgStackUse, 0,func);
+//                    func.callStackUse+=RV32I.I32Unit;
+////                func.calleeArgStackUse+=RV32I.I32Unit;
+                ArgumentReg reg = new ArgumentReg(String.valueOf(i), function.getArgType(i).size());
+                func.arguments.add(reg);
+                reg.stackOffset = new StackOffset(func.callStackUse, 0, func);
+                func.callStackUse += 4;
+//                }
             }
         }
         for (IRFunction function : irmodule.functions) {
             AsmFunction asm=new AsmFunction(function.name);
             function.asmOperand=asm;
-            for (int i = 0; i < ((IRFuncType) function.type).argTypes.size(); i++) {
-
-                VirtualReg vr=new VirtualReg(function.getArgType(i).size());
-                Value arg=function.operands.get(i);
-                asm.arguments.add(vr);
-                arg.asmOperand=asm;
-                if(i>= RV32I.MaxArgRegNum){
-                    vr.stackOffset=new RawStackOffset(asm.calleeArgStackUse, RawStackOffset.RawType.calleeArg);
-                    asm.calleeArgStackUse+=RV32I.I32Unit;
-                }
-            }
+//            for (int i = 0; i < ((IRFuncType) function.type).argTypes.size(); i++) {
+//
+//                VirtualReg vr=new VirtualReg(function.getArgType(i).size());
+//                Value arg=function.operands.get(i);
+//                asm.arguments.add(vr);
+//                arg.asmOperand=asm;
+////                if(i>= RV32I.MaxArgRegNum){
+//                vr.stackOffset=new StackOffset(asm.calleeArgStackUse, 0,asm);
+//                asm.callStackUse+=RV32I.I32Unit;
+////                asm.calleeArgStackUse+=RV32I.I32Unit;
+////                }
+//            }
+            function.operands.forEach(arg -> {
+                arg.asmOperand = new ArgumentReg(arg.name, arg.type.size());
+                asm.arguments.add((Register) arg.asmOperand);
+                ((Register) arg.asmOperand).stackOffset = new StackOffset(asm.callStackUse, 0, asm);
+               asm.callStackUse += 4;
+            });
             module.functions.add((AsmFunction) function.asmOperand);
             for (IRBlock irBlock : function.blockList) {
                 AsmBlock block=new AsmBlock(irBlock.identifier());
@@ -388,9 +409,6 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
                 }
             }
 
-
-
-
         }
 
     }
@@ -401,60 +419,106 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
     @Override
     public void runBlock(IRBlock block) {
         cur.block=(AsmBlock) block.asmOperand;
-        cur.LiMap.clear();
+//        cur.LiMap.clear();
         for (IRBaseNode instruction : block.instructions) {
             instruction.accept(this);
         }
     }
 
     @Override
-    public void runFunction(IRFunction irFunction) {
-        AsmFunction asmFunction=(AsmFunction) irFunction.asmOperand;
-        cur.function=asmFunction;
-        // sp
-        new AsmALUInst(RV32I.AddInst,PhysicalReg.reg("sp"),PhysicalReg.reg("sp"), new RawStackOffset(0, RawStackOffset.RawType.lowerSp),cur.block);
+    public void runFunction(IRFunction function) {
+//        AsmFunction asmFunction=(AsmFunction) irFunction.asmOperand;
+//        cur.function=asmFunction;
+////        // sp
+////        new AsmALUInst(RV32I.AddInst,PhysicalReg.reg("sp"),PhysicalReg.reg("sp"), new RawStackOffset(0, RawStackOffset.RawType.lowerSp),cur.block);
+//
+//        // ra
+//        VirtualReg ra = new VirtualReg();
+//        new AsmMvInst(ra, PhysicalReg.reg("ra"), cur.function.entryBlock);
+//        VirtualReg fp=new VirtualReg();
+//        new AsmMvInst(fp, PhysicalReg.reg("s0"), cur.function.entryBlock);
+//
+//        //callee save
+//        ArrayList<Register> calleeSaver = new ArrayList<>();
+//        for (PhysicalReg phyReg : PhysicalReg.calleeSaved) {
+//            VirtualReg vr = new VirtualReg();
+//            calleeSaver.add(vr);
+//            new AsmMvInst(vr, phyReg, cur.function.entryBlock);
+//        }
+//        for (int i = 0; i < cur.function.arguments.size(); i++) {
+//            if(i==RV32I.MaxArgRegNum)break;
+//            new AsmMvInst(cur.function.arguments.get(i),PhysicalReg.a(i),cur.block);
+//        }
+//
+//        // load arguments in mem to reg
+//        for (int i = RV32I.MaxArgRegNum; i < cur.function.arguments.size(); i++) {
+//            new AsmLoadInst(irFunction.getOperand(i).type.size(), cur.function.arguments.get(i), PhysicalReg.reg("sp"),
+//                    cur.function.arguments.get(i).stackOffset, cur.function.entryBlock);
+//        }
+//
+//        for (IRBlock irBlock : irFunction.blockList) {
+//            runBlock(irBlock);
+//        }
+//        // callee-saved load back
+//        for (int i = 0; i < PhysicalReg.calleeSaved.size(); i++) {
+//            new AsmMvInst(PhysicalReg.calleeSaved.get(i), calleeSaver.get(i),cur.function.exitBlock );
+//        }
+//
+//        //ra load back
+//        new AsmMvInst( PhysicalReg.reg("ra"),ra, cur.function.exitBlock);
+//        //sp return
+//        new AsmALUInst(RV32I.AddInst,PhysicalReg.reg("sp"),PhysicalReg.reg("sp"), new RawStackOffset(0, RawStackOffset.RawType.raiseSp),cur.block);
+//        // return
+//        new AsmRetInst(cur.function.exitBlock);
+//
+//        cur.function.blocks.forEach(block -> {
+//            for (AsmBaseInst instruction : block.instructions) {
+//                allocate(instruction);
+//            }
+//        });
+        cur.function = (AsmFunction) function.asmOperand;
 
-        // ra
-        VirtualReg ra = new VirtualReg();
-        new AsmMvInst(ra, PhysicalReg.reg("ra"), cur.function.entryBlock);
-        //callee save
-        ArrayList<Register> calleeSaver = new ArrayList<>();
+        // lower the stack pointer
+        // backup callee
+        /*
+        ArrayList<Register> calleeSaveTemp = new ArrayList<Register>();
         for (PhysicalReg phyReg : PhysicalReg.calleeSaved) {
-            VirtualReg vr = new VirtualReg();
-            calleeSaver.add(vr);
-            new AsmMvInst(vr, phyReg, cur.function.entryBlock);
+            VirtualReg rd = new VirtualReg();
+            calleeSaveTemp.add(rd);
+            new AsmMvInst(rd, phyReg, cur.func.entryBlock());
         }
-        for (int i = 0; i < cur.function.arguments.size(); i++) {
-            if(i==RV32I.MaxArgRegNum)break;
-            new AsmMvInst(cur.function.arguments.get(i),PhysicalReg.a(i),cur.block);
+        */
+        // ra
+        VirtualReg raTemp = new VirtualReg();
+        new AsmMvInst(raTemp, PhysicalReg.reg("ra"), cur.function.entryBlock);
+        // s0
+        VirtualReg fpTemp = new VirtualReg();
+        new AsmMvInst(fpTemp, PhysicalReg.reg("s0"), cur.function.entryBlock);
+
+        // arguments 0~7
+
+        for (int i = 0; i < Integer.min(cur.function.arguments.size(), RV32I.MaxArgRegNum); i++) {
+            new AsmMvInst(cur.function.arguments.get(i), PhysicalReg.a(i), cur.function.entryBlock);
         }
 
-        // load arguments in mem to reg
+        // spill to mem
         for (int i = RV32I.MaxArgRegNum; i < cur.function.arguments.size(); i++) {
-            new AsmLoadInst(irFunction.getOperand(i).type.size(), cur.function.arguments.get(i), PhysicalReg.reg("sp"),
+            new AsmLoadInst(function.getOperand(i).type.size(), cur.function.arguments.get(i), PhysicalReg.reg("s0"),
                     cur.function.arguments.get(i).stackOffset, cur.function.entryBlock);
         }
 
-        for (IRBlock irBlock : irFunction.blockList) {
-            runBlock(irBlock);
-        }
-        // callee-saved load back
+        function.blockList.forEach(this::runBlock);
+
+        // temp back
+        /*
         for (int i = 0; i < PhysicalReg.calleeSaved.size(); i++) {
-            new AsmMvInst(PhysicalReg.calleeSaved.get(i), calleeSaver.get(i),cur.function.exitBlock );
+            new AsmMvInst(PhysicalReg.calleeSaved.get(i), calleeSaveTemp.get(i), cur.func.exitBlock());
         }
+        */
+        new AsmMvInst(PhysicalReg.reg("ra"), raTemp, cur.function.exitBlock);
+        new AsmMvInst(PhysicalReg.reg("s0"), fpTemp, cur.function.exitBlock);
 
-        //ra load back
-        new AsmMvInst( PhysicalReg.reg("ra"),ra, cur.function.exitBlock);
-        //sp return
-        new AsmALUInst(RV32I.AddInst,PhysicalReg.reg("sp"),PhysicalReg.reg("sp"), new RawStackOffset(0, RawStackOffset.RawType.raiseSp),cur.block);
-        // return
-        new AsmRetInst(cur.function.exitBlock);
-
-        cur.function.blocks.forEach(block -> {
-            for (AsmBaseInst instruction : block.instructions) {
-                allocate(instruction);
-            }
-        });
+        cur.function.virtualStackUse = VirtualReg.virtualRegNum * 4;
         VirtualReg.setVirtualRegNumZero();
 
     }

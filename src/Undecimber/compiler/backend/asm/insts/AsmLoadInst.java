@@ -8,8 +8,7 @@ import utility.RV32I;
 
 public class AsmLoadInst extends AsmBaseInst{
     public int width;//lbu lb lw lh lhu
-    public Register rd,rs1;
-    public Immediate offset;
+
 
     public AsmLoadInst(int width,Register rd, Register rs1, Immediate imm, AsmBlock blk) {
         super(rd, rs1, null, imm, blk);

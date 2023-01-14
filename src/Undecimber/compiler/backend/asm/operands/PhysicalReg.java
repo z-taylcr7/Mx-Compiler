@@ -7,10 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class PhysicalReg extends Register {
-    /*
-     * RV32 Physical Reg Arch
-     */
-
 
     public PhysicalReg(String identifier) {
         super(identifier);

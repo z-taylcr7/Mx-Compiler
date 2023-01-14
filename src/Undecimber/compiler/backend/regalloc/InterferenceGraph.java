@@ -15,8 +15,7 @@ public class InterferenceGraph {
 
        }
        public boolean isLoop(){
-           return this.u==this.v;
-
+           return this.u.equals(this.v);
        }
        public boolean equals(Object o){
            return (o instanceof Edge)&&(this.u==((Edge)o).u)&&(this.v==((Edge)o).v);
@@ -35,10 +34,13 @@ public class InterferenceGraph {
         public boolean preColored;
         public int deg;
         public double priority;
+        public Register alias=null;
+
         public void init(boolean isPreColored) {
             this.adjList.clear();
             this.moveList.clear();
             this.priority = 0;
+            this.alias=null;
             if (isPreColored) this.deg = inf;
             else this.deg = 0;
             this.preColored = isPreColored;

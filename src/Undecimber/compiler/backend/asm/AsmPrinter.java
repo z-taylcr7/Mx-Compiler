@@ -7,11 +7,14 @@ import undecimber.compiler.middleend.llvmir.IRFunction;
 import undecimber.compiler.middleend.llvmir.IRModule;
 import utility.pass.*;
 
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 
 public class AsmPrinter implements AsmPass {
     PrintStream ps;
     String file_name;
+
     private final static String TAB = "\t";
     public int funcEndCounter = 0;
 

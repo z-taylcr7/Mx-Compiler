@@ -14,9 +14,7 @@ import java.util.HashMap;
 public class CurrentInfo {
     public AsmBlock block;
     public AsmFunction function;
-    HashMap<Integer,Register>LiMap=new HashMap<>(
-
-    );
+//    HashMap<Integer,Register>LiMap=new HashMap<>();
     //allocate Reg
     public Register toReg(Value value) {
         if (value.asmOperand != null) {
@@ -32,21 +30,28 @@ public class CurrentInfo {
             return PhysicalReg.reg("zero");
         }
 
-        Register ret;
+        VirtualReg ret = new VirtualReg(value.type.size());
 
-        if (LiMap.containsKey(intValue)) {
-            ret = LiMap.get(intValue);
+        if (intValue != null) {
+            new AsmLiInst(ret, new Immediate(intValue), this.block);
         }
-        else {
-            ret = new VirtualReg(value.type.size());
-            if (intValue != null) {
-                new AsmLiInst(ret, new Immediate(intValue), this.block);
-                LiMap.put(intValue, ret);
-            }
-        }
-
-        if (!(value instanceof IntConst || value instanceof BoolConst)) value.asmOperand = ret;
+        value.asmOperand = ret;
         return ret;
+//        Register ret;
+//
+//        if (LiMap.containsKey(intValue)) {
+//            ret = LiMap.get(intValue);
+//        }
+//        else {
+//            ret = new VirtualReg(value.type.size());
+//            if (intValue != null) {
+//                new AsmLiInst(ret, new Immediate(intValue), this.block);
+//                LiMap.put(intValue, ret);
+//            }
+//        }
+//
+//        if (!(value instanceof IntConst || value instanceof BoolConst)) value.asmOperand = ret;
+//        return ret;
     }
     //allocate imm
     public Immediate toImm(int value) {
@@ -55,7 +60,7 @@ public class CurrentInfo {
     }
 
     public Immediate toImm(Value value) {
-        if (value.asmOperand instanceof RawStackOffset) return (Immediate) value.asmOperand;
+        if (value.asmOperand instanceof StackOffset) return (Immediate) value.asmOperand;
         if (value instanceof IntConst) return new Immediate(((IntConst) value).data);
         if (value instanceof BoolConst) return new Immediate (((BoolConst) value).flag ? 1 : 0);
         throw new InternalException();

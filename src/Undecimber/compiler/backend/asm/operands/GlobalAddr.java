@@ -5,7 +5,7 @@ package undecimber.compiler.backend.asm.operands;
 // lw	a0, %lo(glb)(a0)
 
 public class GlobalAddr extends Immediate {
-    public enum status {head, offset};
+    public enum status {hi, lo};
 
     public GlobalReg reg;
 
