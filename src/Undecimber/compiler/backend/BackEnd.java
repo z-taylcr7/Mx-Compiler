@@ -9,6 +9,7 @@ import undecimber.compiler.backend.regalloc.RegAllocator;
 //import undecimber.compiler.backend.regalloc.StackAllocator;
 import undecimber.compiler.backend.regalloc.StackAlloc;
 import undecimber.compiler.middleend.MiddleEnd;
+import utility.BuiltInPrinter;
 import utility.CopyFile;
 
 import java.io.FileNotFoundException;
@@ -42,7 +43,8 @@ public class BackEnd {
 
         new AsmPrinter(ps,"ssss.s"  ).runModule(this.module);
 //        PrintStream bps=new PrintStream("builtIn.s");
-         CopyFile.copy("builtInSrc.s","builtin.s");
-
+//         CopyFile.copy("builtInSrc.s","builtin.s");
+BuiltInPrinter biu=new BuiltInPrinter();
+biu.print();
     }
 }

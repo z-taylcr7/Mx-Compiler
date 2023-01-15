@@ -18,7 +18,7 @@ public class MiddleEnd {
         PrintStream ps= System.out;
         Value.rename=true;
         this.module=new IRBuilder(frontend.ASTRoot).module;
-//        new MidOptim().runModule(this.module);
+        new MidOptim().runModule(this.module);
         //new IRPrinter(ps,"test.mx").runModule(this.module);
     }
 
