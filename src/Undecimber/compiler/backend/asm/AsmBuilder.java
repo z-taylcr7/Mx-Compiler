@@ -43,7 +43,6 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
     @Override
     public void visit(BinNode Node) {
         new AsmALUInst(AsmTranslator.translateArithOp(Node.op),cur.toReg(Node),cur.toReg(Node.lhs()),cur.toReg(Node.rhs()),cur.block);
-
     }
 
     /**
@@ -95,24 +94,26 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
             if(i< RV32I.MaxArgRegNum){
                 //todo:argnum cflt
                 if(Node.getArg(i) instanceof GlobalValue){
-
-                        if (((GlobalValue) Node.getArg(i)).isGlbPointer) {
-                            new AsmMvInst(PhysicalReg.a(i), PhysicalReg.reg("gp"), cur.block);
-                        }
-                        else {
-                            new AsmLaInst(PhysicalReg.a(i), Node.getArg(i).asmOperand.id, cur.block);
-                        }
-
+//
+//                        if (((GlobalValue) Node.getArg(i)).isGlbPointer) {
+//                            new AsmMvInst(PhysicalReg.a(i), PhysicalReg.reg("gp"), cur.block);
+//                        }
+//                        else {
+//                            new AsmLaInst(PhysicalReg.a(i), Node.getArg(i).asmOperand.id, cur.block);
+//                        }
+                    new AsmLaInst(PhysicalReg.a(i), Node.getArg(i).asmOperand.id, cur.block);
                 }else new AsmMvInst(PhysicalReg.a(i),cur.toReg(Node.getArg(i)),cur.block);
             }
             else new AsmStoreInst(
                     Node.getArg(i).type.size(),
                     PhysicalReg.reg("sp"),
-                    cur.toReg(Node.getArg(i)),
+                        asmFunction.arguments.get(i),
+//                    cur.toReg(Node.getArg(i)),
 //                   new  RawStackOffset(asmFunction.arguments.get(i).stackOffset.imm, RawStackOffset.RawType.callerArg),
               asmFunction.arguments.get(i).stackOffset,
                     cur.block
             );
+
         }
 //        cur.function.callerArgStackUse = max(cur.function.callerArgStackUse, asmFunction.calleeArgStackUse);
         cur.function.callStackUse = max(cur.function.callStackUse, asmFunction.callStackUse);
@@ -132,29 +133,32 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
     public void visit(ICmpNode Node) {
         // only use slt, seqz, snez
 
-        if(Node.onlyBR())return;// will be merged into next br
+        if(Node.onlyBR()){
 
+            return;// will be merged into next br
+        }
+        Register instReg=cur.toReg(Node);
         switch(Node.cmp){
             case LLVM.EqualArg -> {
                 VirtualReg vr=new VirtualReg();
                 new AsmALUInst(RV32I.XorInst,vr, cur.toReg(Node.lhs()),cur.toReg(Node.rhs()),cur.block );
-                new AsmALUInst(RV32I.SeqzInst,cur.toReg(Node),vr,cur.block);
+                new AsmALUInst(RV32I.SeqzInst,instReg,vr,cur.block);
             }// a == b -> xor = a ^ b; seqz rd, xor
             case LLVM.NotEqualArg -> {
                 VirtualReg vr=new VirtualReg();
                 new AsmALUInst(RV32I.XorInst,vr, cur.toReg(Node.lhs()),cur.toReg(Node.rhs()),cur.block );
-                new AsmALUInst(RV32I.SnezInst,cur.toReg(Node),vr,cur.block);
+                new AsmALUInst(RV32I.SnezInst,instReg,vr,cur.block);
             }
             case LLVM.LessArg -> new AsmALUInst(RV32I.SltInst,cur.toReg(Node),cur.toReg(Node.lhs()),cur.toReg(Node.rhs()),cur.block);
             case LLVM.GreaterArg -> new AsmALUInst(RV32I.SltInst,cur.toReg(Node),cur.toReg(Node.rhs()),cur.toReg(Node.lhs()),cur.block);
             case LLVM.LessEqualArg -> {
-                new AsmALUInst(RV32I.SltInst,cur.toReg(Node),cur.toReg(Node.rhs()),cur.toReg(Node.lhs()),cur.block);
-                new AsmALUInst(RV32I.XorInst,cur.toReg(Node),cur.toReg(Node),new Immediate(1), cur.block);
+                new AsmALUInst(RV32I.SltInst,instReg,cur.toReg(Node.rhs()),cur.toReg(Node.lhs()),cur.block);
+                new AsmALUInst(RV32I.XorInst,instReg,instReg,new Immediate(1), cur.block);
             }//a <= b -> !(a > b)
             case LLVM.GreaterEqualArg -> {
 
-                new AsmALUInst(RV32I.SltInst,cur.toReg(Node),cur.toReg(Node.lhs()),cur.toReg(Node.rhs()),cur.block);
-                new AsmALUInst(RV32I.XorInst,cur.toReg(Node),cur.toReg(Node),new Immediate(1), cur.block);
+                new AsmALUInst(RV32I.SltInst,instReg,cur.toReg(Node.lhs()),cur.toReg(Node.rhs()),cur.block);
+                new AsmALUInst(RV32I.XorInst,instReg,instReg,new Immediate(1), cur.block);
             }
             default -> throw new RuntimeException();
         }
@@ -191,7 +195,7 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
      */
     @Override
     public void visit(ZextNode Node) {
-        if (cur.toImm(Node.getOperand(0)).isValidImm()) {
+        if (validImm(Node.getOperand(0))) {
             new AsmLiInst(cur.toReg(Node), cur.toImm(Node.getOperand(0)), cur.block);
         }
         else {
@@ -267,7 +271,7 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
      */
     @Override
     public void visit(MoveNode Node) {
-        if (cur.toImm(Node.getFrom()).isValidImm()) {
+        if (validImm(Node.getFrom())) {
             new AsmLiInst(cur.toReg(Node.getTo()), cur.toImm(Node.getFrom()), cur.block);
         }
         else {

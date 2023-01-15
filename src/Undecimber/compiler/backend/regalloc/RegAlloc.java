@@ -316,6 +316,11 @@ public class RegAlloc implements AsmPass {
         spillWorklist.remove(minReg);
         simplifyWorklist.add(minReg);
         freezeMoves(minReg);
+//        var it=spillWorklist.iterator();
+//        var chosen=it.next();
+//        it.remove();
+//        simplifyWorklist.add(chosen);
+//        freezeMoves(chosen);
     }
 
     private void assignColors() {
