@@ -39,7 +39,7 @@ public class BackEnd {
 //        PrintStream ps=System.out;
 
 //        PrintStream ps= new PrintStream("output.s");
-        PrintStream ps= new PrintStream("test.s");
+        PrintStream ps= new PrintStream("output.s");
 
         new AsmPrinter(ps,"ssss.s"  ).runModule(this.module);
 //        PrintStream bps=new PrintStream("builtIn.s");
