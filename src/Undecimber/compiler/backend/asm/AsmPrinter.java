@@ -82,6 +82,7 @@ public class AsmPrinter implements AsmPass {
          */
         for (GlobalReg globalReg : module.stringConsts) {
 
+
             ps.println(TAB + ".type" + TAB + globalReg + ",@object");
             ps.println(TAB + ".section" + TAB + ".rodata");
             ps.println(globalReg.id + ":");

@@ -442,10 +442,12 @@ public class IRBuilder implements ASTVisitor {
 
     private boolean funcDetect(ExprNode node) {
         if(node instanceof AtomExprNode){
-            return ! (node.type instanceof MxFuncType);
+            return (node.type instanceof MxFuncType);
         }else if(node instanceof BinaryExprNode){
             return funcDetect(((BinaryExprNode)node).lhsExprNode) && funcDetect(((BinaryExprNode)node).rhsExprNode);
-        }else return false;
+        }
+        return false;
+
     }
 
     /**
@@ -582,19 +584,20 @@ public class IRBuilder implements ASTVisitor {
      */
     @Override
     public void visit(SuffixExprNode node) {
+        //a++
         node.exprNode.accept(this);
-        String _op = node.op;
-        Value _val = node.exprNode.value, _ptr = node.exprNode.value.resolveFrom;
-        switch (_op) {
-            case Mx.DecrementOp:
-                node.value = new BinNode(Mx.AddOp, new IRIntType(32), _val, new IntConst(-1), cur.block);
-                break;
+        Value calculated = null, storePtr = node.exprNode.value.resolveFrom;
+        switch (node.op) {
             case Mx.IncrementOp:
-                node.value = new BinNode(Mx.AddOp, new IRIntType(32), _val, new IntConst(+1), cur.block);
+                calculated = new BinNode(LLVM.AddInst, IRTranslator.i32Type,  node.exprNode.value, new IntConst(1), cur.block);
                 break;
+            case Mx.DecrementOp:
+                calculated = new BinNode(LLVM.SubInst, IRTranslator.i32Type, node.exprNode.value, new IntConst(1), cur.block);
+                break;
+            default: throw new InternalError("unknown postfix op");
         }
-        node.value.resolveFrom = node.exprNode.value.resolveFrom;
-        memStore(node.value.resolveFrom, node.value);
+        memStore(storePtr, calculated);
+        node.value = node.exprNode.value;
     }
 
     /**

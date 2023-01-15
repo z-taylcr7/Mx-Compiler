@@ -19,5 +19,6 @@ int main() {
     int c;
     c = a++;
     b = c;
+    printInt(b+c+a);
     return b+c+a;
 }
