@@ -71,7 +71,7 @@ public class Value {
         return rawName.substring(0, lastAddrSuffixIndex) + LLVM.ResolveSuffix;
     }
 
-    public String renameAddress(String rawName){
+    public static String renameAddress(String rawName){
         return rawName+LLVM.AddrSuffix;
     }
 

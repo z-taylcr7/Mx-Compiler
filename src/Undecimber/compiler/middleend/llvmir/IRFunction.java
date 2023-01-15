@@ -1,5 +1,6 @@
 package undecimber.compiler.middleend.llvmir;
 
+import undecimber.compiler.middleend.analytics.CallGraphAnalyzer;
 import undecimber.compiler.middleend.llvmir.irconst.GlobalValue;
 import undecimber.compiler.middleend.llvmir.irtype.IRBaseType;
 import undecimber.compiler.middleend.llvmir.irtype.IRFuncType;
@@ -15,6 +16,8 @@ public class IRFunction extends GlobalValue {
     public Value returnAddress; // returnType == void ? null : valid_address;
     public boolean isBuiltin = false;
     public boolean isUsed = false;
+    public CallGraphAnalyzer.Node node=new CallGraphAnalyzer.Node(this);
+
     public IRFunction(String name, IRBaseType type) {
         super(name, type);
         this.returnAddress = null;

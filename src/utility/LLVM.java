@@ -16,16 +16,16 @@ public class LLVM {
     public static final String Anon = "anon";
     public static final String Nullptr = "null";
 
-    public static final String TypeAnon = "anonym" + Splitter + "type";
-    public static final String ConstAnon = "anonym" + Splitter + "const";
-    public static final String StrConstAnon = "anonym" + Splitter + "strconst";
+    public static final String TypeAnon = "anon" + Splitter + "type";
+    public static final String ConstAnon = "anon" + Splitter + "const";
+    public static final String StrConstAnon = "anon" + Splitter + "strconst";
 
 
     public static final String ThisArg = "internal" + Splitter + "this";
     public static final String RetReg = "internal" + Splitter + "ret";
     public static final String TParaReg = "internal" + Splitter + "tpara";
 
-    public static final String InitFuncName = FuncNameSplitter + "global" + FuncNameSplitter + "init";
+    public static final String InitFuncName = FuncNameSplitter + "glb" + FuncNameSplitter + "init";
 
     public static final String EntryBlockLabel = "entry";
     public static final String ExitBlockLabel = "exit";

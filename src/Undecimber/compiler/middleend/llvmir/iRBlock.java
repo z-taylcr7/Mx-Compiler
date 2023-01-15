@@ -50,6 +50,15 @@ public class IRBlock extends Value {
         phiNode.parentBlock=this;
         PhiInstructions.add(phiNode);
     }
+    public void tAddFirst(IRBaseNode inst) {
+        inst.parentBlock = this;
+        instructions.addFirst(inst);
+    }
+
+    public void tAddLast(IRBaseNode inst) {
+        inst.parentBlock = this;
+        instructions.addLast(inst);
+    }
 
 
 }

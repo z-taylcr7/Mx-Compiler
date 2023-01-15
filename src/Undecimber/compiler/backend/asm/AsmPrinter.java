@@ -47,6 +47,8 @@ public class AsmPrinter implements AsmPass {
 
     public void runModule(AsmModule module) {
         //module
+        ps.println(TAB + ".text");
+
         for (AsmFunction function : module.functions) {
             runFunction(function);
         }

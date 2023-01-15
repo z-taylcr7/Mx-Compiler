@@ -111,8 +111,8 @@ public class StackAlloc implements AsmPass {
     public void runFunction(AsmFunction function) {
 
         function.totalStackUse += function.callStackUse + function.allocaStackUse + function.virtualStackUse;
-        if (function.totalStackUse % RV32I.SpLowUnit != 0)
-            function.totalStackUse = (function.totalStackUse / RV32I.SpLowUnit + 1) * RV32I.SpLowUnit;
+        if (function.totalStackUse % 16 != 0)
+            function.totalStackUse = (function.totalStackUse / 16 + 1) * 16;
 
         // todo: overflow
         // if (function.stackBase > RV32I.MaxStackSize) throw new StackOverflowError();

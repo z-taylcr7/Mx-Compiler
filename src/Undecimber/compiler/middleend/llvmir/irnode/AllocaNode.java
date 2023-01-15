@@ -2,6 +2,7 @@ package undecimber.compiler.middleend.llvmir.irnode;
 
 import undecimber.compiler.middleend.llvmir.IRBlock;
 import undecimber.compiler.middleend.llvmir.IRVisitor;
+import undecimber.compiler.middleend.llvmir.Value;
 import undecimber.compiler.middleend.llvmir.irtype.IRBaseType;
 import undecimber.compiler.middleend.llvmir.irtype.IRPointerType;
 import utility.LLVM;
@@ -12,7 +13,7 @@ public class AllocaNode extends IRBaseNode {
 
 
     public AllocaNode(String NodeName, IRBaseType type, IRBlock parentBlock) {
-        super(parentBlock.renameAddress(NodeName), new IRPointerType(type), parentBlock,true);
+        super(renameAddress(NodeName), new IRPointerType(type), parentBlock,true);
         allocaName=NodeName;
         allocaType=type;
     }

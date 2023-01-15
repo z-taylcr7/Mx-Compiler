@@ -37,7 +37,8 @@ public class BackEnd {
         //new BackEndOptimizer().runOnModule(this.module);
 //        PrintStream ps=System.out;
 
-        PrintStream ps= new PrintStream("output.s");
+//        PrintStream ps= new PrintStream("output.s");
+        PrintStream ps= new PrintStream("test.s");
 
         new AsmPrinter(ps,"ssss.s"  ).runModule(this.module);
 //        PrintStream bps=new PrintStream("builtIn.s");

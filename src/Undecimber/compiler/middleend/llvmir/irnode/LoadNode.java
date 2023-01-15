@@ -16,6 +16,7 @@ public class LoadNode extends IRBaseNode{
     public Value getLoadAddr(){
         return this.getOperand(0);
     }
+    public void replacePtr(Value value) {this.operands.set(0,value);}
 
 
     /**

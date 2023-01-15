@@ -14,6 +14,7 @@ public class StoreNode extends IRBaseNode{
         this.addOperand(StorePtr);
         this.addOperand(StoreData);
     }
+    public void replacePtr(Value value) {this.operands.set(0,value);}
 
     /**
      * @return

@@ -392,7 +392,7 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
             });
             module.functions.add((AsmFunction) function.asmOperand);
             for (IRBlock irBlock : function.blockList) {
-                AsmBlock block=new AsmBlock(irBlock.identifier());
+                AsmBlock block=new AsmBlock(irBlock.name);
 
                 block.loopDepth= irBlock.loopDepth;
                 irBlock.asmOperand=block;
