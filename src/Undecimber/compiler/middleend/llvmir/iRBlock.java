@@ -9,10 +9,7 @@ import utility.errors.internalError;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.LinkedList;
-
 public class IRBlock extends Value {
-
-
     public LinkedList<IRBaseNode> instructions=new LinkedList<>();
     public ArrayList<PhiNode> PhiInstructions=new ArrayList<>();
 
