@@ -33,7 +33,7 @@ public class Mem2Reg implements FunctionPass {
 
     private final Map<String, Stack<Value>> nameStack = new HashMap<>();
 
-    private final Map<PhiNode, String> phiAllocaName = new HashMap<>();
+    private final Map<PhiNode, String> phiAllocatedName = new HashMap<>();
 
     private void collectAllocated(IRFunction function) {
         for (IRBaseNode inst : function.entryBlock.instructions)
@@ -68,13 +68,6 @@ public class Mem2Reg implements FunctionPass {
          * -> b2: phi [b1, val]
          */
 
-        // Log.mark("phi insertion: " + function.identifier());
-        /*
-        function.blocks.forEach(block -> Log.report("idom: ", block.identifier(), block.node.idom.fromBlock.identifier()));
-        function.blocks.forEach(block -> block.node.domFrontier.forEach(
-                df -> Log.report("df", block.identifier(), df.identifier())
-        ));
-        */
         collectAllocated(function);
 
         for (IRBaseNode allocaVar : allocated) {
@@ -83,29 +76,23 @@ public class Mem2Reg implements FunctionPass {
             var defs = collectAllocaDefs(allocaVar);
             var visited = new HashSet<IRBlock>();
 
-            defs.forEach(defNode -> workQueue.offer(defNode.parentBlock));
+            for (IRBaseNode def : defs) {
+                workQueue.offer(def.parentBlock);
+            }
+
 
             while (!workQueue.isEmpty()) {
                 var runner = workQueue.poll();
                 for (var frontier : runner.dtNode.domFrontier) {
                     if (visited.contains(frontier)) continue;
-                    visited.add(frontier);
-
-                    workQueue.offer(frontier);
-                    // Log.mark("new phi");
                     var phi = new PhiNode(((IRPointerType) allocaVar.type).pointedType, null);
+                    visited.add(frontier);
+                    workQueue.offer(frontier);
                     frontier.addPhiInst(phi);
-                    phiAllocaName.put(phi, allocaVar.name);
+                    phiAllocatedName.put(phi, allocaVar.name);
                 }
             }
         }
-    }
-
-    private Value getReplace(String name) {
-        if (!nameStack.containsKey(name) || nameStack.get(name).empty()) {
-            return new NullConst();
-        }
-        return nameStack.get(name).lastElement();
     }
 
     private void updateReplace(String name, Value replace) {
@@ -113,19 +100,23 @@ public class Mem2Reg implements FunctionPass {
         nameStack.get(name).push(replace);
     }
 
+    private Value getReplace(String name) {
+        if (!nameStack.containsKey(name) || nameStack.get(name).empty()) {
+            return new NullConst();
+        }else return nameStack.get(name).lastElement();
+    }
+
     private void variableRenaming(IRBlock block) {
         ArrayList<String> rollbackRecord = new ArrayList<>();
 
         for (var phi : block.PhiInstructions) {
-            if (phiAllocaName.containsKey(phi)) {
-                // Log.report("phi: ", phi.format(), phiAllocaName.get(phi));
-                updateReplace(phiAllocaName.get(phi), phi);
-                rollbackRecord.add(phiAllocaName.get(phi));
+            if (phiAllocatedName.containsKey(phi)) {
+                updateReplace(phiAllocatedName.get(phi), phi);
+                rollbackRecord.add(phiAllocatedName.get(phi));
             }
         }
 
         var it = block.instructions.iterator();
-
         while (it.hasNext()) {
             var inst = it.next();
 
@@ -169,8 +160,8 @@ public class Mem2Reg implements FunctionPass {
 
         for (IRBlock suc : block.nexts) {
             for (var sucPhi : suc.PhiInstructions) {
-                if (phiAllocaName.containsKey(sucPhi)) {
-                    sucPhi.addBranch(getReplace(phiAllocaName.get(sucPhi)), block);
+                if (phiAllocatedName.containsKey(sucPhi)) {
+                    sucPhi.addBranch(getReplace(phiAllocatedName.get(sucPhi)), block);
                 }
             }
         }

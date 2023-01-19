@@ -18,7 +18,6 @@ public class SSADestructor implements FunctionPass {
     private final HashMap<IRBlock, CopyGraph> copyGraphMap = new HashMap<>();
 
     // critical path: fromBlock -> toBlock
-    // notice: ConcurrentModificationException
     private void criticalEdgeSplit(IRFunction function) {
         ArrayList<IRBlock> midBlockLists = new ArrayList<>();
         HashMap<IRBlock, IRBlock> redirectPreLists = new HashMap<>();
@@ -52,16 +51,16 @@ public class SSADestructor implements FunctionPass {
 
     // resolve phi and generate para copies
     private void buildCopyGraph(IRFunction function) {
-       function.blockList.forEach(block -> copyGraphMap.put(block, new CopyGraph()));
-       for (IRBlock block : function.blockList) {
-           for (PhiNode phi : block.PhiInstructions) {
-               for (int i = 0; i < phi.getOperandSize(); i += 2) {
-                   // insert in the graph of prevs
-                   copyGraphMap.get((IRBlock) phi.getOperand(i + 1)).
-                           insert(new CopyGraph.CopyEdge(phi, phi.getOperand(i)));
-               }
-           }
-       }
+        function.blockList.forEach(block -> copyGraphMap.put(block, new CopyGraph()));
+        for (IRBlock block : function.blockList) {
+            for (PhiNode phi : block.PhiInstructions) {
+                for (int i = 0; i < phi.getOperandSize(); i += 2) {
+                    // insert in the graph of prevs
+                    copyGraphMap.get((IRBlock) phi.getOperand(i + 1)).
+                            insert(new CopyGraph.CopyEdge(phi, phi.getOperand(i)));
+                }
+            }
+        }
     }
 
     // copy -> move inst
@@ -82,6 +81,7 @@ public class SSADestructor implements FunctionPass {
             }
         }
     }
+
     // turn copy to move inst
     // if there is a loop, use a mid dest to break the loop
     public void copyToMove(IRBlock block, CopyGraph copyGraph) {

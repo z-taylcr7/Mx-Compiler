@@ -728,7 +728,6 @@ public class IRBuilder implements ASTVisitor {
         // int[][][] a = new int [3][4][5];
         // curDim: from 0 to 2
         // elementType: now dim element. e.g. curDim = 0, elementType = i32**
-
         // step 1. malloc this dim.
         // size = (curDim+1) * elementTypeSize
         Value curDimSize = new BinNode(LLVM.MulInst, IRTranslator.i32Type,

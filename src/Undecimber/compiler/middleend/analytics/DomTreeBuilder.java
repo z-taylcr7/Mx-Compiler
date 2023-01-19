@@ -17,7 +17,9 @@ public class DomTreeBuilder implements FunctionPass {
     private IRBlock startBlock;
 
     public DomTreeBuilder(boolean postDomTree) {
-        this.postDomTree = postDomTree;
+        this.postDomTree=false;
+
+//        this.postDomTree = postDomTree;
     }
 
     @Override
@@ -28,10 +30,10 @@ public class DomTreeBuilder implements FunctionPass {
         sortByRPO(startBlock);
         Collections.reverse(blocksInRPO);
         for (int i = 0; i < blocksInRPO.size(); i++)
-            blocksInRPO.get(i).dtNode.order = i;
+            blocksInRPO.get(i).dtNode.order = i;// rpo
 
-        calculateIDom(function);
-        calculateDF(function);
+        calculateIDom(function);//immediate dom
+        calculateDF(function);//Dom Frontier
         calculateDoms(startBlock);
     }
 
@@ -39,8 +41,8 @@ public class DomTreeBuilder implements FunctionPass {
         public int order;
         public IRBlock fromBlock;
         public Node idom;
-        public HashSet<Node> doms;
         public List<Node> sons;
+        public HashSet<Node> doms;
         public List<IRBlock> domFrontier;
 
         public Node(IRBlock fromBlock) {
@@ -50,8 +52,8 @@ public class DomTreeBuilder implements FunctionPass {
         public void init() {
             order = 0;
             idom = null;
-            doms = new HashSet<>();
             sons = new ArrayList<>();
+            doms = new HashSet<>();
             domFrontier = new ArrayList<>();
         }
     }
@@ -64,12 +66,12 @@ public class DomTreeBuilder implements FunctionPass {
         function.blockList.forEach(block -> block.dtNode.init());
     }
 
-    private void sortByRPO(IRBlock block) {
+    private void sortByRPO(IRBlock block) {//reverse post order
         visited.add(block);
 
-        var trueNext = postDomTree ? block.prevs : block.nexts;
+        var realNext = postDomTree ? block.prevs : block.nexts;
 
-        for (IRBlock suc : trueNext)
+        for (IRBlock suc : realNext)
             if (!visited.contains(suc)) sortByRPO(suc);
         blocksInRPO.add(block);
     }
@@ -96,6 +98,7 @@ public class DomTreeBuilder implements FunctionPass {
                 Node newIdom = null;
                 var truePrevs = postDomTree ? block.nexts : block.prevs;
                 for (IRBlock pred : truePrevs) {
+                    //to calculate the intersect of all the predecessors
                     if (pred.dtNode.idom == null) continue;
                     if (newIdom == null) newIdom = pred.dtNode;
                     else newIdom = intersect(newIdom, pred.dtNode);
@@ -133,6 +136,8 @@ public class DomTreeBuilder implements FunctionPass {
             block.dtNode.doms.addAll(block.dtNode.idom.doms);
         }
         block.dtNode.doms.add(block.dtNode.idom);
-        block.dtNode.sons.forEach(node -> calculateDoms(node.fromBlock));
+        for (Node son : block.dtNode.sons) {
+            calculateDoms(son.fromBlock);
+        }
     }
 }

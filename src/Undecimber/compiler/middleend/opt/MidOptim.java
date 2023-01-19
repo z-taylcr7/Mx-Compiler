@@ -3,6 +3,7 @@ package undecimber.compiler.middleend.opt;
 import undecimber.compiler.middleend.analytics.CallGraphAnalyzer;
 import undecimber.compiler.middleend.llvmir.IRFunction;
 import undecimber.compiler.middleend.llvmir.IRModule;
+import undecimber.compiler.middleend.opt.ssa.Mem2Reg;
 import undecimber.compiler.middleend.opt.ssa.SSADestructor;
 import utility.pass.ModulePass;
 
@@ -17,8 +18,8 @@ public class MidOptim implements ModulePass {
         new CallGraphAnalyzer().runModule(module);
 
         for (IRFunction function : module.functions) {
-            //new Glo2Loc().runFunction(function);
-//            new Mem2Reg().runOnFunc(function);
+            new Glo2Loc().runFunction(function);
+            new Mem2Reg().runFunction(function);
         }
         // re-analyze info for asm
         for (IRFunction function : module.functions) {
