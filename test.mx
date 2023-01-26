@@ -1,7 +1,0 @@
-int main(){
-int b=0,a=2;
-    bool d = (b != 0) && (a/b != 1);
-    if(d)println("asdasdadas aasda");
-    else println("uihui");
-
-}

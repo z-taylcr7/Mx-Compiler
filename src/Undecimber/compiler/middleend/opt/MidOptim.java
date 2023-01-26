@@ -19,8 +19,9 @@ public class MidOptim implements ModulePass {
 
         for (IRFunction function : module.functions) {
             new Glo2Loc().runFunction(function);
-//            new Mem2Reg().runFunction(function);
+            new Mem2Reg().runFunction(function);
         }
+
         // re-analyze info for asm
         for (IRFunction function : module.functions) {
             new SSADestructor().runFunction(function);
