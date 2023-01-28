@@ -54,12 +54,12 @@ public class IRBlock extends Value {
         phiNode.parentBlock=this;
         PhiInstructions.add(phiNode);
     }
-    public void tAddFirst(IRBaseNode inst) {
+    public void addFirst(IRBaseNode inst) {
         inst.parentBlock = this;
         instructions.addFirst(inst);
     }
 
-    public void tAddLast(IRBaseNode inst) {
+    public void addLast(IRBaseNode inst) {
         inst.parentBlock = this;
         instructions.addLast(inst);
     }
@@ -93,7 +93,7 @@ public class IRBlock extends Value {
             }
         }
     }
-    public void tAddBeforeTerminator(IRBaseNode inst) {
+    public void addBeforeTerminator(IRBaseNode inst) {
         inst.parentBlock = this;
         if (instructions.isEmpty()) return;
         instructions.add(instructions.size() - 1, inst);
@@ -109,11 +109,11 @@ public class IRBlock extends Value {
 //        it.set(inst);
 //    }
 //
-//    public void tReplaceTerminator(IRBaseInst newTerminator) {
-//        newTerminator.parentBlock = this;
-//        instructions.removeLast();
-//        instructions.addLast(newTerminator);
-//    }
+    public void replaceTerminator(IRBaseNode newTerminator) {
+        newTerminator.parentBlock = this;
+        instructions.removeLast();
+        instructions.addLast(newTerminator);
+    }
 
     public void removePhiBranch(IRBlock remove) {
         var it = this.PhiInstructions.iterator();

@@ -40,7 +40,7 @@ public class ICmpNode extends IRBaseNode {
      */
     @Override
     public IRBaseNode copy() {
-        return null;
+        return new ICmpNode(this.cmp,this.lhs(),this.rhs(),this.parentBlock);
     }
 
     /**

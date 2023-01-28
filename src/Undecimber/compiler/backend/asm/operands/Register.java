@@ -5,14 +5,9 @@ import undecimber.compiler.backend.regalloc.InterferenceGraph;
 
 public abstract class Register extends BasicOperand {
 
-    // assigned in RegisterAllocator
     public PhysicalReg color;
 
-    // location in stack, only spill registers have (graphColor spill & function call spill)
-//    public StackOffset stackOffset;
     public RawStackOffset stackOffset;
-
-    // info in InterferenceGraph, used in RegAlloc
      public InterferenceGraph.node node = new InterferenceGraph.node();
 
     public Register(String identifier) { super(identifier);}

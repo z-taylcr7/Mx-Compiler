@@ -27,7 +27,7 @@ public class MoveNode extends IRBaseNode{
 
     @Override
     public IRBaseNode copy() {
-        return null;
+        return new MoveNode(this.getTo(),this.getFrom(),this.parentBlock);
     }
 
     @Override

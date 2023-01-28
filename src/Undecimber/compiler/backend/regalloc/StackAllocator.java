@@ -20,7 +20,7 @@ public class StackAllocator {
         function.totalStackUse+=function.callerArgStackUse+function.allocaStackUse+ function.spillStackUse;
         // |caller|alloca|spill
         //stack alignment
-        if( (mod=function.totalStackUse% RV32I.SpLowUnit)>0)function.totalStackUse+=(RV32I.SpLowUnit)-mod;
+        if( (mod=function.totalStackUse% RV32I.SpLowUnit)>0)function.totalStackUse=(function.totalStackUse / RV32I.SpLowUnit + 1) * RV32I.SpLowUnit;
         for (AsmBlock block : function.blocks) {
             for (AsmBaseInst instruction : block.instructions) {
                 if(!(instruction.imm instanceof RawStackOffset))continue;
@@ -32,6 +32,7 @@ public class StackAllocator {
                     case calleeArg -> instruction.imm=new Immediate(function.totalStackUse+ immediate.imm);
                     case raiseSp -> instruction.imm=new Immediate(function.totalStackUse);
                     case lowerSp -> instruction.imm=new Immediate(-function.totalStackUse);
+                    default -> throw new InternalError();
 
                 }
             }

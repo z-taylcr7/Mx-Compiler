@@ -1,7 +1,8 @@
-## IR 
+# IR 
 
-### SSA destructor
-Main method: insert copies at Node's every predecessor
+## SSA destructor
+### Main method
+insert copies at Node's every predecessor
 ```
 Block X       Block Y
 a2<-xxx       a3<-yyy
@@ -50,4 +51,41 @@ We add a midBlock between A and C.
          C
 ```
 Because MidBlock only has one pred and successor, the critical edge is destructed.
+
+
+
+###  Copy Eliminate
+
+Notice that if we have:
+
+```T
+A <- B
+B <- C
+```
+
+Then 1 must be done after 2.
+
+if we have
+
+```
+A <- B
+B <- C
+C <- A
+```
+
+which is a ring, then we do
+
+```
+A <- A' <- B
+```
+
+And we commit A1 <- B first, then it will be converted into a chain
+
+```
+A <- A'
+C <- A
+B <- C
+```
+
+
 

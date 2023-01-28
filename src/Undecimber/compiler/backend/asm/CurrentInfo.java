@@ -60,7 +60,7 @@ public class CurrentInfo {
     }
 
     public Immediate toImm(Value value) {
-        if (value.asmOperand instanceof StackOffset) return (Immediate) value.asmOperand;
+        if (value.asmOperand instanceof RawStackOffset) return (Immediate) value.asmOperand;
         if (value instanceof IntConst) return new Immediate(((IntConst) value).data);
         if (value instanceof BoolConst) return new Immediate (((BoolConst) value).flag ? 1 : 0);
         throw new InternalException();

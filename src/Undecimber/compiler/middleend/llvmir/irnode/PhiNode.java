@@ -28,7 +28,10 @@ public class PhiNode extends IRBaseNode{
 
     @Override
     public IRBaseNode copy() {
-        return null;
+        PhiNode ret = new PhiNode(type, null);
+        for (int i = 0; i < this.getOperandSize(); i += 2)
+            ret.addBranch(this.getOperand(i), (IRBlock) this.getOperand(i+1));
+        return ret;
     }
 
     @Override

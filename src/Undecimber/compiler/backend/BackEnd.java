@@ -4,6 +4,7 @@ import undecimber.compiler.backend.asm.AsmBuilder;
 import undecimber.compiler.backend.asm.AsmFunction;
 import undecimber.compiler.backend.asm.AsmModule;
 import undecimber.compiler.backend.asm.AsmPrinter;
+import undecimber.compiler.backend.optim.BackEndOptim;
 import undecimber.compiler.backend.regalloc.RegAllocator;
 //import undecimber.compiler.backend.regalloc.StackAllocator;
 import undecimber.compiler.backend.regalloc.StackAllocator;
@@ -32,7 +33,7 @@ public class BackEnd {
         // Stack Allocate. Eliminate RawStackOffset
         new StackAllocator().runModule(this.module);
 
-        // new BackEndOptimizer().runOnModule(this.module);
+         new BackEndOptim().runModule(this.module);
 //        PrintStream ps=System.out;
 
 //        PrintStream ps= new PrintStream("output.s");

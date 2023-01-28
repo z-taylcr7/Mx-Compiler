@@ -47,7 +47,7 @@ public class InterferenceGraph {
         }
 
     }
-    HashSet<Edge>edgeList=new LinkedHashSet<>();
+    public Set<Edge>edgeList=new LinkedHashSet<>();
     public void addEdge(Edge edge){
         if(edge.isLoop()||edgeList.contains(edge))return;
         edgeList.add(edge);

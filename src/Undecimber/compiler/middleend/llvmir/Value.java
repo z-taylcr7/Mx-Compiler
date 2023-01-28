@@ -17,7 +17,7 @@ public class Value {
     public Value resolveFrom = null;
     public String name;
     public String comment = null;
-    public BasicOperand asmOperand;
+    public BasicOperand asmOperand=null;
 
 
     public Value(IRBaseType type) {
