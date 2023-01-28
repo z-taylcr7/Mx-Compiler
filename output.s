@@ -1,193 +1,295 @@
-# fileName: test	 compiled by @Masterball.
 	.text
+	.globl	_glb_init
+	.p2align	1
+	.type	_glb_init,@function
+_glb_init:
+entry.11:
+	addi	sp, sp, 0
+	j	exit.11
+exit.11:
+	addi	sp, sp, 0
+	ret
+	mv	t0, a0
+                            #function ends.
+	.globl	test_foo
+	.p2align	1
+	.type	test_foo,@function
+test_foo:
+entry.12:
+	addi	sp, sp, -96
+	sw	t0, 76(sp)
+	sw	zero, 72(sp)
+	sw	zero, 68(sp)
+	sw	zero, 64(sp)
+	sw	zero, 60(sp)
+	sw	zero, 56(sp)
+	sw	zero, 52(sp)
+	sw	zero, 48(sp)
+	sw	zero, 44(sp)
+	sw	zero, 40(sp)
+	sw	zero, 36(sp)
+	sw	zero, 32(sp)
+	sw	zero, 28(sp)
+	sw	zero, 24(sp)
+	sw	zero, 20(sp)
+	sw	zero, 16(sp)
+	sw	zero, 12(sp)
+	sw	zero, 8(sp)
+	sw	zero, 4(sp)
+	sw	zero, 0(sp)
+	lw	t0, 8(sp)
+	sw	zero, 8(sp)
+	j	for.cond
+exit.12:
+	lw	a0, 80(sp)
+	addi	sp, sp, 96
+	ret
+for.cond:
+	lw	t1, 8(sp)
+	lw	t0, 76(sp)
+	blt	t1,t0,for.body
+	j	for.exit
+for.incr:
+	lw	t1, 8(sp)
+	li	t0, 1
+	add	t0, t1, t0
+	sw	t0, 8(sp)
+	j	for.cond
+for.body:
+	lw	t0, 4(sp)
+	sw	zero, 4(sp)
+	j	for.cond.1
+for.exit:
+	lw	t0, 72(sp)
+	sw	t0, 80(sp)
+	j	exit.12
+for.cond.1:
+	lw	t1, 4(sp)
+	lw	t0, 76(sp)
+	blt	t1,t0,for.body.1
+	j	for.exit.1
+for.incr.1:
+	lw	t1, 4(sp)
+	li	t0, 1
+	add	t0, t1, t0
+	sw	t0, 4(sp)
+	j	for.cond.1
+for.body.1:
+	lw	t0, 0(sp)
+	sw	zero, 0(sp)
+	j	for.cond.2
+for.exit.1:
+	j	for.incr
+for.cond.2:
+	lw	t1, 0(sp)
+	lw	t0, 76(sp)
+	blt	t1,t0,for.body.2
+	j	for.exit.2
+for.incr.2:
+	lw	t1, 0(sp)
+	li	t0, 1
+	add	t0, t1, t0
+	sw	t0, 0(sp)
+	j	for.cond.2
+for.body.2:
+	lw	t0, 20(sp)
+	sw	zero, 20(sp)
+	j	for.cond.3
+for.exit.2:
+	j	for.incr.1
+for.cond.3:
+	lw	t1, 20(sp)
+	lw	t0, 76(sp)
+	blt	t1,t0,for.body.3
+	j	for.exit.3
+for.incr.3:
+	lw	t1, 20(sp)
+	li	t0, 1
+	add	t0, t1, t0
+	sw	t0, 20(sp)
+	j	for.cond.3
+for.body.3:
+	lw	t0, 72(sp)
+	lw	t1, 72(sp)
+	li	t0, 1
+	add	t0, t1, t0
+	sw	t0, 72(sp)
+	lw	t1, 72(sp)
+	li	t0, 1000000
+	blt	t0,t1,if.true
+	j	if.false
+for.exit.3:
+	j	for.incr.2
+if.true:
+	lw	t0, 72(sp)
+	lw	t1, 72(sp)
+	li	t0, 1000000
+	sub	t0, t1, t0
+	sw	t0, 72(sp)
+	j	if.exit
+if.false:
+	j	if.exit
+if.exit:
+	lw	t1, 48(sp)
+	li	t0, 1000000
+	blt	t0,t1,if.true.1
+	j	if.false.1
+if.true.1:
+	lw	t0, 48(sp)
+	lw	t1, 48(sp)
+	li	t0, 1000000
+	sub	t0, t1, t0
+	sw	t0, 48(sp)
+	j	if.exit.1
+if.false.1:
+	j	if.exit.1
+if.exit.1:
+	lw	t1, 68(sp)
+	li	t0, 1000000
+	blt	t0,t1,if.true.2
+	j	if.false.2
+if.true.2:
+	lw	t0, 68(sp)
+	lw	t1, 68(sp)
+	li	t0, 1000000
+	sub	t0, t1, t0
+	sw	t0, 68(sp)
+	j	if.exit.2
+if.false.2:
+	j	if.exit.2
+if.exit.2:
+	lw	t1, 64(sp)
+	li	t0, 1000000
+	blt	t0,t1,if.true.3
+	j	if.false.3
+if.true.3:
+	lw	t0, 64(sp)
+	lw	t1, 64(sp)
+	li	t0, 1000000
+	sub	t0, t1, t0
+	sw	t0, 64(sp)
+	j	if.exit.3
+if.false.3:
+	j	if.exit.3
+if.exit.3:
+	lw	t1, 52(sp)
+	li	t0, 1000000
+	blt	t0,t1,if.true.4
+	j	if.false.4
+if.true.4:
+	lw	t0, 52(sp)
+	lw	t1, 52(sp)
+	li	t0, 1000000
+	sub	t0, t1, t0
+	sw	t0, 52(sp)
+	j	if.exit.4
+if.false.4:
+	j	if.exit.4
+if.exit.4:
+	lw	t0, 68(sp)
+	lw	t1, 68(sp)
+	li	t0, 2
+	add	t0, t1, t0
+	sw	t0, 68(sp)
+	lw	t1, 72(sp)
+	li	t0, 3
+	blt	t0,t1,if.true.5
+	j	if.false.5
+if.true.5:
+	lw	t0, 64(sp)
+	lw	t1, 64(sp)
+	lw	t0, 72(sp)
+	add	t1, t1, t0
+	li	t0, 10
+	sub	t0, t1, t0
+	sw	t0, 64(sp)
+	j	if.exit.5
+if.false.5:
+	j	if.exit.5
+if.exit.5:
+	lw	t0, 64(sp)
+	lw	t1, 64(sp)
+	li	t0, 1
+	add	t0, t1, t0
+	sw	t0, 64(sp)
+	lw	t0, 52(sp)
+	lw	t1, 64(sp)
+	lw	t0, 72(sp)
+	add	t0, t1, t0
+	sw	t0, 52(sp)
+	lw	t0, 60(sp)
+	lw	t1, 52(sp)
+	lw	t0, 60(sp)
+	add	t0, t1, t0
+	sw	t0, 60(sp)
+	lw	t0, 48(sp)
+	lw	t1, 72(sp)
+	lw	t0, 68(sp)
+	add	t1, t1, t0
+	lw	t0, 64(sp)
+	add	t1, t1, t0
+	lw	t0, 60(sp)
+	add	t1, t1, t0
+	lw	t0, 56(sp)
+	add	t1, t1, t0
+	lw	t0, 52(sp)
+	add	t0, t1, t0
+	sw	t0, 48(sp)
+	lw	t1, 48(sp)
+	li	t0, 10
+	blt	t0,t1,if.true.6
+	j	if.false.6
+if.true.6:
+	lw	t0, 44(sp)
+	lw	t1, 44(sp)
+	li	t0, 1
+	add	t0, t1, t0
+	sw	t0, 44(sp)
+	lw	t0, 28(sp)
+	lw	t1, 28(sp)
+	li	t0, 1
+	add	t0, t1, t0
+	sw	t0, 28(sp)
+	lw	t0, 16(sp)
+	lw	t1, 16(sp)
+	li	t0, 1
+	add	t0, t1, t0
+	sw	t0, 16(sp)
+	j	if.exit.6
+if.false.6:
+	lw	t0, 72(sp)
+	lw	t1, 72(sp)
+	li	t0, 1
+	add	t0, t1, t0
+	sw	t0, 72(sp)
+	lw	t0, 28(sp)
+	lw	t1, 28(sp)
+	li	t0, 1
+	add	t0, t1, t0
+	sw	t0, 28(sp)
+	lw	t0, 32(sp)
+	lw	t1, 32(sp)
+	li	t0, 1
+	add	t0, t1, t0
+	sw	t0, 32(sp)
+	j	if.exit.6
+if.exit.6:
+	j	for.incr.3
+                            #function ends.
 	.globl	main
 	.p2align	1
 	.type	main,@function
 main:
 entry.13:
-	addi	sp, sp, -64
-	sw	s0, 48(sp)
-	sw	s1, 44(sp)
-	sw	s2, 40(sp)
-	sw	s3, 36(sp)
-	sw	s4, 32(sp)
-	sw	s5, 28(sp)
-	sw	s6, 24(sp)
-	sw	s7, 20(sp)
-	sw	s8, 16(sp)
-	sw	s9, 12(sp)
-	sw	s10, 8(sp)
-	sw	s11, 4(sp)
-	sw	ra, 52(sp)
-	li	s2, 0
-	li	t0, 0
-	sw	t0, 0(sp)
-	li	t0, 500000
-	blt	s2, t0, for.body.1
-	lw	a0, 0(sp)
+	addi	sp, sp, -16
+	call	_glb_init
+	sw	zero, 0(sp)
+	li	a0, 60
+	call	test_foo
 	call	printInt
-	li	a0, 0
-	lw	s0, 48(sp)
-	lw	s1, 44(sp)
-	lw	s2, 40(sp)
-	lw	s3, 36(sp)
-	lw	s4, 32(sp)
-	lw	s5, 28(sp)
-	lw	s6, 24(sp)
-	lw	s7, 20(sp)
-	lw	s8, 16(sp)
-	lw	s9, 12(sp)
-	lw	s10, 8(sp)
-	lw	s11, 4(sp)
-	lw	ra, 52(sp)
-	addi	sp, sp, 64
-	ret
-for.body.1:
-	addi	s3, s2, 1
-	addi	s11, s2, 2
-	addi	s10, s2, 3
-	addi	t3, s2, 4
-	addi	s8, s2, 5
-	addi	t4, s2, 6
-	addi	a2, s2, 7
-	addi	t2, s2, 8
-	addi	a6, s2, 9
-	addi	a7, s2, 10
-	addi	t1, s2, 11
-	addi	s6, s2, 12
-	addi	a4, s2, 13
-	addi	t0, s2, 14
-	addi	a1, s2, 15
-	addi	s1, s2, 16
-	addi	a0, s2, 17
-	addi	t6, s2, 18
-	addi	s0, s2, 19
-	addi	a3, s2, 20
-	addi	a5, s2, 21
-	addi	s4, s2, 22
-	addi	t5, s2, 23
-	addi	s7, s2, 24
-	li	ra, 0
-	li	s9, 0
-	li	s5, 50
-	blt	ra, s5, for.body.i
-	lw	t0, 0(sp)
-	add	t0, t0, s9
-	mv	s2, s3
-	sw	t0, 0(sp)
-	li	t0, 500000
-	blt	s2, t0, for.body.1
+	j	exit.13
+exit.13:
 	lw	a0, 0(sp)
-	call	printInt
-	li	a0, 0
-	lw	s0, 48(sp)
-	lw	s1, 44(sp)
-	lw	s2, 40(sp)
-	lw	s3, 36(sp)
-	lw	s4, 32(sp)
-	lw	s5, 28(sp)
-	lw	s6, 24(sp)
-	lw	s7, 20(sp)
-	lw	s8, 16(sp)
-	lw	s9, 12(sp)
-	lw	s10, 8(sp)
-	lw	s11, 4(sp)
-	lw	ra, 52(sp)
-	addi	sp, sp, 64
+	addi	sp, sp, 16
 	ret
-for.body.i:
-	add	s5, s9, s2
-	add	s5, s5, s3
-	add	s5, s5, s11
-	add	s5, s5, s10
-	add	s5, s5, t3
-	add	s5, s5, s8
-	add	s5, s5, t4
-	add	s5, s5, a2
-	add	s5, s5, t2
-	add	s5, s5, a6
-	add	s5, s5, a7
-	add	s5, s5, t1
-	add	s5, s5, s6
-	add	s5, s5, a4
-	add	s5, s5, t0
-	add	s5, s5, a1
-	add	s5, s5, s1
-	add	s5, s5, a0
-	add	s5, s5, t6
-	add	s5, s5, s0
-	add	s5, s5, a3
-	add	s5, s5, a5
-	add	s5, s5, s4
-	add	s5, s5, t5
-	add	s5, s5, s7
-	add	s5, s5, ra
-	li	s9, 1000000
-	bge	s5, s9, if.true.i
-	addi	ra, ra, 1
-	mv	s9, s5
-	li	s5, 50
-	blt	ra, s5, for.body.i
-	lw	t0, 0(sp)
-	add	t0, t0, s9
-	mv	s2, s3
-	sw	t0, 0(sp)
-	li	t0, 500000
-	blt	s2, t0, for.body.1
-	lw	a0, 0(sp)
-	call	printInt
-	li	a0, 0
-	lw	s0, 48(sp)
-	lw	s1, 44(sp)
-	lw	s2, 40(sp)
-	lw	s3, 36(sp)
-	lw	s4, 32(sp)
-	lw	s5, 28(sp)
-	lw	s6, 24(sp)
-	lw	s7, 20(sp)
-	lw	s8, 16(sp)
-	lw	s9, 12(sp)
-	lw	s10, 8(sp)
-	lw	s11, 4(sp)
-	lw	ra, 52(sp)
-	addi	sp, sp, 64
-	ret
-if.true.i:
-	li	s9, 1000000
-	sub	s5, s5, s9
-	addi	ra, ra, 1
-	mv	s9, s5
-	li	s5, 50
-	blt	ra, s5, for.body.i
-	lw	t0, 0(sp)
-	add	t0, t0, s9
-	mv	s2, s3
-	sw	t0, 0(sp)
-	li	t0, 500000
-	blt	s2, t0, for.body.1
-	lw	a0, 0(sp)
-	call	printInt
-	li	a0, 0
-	lw	s0, 48(sp)
-	lw	s1, 44(sp)
-	lw	s2, 40(sp)
-	lw	s3, 36(sp)
-	lw	s4, 32(sp)
-	lw	s5, 28(sp)
-	lw	s6, 24(sp)
-	lw	s7, 20(sp)
-	lw	s8, 16(sp)
-	lw	s9, 12(sp)
-	lw	s10, 8(sp)
-	lw	s11, 4(sp)
-	lw	ra, 52(sp)
-	addi	sp, sp, 64
-	ret
-	.size	main, .-main
-                                        # -- End function
-	.type	NUM_ITERATIONS,@object
-	.section	.bss
-	.globl	NUM_ITERATIONS
-NUM_ITERATIONS:
-	.word	0
-	.size	NUM_ITERATIONS, 4
+                            #function ends.

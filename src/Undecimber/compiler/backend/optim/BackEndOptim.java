@@ -14,6 +14,7 @@ public class BackEndOptim implements AsmPass {
     @Override
     public void runFunction(AsmFunction func) {
         new MoveCoalescence().runFunction(func);
+        new ZeroElimination().runFunction(func);
 
     }
     /**
