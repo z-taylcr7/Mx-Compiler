@@ -53,7 +53,6 @@ public class RegAllocator implements AsmPass {
             worklistMoves = new LinkedHashSet<>(),
             activeMoves = new LinkedHashSet<>();
 
-    /* graph */
     private final InterferenceGraph G = new InterferenceGraph();
 
 
@@ -83,28 +82,28 @@ public class RegAllocator implements AsmPass {
     @Override
     public void runFunction(AsmFunction function) {
             curFunc=function;
-    while(true){
-        init();
-        new LiveAnalyzer().runFunction(curFunc);
-        buildInterferenceGraph();
-        makeWorklist();
+            while(true){
+                init();
+                new LiveAnalyzer().runFunction(function);
+                buildInterferenceGraph();
+                makeWorklist();
 
-        do {
-            if (!simplifyWorklist.isEmpty()) simplify();
-            else if (!worklistMoves.isEmpty()) coalesce();
-            else if (!freezeWorklist.isEmpty()) freeze();
-            else if (!spillWorklist.isEmpty()) selectSpill();
-        } while (!simplifyWorklist.isEmpty() ||
-               !worklistMoves.isEmpty() ||
-                !freezeWorklist.isEmpty() ||
-                !spillWorklist.isEmpty());
+                do {
+                    if (!simplifyWorklist.isEmpty()) simplify();
+                    else if (!worklistMoves.isEmpty()) coalesce();
+                    else if (!freezeWorklist.isEmpty()) freeze();
+                    else if (!spillWorklist.isEmpty()) selectSpill();
+                } while (!simplifyWorklist.isEmpty() ||
+                       !worklistMoves.isEmpty() ||
+                        !freezeWorklist.isEmpty() ||
+                        !spillWorklist.isEmpty());
 
-        assignColors();
+                assignColors();
 
-    if (!spilledNodes.isEmpty()) {
-        reGenerate();
-    }else return;
-}
+            if (!spilledNodes.isEmpty()) {
+                reGenerate();
+            }else return;
+        }
 
     }
 
@@ -171,7 +170,6 @@ public class RegAllocator implements AsmPass {
     private void freeze() {
         var it = freezeWorklist.iterator();
         Register reg = it.next();
-        // Log.track("freeze", reg);
         it.remove();
         simplifyWorklist.add(reg);
         freezeMoves(reg);
@@ -216,8 +214,8 @@ public class RegAllocator implements AsmPass {
     }
 
     private boolean George(Register a, Register b) {
-        for (Register register : adjacent(a)) {
-            if(register.node.deg<K||adjacent(b).contains(register))continue;
+        for (Register register : adjacent(b)) {
+            if(register.node.deg<K||register.node.preColored||G.edgeList.contains(new InterferenceGraph.Edge(register,a)))continue;
             return false;
         }
         return true;
@@ -310,8 +308,8 @@ public class RegAllocator implements AsmPass {
                 AsmBaseInst inst=block.instructions.get(i);
                 if(inst instanceof AsmMvInst){
                     alive.removeAll(inst.uses());
-                    HashSet<Register> move=new HashSet<>();
-                    move.addAll(inst.defs());
+                    HashSet<Register> move=new HashSet<>(inst.defs());
+
                     move.addAll(inst.uses());
                     for (Register register : move) {
                         register.node.moveList.add((AsmMvInst) inst);
