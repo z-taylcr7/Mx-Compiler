@@ -41,6 +41,7 @@ public class AsmPrinter implements AsmPass {
             runBlock(block);
         }
         funcEndCounter++;
+        ps.println(TAB + ".size" + TAB + function + ", .-" + function);
 
         ps.println("                            #function ends.");
     }
