@@ -1,46 +1,46 @@
 	.text
+	.globl	_glb_init
+	.p2align	1
+	.type	_glb_init,@function
+_glb_init:
+entry.11:
+	j	exit.11
+exit.11:
+	ret
+                            #function ends.
 	.globl	main
 	.p2align	1
 	.type	main,@function
 main:
 entry.12:
 	addi	sp, sp, -16
-	sw	s0, 8(sp)
-	sw	s1, 4(sp)
+	sw	s0, 4(sp)
 	sw	ra, 0(sp)
-	j	entry.11.i
+	call	_glb_init
+	li	t0, 1
+	mv	s0, zero
+	li	t1, 0
+	j	for.cond
 exit.12:
-	mv	a0, s1
-	lw	s0, 8(sp)
-	lw	s1, 4(sp)
+	mv	a0, s0
+	lw	s0, 4(sp)
 	lw	ra, 0(sp)
 	addi	sp, sp, 16
 	ret
 for.cond:
-	li	t1, 10
-	blt	s0,t1,for.body
+	li	t2, 10
+	blt	t0,t2,for.body
 	j	for.exit
 for.incr:
-	li	t0, 1
-	add	t0, s0, t0
-	mv	s0, t0
-	mv	t0, s1
+	li	t2, 1
+	add	t0, t0, t2
+	mv	s0, t1
 	j	for.cond
 for.body:
-	add	s1, t0, s1
-	mv	a0, s1
-	call	printInt
+	add	t1, t1, t1
 	j	for.incr
 for.exit:
+	mv	a0, s0
+	call	printInt
 	j	exit.12
-entry.11.i:
-	j	exit.11.i
-exit.11.i:
-	j	split
-split:
-	li	s0, 1
-	mv	s1, zero
-	li	s1, 1
-	li	t0, 0
-	j	for.cond
                             #function ends.

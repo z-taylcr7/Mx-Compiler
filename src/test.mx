@@ -23,8 +23,8 @@ int main() {
         f2 = f0 + f1;
         f0 = f1;
         f1 = f2;
-        printInt(f2);
     }
 
+        printInt(f2);
     return f2;
 }
