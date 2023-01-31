@@ -50,12 +50,10 @@ public class MergeBlock implements AsmPass {
         while (changed) {
             changed = false;
             unionSet.clear();
-            // Log.mark("round");
 
             for (AsmBlock block : function.blocks) {
                 var dest = getOnlyDest(block);
                 if (dest != null) {
-                    // Log.report("remove", block);
                     var replace = unionSet.getAlias(dest);
                     unionSet.setAlias(block, replace);
                 }
