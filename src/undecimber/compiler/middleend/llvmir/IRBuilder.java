@@ -645,14 +645,17 @@ public class IRBuilder implements ASTVisitor {
     private Value memLoad(Value pointer, IRBlock parentBlock) {
         assert pointer.type instanceof IRPointerType;
         Value ret = new LoadNode(pointer, parentBlock);
-        if (((IRPointerType) pointer.type).pointedType instanceof IRMemBoolType)
+        if (((IRPointerType) pointer.type).pointedType instanceof IRMemBoolType){
+            // trunc if memBool->bool
             ret = new TruncNode(ret, IRTranslator.boolType, parentBlock);
+        }
         ret.resolveFrom = pointer;
         return ret;
     }
 
     private void memStore(Value destPtr, Value assignData) {
         if (assignData.type instanceof IRBoolType) {
+            //extend if bool
             assignData = new ZextNode(assignData, IRTranslator.memBoolType, cur.block);
         }
         assert destPtr.type instanceof IRPointerType;
@@ -661,6 +664,7 @@ public class IRBuilder implements ASTVisitor {
     }
 
     private void createInitFunc() {
+        //global_init
         FuncRegistry initRegistry = new FuncRegistry(LLVM.InitFuncName, MxBaseType.BasicType.VOID);
         initRegistry.isBasic = false;
         cur.function = new IRFunction(LLVM.InitFuncName,
@@ -725,7 +729,7 @@ public class IRBuilder implements ASTVisitor {
     }
 
     private Value arrayMalloc(ArrayList<Value> eachDimLengths, int curDim, IRBaseType elementType) {
-        // int[][][] a = new int [3][4][5];
+        // eg. int[][][] a = new int [3][4][5];
         // curDim: from 0 to 2
         // elementType: now dim element. e.g. curDim = 0, elementType = i32**
         // step 1. malloc this dim.

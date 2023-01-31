@@ -26,32 +26,7 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
     private final CurrentInfo cur = new CurrentInfo();
 
     public AsmBuilder() {
-    }
-
-    // private basic methods
-    private static boolean validImm(Value value) {
-        return (value instanceof IntConst && ((IntConst) value).data >= -1 * RV32I.ImmBound && ((IntConst) value).data < RV32I.ImmBound) || value instanceof BoolConst;
-    }
-
-    private static boolean validImm(int value) {
-        return value >= -1 * RV32I.ImmBound && value < RV32I.ImmBound;
-    }
-
-    private static boolean equalZero(Value value) {
-        return value instanceof NullConst || (value instanceof IntConst && ((IntConst) value).data == 0)
-                || (value instanceof BoolConst && !((BoolConst) value).flag);
-    }
-
-    private static Immediate twoPowerCheck(Value value) {
-        if (!(value instanceof IntConst)) return null;
-        int log2 = 0, valData = ((IntConst) value).data;
-        if (valData <= 0) return null;
-        while (valData > 1) {
-            if (valData % 2 != 0) return null;
-            valData /= 2;
-            log2++;
-        }
-        return new Immediate(log2);
+        //default
     }
 
     /**
@@ -404,12 +379,10 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
                 VirtualReg vr = new VirtualReg(function.getArgType(i).size());
                 func.arguments.add(vr);
                 if (i >= RV32I.MaxArgRegNum) {
+                    //args that more than 8 args will be spilled to stack.
                     vr.stackOffset = new RawStackOffset(func.calleeArgStackUse, RawStackOffset.RawType.calleeArg);
                     func.calleeArgStackUse += RV32I.I32Unit;
-//                ArgumentReg reg = new ArgumentReg(String.valueOf(i), function.getArgType(i).size());
-//                func.arguments.add(reg);
-//                reg.stackOffset = new StackOffset(func.callStackUse, 0, func);
-//                func.callStackUse += 4;
+
                 }
             }
         }
@@ -423,6 +396,8 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
                 asm.arguments.add(vr);
                 arg.asmOperand = vr;
                 if (i >= RV32I.MaxArgRegNum) {
+                    //args that more than 8 args will be spilled to stack.
+
                     vr.stackOffset = new RawStackOffset(asm.calleeArgStackUse, RawStackOffset.RawType.calleeArg);
                     asm.calleeArgStackUse += RV32I.I32Unit;
                 }
@@ -436,11 +411,11 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
             module.functions.add((AsmFunction) function.asmOperand);
             for (IRBlock irBlock : function.blockList) {
                 AsmBlock block = new AsmBlock(irBlock.name);
-
-                block.loopDepth = irBlock.loopDepth;
                 irBlock.asmOperand = block;
+                block.loopDepth = irBlock.loopDepth;
                 asm.blocks.add(block);
             }
+            //inherit prev and next info from IR
             for (IRBlock irBlock : function.blockList) {
                 for (IRBlock prev : irBlock.prevs) {
                     ((AsmBlock) irBlock.asmOperand).prevs.add((AsmBlock) prev.asmOperand);
@@ -484,13 +459,12 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
         // ra
         VirtualReg ra = new VirtualReg();
         new AsmMvInst(ra, PhysicalReg.reg("ra"), cur.function.entryBlock);
-//        VirtualReg fp=new VirtualReg();
-//        new AsmMvInst(fp, PhysicalReg.reg("s0"), cur.function.entryBlock);
 
 
+        // load args
         for (int i = 0; i < cur.function.arguments.size(); i++) {
             if (i == RV32I.MaxArgRegNum) break;
-            new AsmMvInst(cur.function.arguments.get(i), PhysicalReg.a(i), cur.block);
+            new AsmMvInst(cur.function.arguments.get(i), PhysicalReg.a(i), cur.function.entryBlock);
         }
 
         // load arguments in mem to reg
@@ -498,7 +472,7 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
             new AsmLoadInst(function.getOperand(i).type.size(), cur.function.arguments.get(i), PhysicalReg.reg("sp"),
                     cur.function.arguments.get(i).stackOffset, cur.function.entryBlock);
         }
-
+        //func body
         for (IRBlock irBlock : function.blockList) {
             runBlock(irBlock);
         }
@@ -555,6 +529,33 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
             if (!(user instanceof LoadNode || user instanceof StoreNode)) return false;
         return true;
     }
+
+    // private basic methods
+    private static boolean validImm(Value value) {
+        return (value instanceof IntConst && ((IntConst) value).data >= -1 * RV32I.ImmBound && ((IntConst) value).data < RV32I.ImmBound) || value instanceof BoolConst;
+    }
+
+    private static boolean validImm(int value) {
+        return value >= -1 * RV32I.ImmBound && value < RV32I.ImmBound;
+    }
+
+    private static boolean equalZero(Value value) {
+        return value instanceof NullConst || (value instanceof IntConst && ((IntConst) value).data == 0)
+                || (value instanceof BoolConst && !((BoolConst) value).flag);
+    }
+
+    private static Immediate twoPowerCheck(Value value) {
+        if (!(value instanceof IntConst)) return null;
+        int log2 = 0, valData = ((IntConst) value).data;
+        if (valData <= 0) return null;
+        while (valData > 1) {
+            if (valData % 2 != 0) return null;
+            valData /= 2;
+            log2++;
+        }
+        return new Immediate(log2);
+    }
+
 
     private void allocate(AsmBaseInst inst) {
         if (!(inst.imm instanceof RawMemOffset)) return;
