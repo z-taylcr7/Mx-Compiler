@@ -744,7 +744,7 @@ public class IRBuilder implements ASTVisitor {
                 new GetElementPtrNode(lengthDestPtr, IRTranslator.i32PointerType, cur.block, new IntConst(1)),
                 new IRPointerType(elementType), cur.block);
         if (curDim < eachDimLengths.size() - 1) {
-            // int* curDimPtr = 0; while (curDimPtr != tailDimPtr) {curDimPtr++;}
+            // int* curDimPtr = 0; while (curDimPtr != tailDimPtr) {curDimPtr++;memstore();}
             IRBlock condBlock = new IRBlock(LLVM.WhCondBlockLabel, cur.function),
                     bodyBlock = new IRBlock(LLVM.WhBodyBlockLabel, cur.function),
                     exitBlock = new IRBlock(LLVM.WhExitBlockLabel, cur.function);

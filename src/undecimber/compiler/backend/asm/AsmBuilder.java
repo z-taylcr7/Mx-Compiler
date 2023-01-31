@@ -70,8 +70,8 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
     @Override
     public void visit(BinNode Node) {
         Register rs = cur.toReg(Node);
-
-        if (Node.op.equals(RV32I.MulInst)) {
+        String op=AsmTranslator.translateArithOp(Node.op);
+        if (op.equals(RV32I.MulInst)) {
             Immediate lhsLog2 = twoPowerCheck(Node.lhs()), rhsLog2 = twoPowerCheck(Node.rhs());
             if (lhsLog2 != null) {
                 new AsmALUInst(RV32I.ShiftLeftInst, rs, cur.toReg(Node.rhs()), lhsLog2, cur.block);
@@ -81,7 +81,13 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
                 return;
             }
         }
-        new AsmALUInst(AsmTranslator.translateArithOp(Node.op), rs, cur.toReg(Node.lhs()), cur.toReg(Node.rhs()), cur.block);
+        if (AsmTranslator.has_I_Type(op)) {
+            if (validImm(Node.rhs())) {
+                new AsmALUInst(op, rs, cur.toReg(Node.lhs()), cur.toImm(Node.rhs()), cur.block);
+                return;
+            }
+        }
+        new AsmALUInst(op, rs, cur.toReg(Node.lhs()), cur.toReg(Node.rhs()), cur.block);
     }
 
     /**

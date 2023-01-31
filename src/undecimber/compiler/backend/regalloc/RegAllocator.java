@@ -53,7 +53,7 @@ public class RegAllocator implements AsmPass {
             worklistMoves = new LinkedHashSet<>(),
             activeMoves = new LinkedHashSet<>();
 
-    private final InterferenceGraph G = new InterferenceGraph();
+    private final RIG G = new RIG();
 
 
 
@@ -179,9 +179,9 @@ public class RegAllocator implements AsmPass {
         var it = worklistMoves.iterator();
         AsmMvInst move = it.next();
         Register alias_dst=unionSet.getAlias(move.rd),alias_src=unionSet.getAlias(move.rs1);
-        InterferenceGraph.Edge edge;
-        if(alias_src.node.preColored)edge= new InterferenceGraph.Edge(alias_src,alias_dst);
-            else edge=new InterferenceGraph.Edge(alias_dst,alias_src);
+        RIG.Edge edge;
+        if(alias_src.node.preColored)edge= new RIG.Edge(alias_src,alias_dst);
+            else edge=new RIG.Edge(alias_dst,alias_src);
         it.remove();
         if(edge.isLoop()){
             coalescedMoves.remove(move);
@@ -215,7 +215,7 @@ public class RegAllocator implements AsmPass {
 
     private boolean George(Register a, Register b) {
         for (Register register : adjacent(b)) {
-            if(register.node.deg<K||register.node.preColored||G.edgeList.contains(new InterferenceGraph.Edge(register,a)))continue;
+            if(register.node.deg<K||register.node.preColored||G.edgeList.contains(new RIG.Edge(register,a)))continue;
             return false;
         }
         return true;
@@ -322,7 +322,7 @@ public class RegAllocator implements AsmPass {
                 alive.add(PhysicalReg.reg("zero"));
                 for (Register def : inst.defs()) {
                     for (Register register : alive) {
-                        G.addEdge(new InterferenceGraph.Edge(def,register));
+                        G.addEdge(new RIG.Edge(def,register));
                     }
                 }
                 alive.removeAll(inst.defs());
@@ -342,7 +342,7 @@ public class RegAllocator implements AsmPass {
         enableMoves(Collections.singleton(v));
 
         for (Register t : adjacent(v)) {
-            G.addEdge(new InterferenceGraph.Edge(t, u));
+            G.addEdge(new RIG.Edge(t, u));
             removeAdjacent(t);
         }
 

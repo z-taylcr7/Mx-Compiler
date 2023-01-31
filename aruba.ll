@@ -20,36 +20,20 @@ declare i8* @_str_substring(i8*, i32, i32)
 declare i32 @_str_parseInt(i8*)
 declare i32 @_str_ord(i8*, i32)
 
-define void @_glb_init()
-{
-
-entry.11:                       ;prevs =  | nexts = %exit.11, 
- br label %exit.11
-
-exit.11:                       ;prevs = %entry.11, 
- ret void
-
-}
-
 define i32 @main()
 {
 
-entry.12:                       ;prevs =  | nexts = %for.cond, 
- call void @_glb_init()
- move %phi from 1
- move %phi.1 from null
- move %phi.2 from 1
- move %phi.3 from 0
- br label %for.cond
+entry.12:                       ;prevs =  | nexts = %entry.11.i, 
+ br label %entry.11.i
 
 exit.12:                       ;prevs = %for.exit, 
  ret i32 %phi.1
 
-for.cond:                       ;prevs = %entry.12, %for.incr,  | nexts = %for.body, %for.exit, 
- %phi = phi i32 [1, %entry.12], [%add, %for.incr]
- %phi.1 = phi i32 [null, %entry.12], [%add.1, %for.incr]
- %phi.2 = phi i32 [1, %entry.12], [%add.1, %for.incr]
- %phi.3 = phi i32 [0, %entry.12], [%phi.2, %for.incr]
+for.cond:                       ;prevs = %for.incr, %split,  | nexts = %for.body, %for.exit, 
+ %phi = phi i32 [1, %split], [%add, %for.incr]
+ %phi.1 = phi i32 [null, %split], [%add.1, %for.incr]
+ %phi.2 = phi i32 [1, %split], [%add.1, %for.incr]
+ %phi.3 = phi i32 [0, %split], [%phi.2, %for.incr]
  %slt = icmp slt i32 %phi , 10
  br i1 %slt , label %for.body , label %for.exit
 
@@ -68,6 +52,19 @@ for.body:                       ;prevs = %for.cond,  | nexts = %for.incr,
 for.exit:                       ;prevs = %for.cond,  | nexts = %exit.12, 
  call void @printInt(i32 %phi.1)
  br label %exit.12
+
+entry.11.i:                       ;prevs = %entry.12,  | nexts = %exit.11.i, 
+ br label %exit.11.i
+
+exit.11.i:                       ;prevs = %entry.11.i,  | nexts = %split, 
+ br label %split
+
+split:                       ;prevs = %exit.11.i,  | nexts = %for.cond, 
+ move %phi from 1
+ move %phi.1 from null
+ move %phi.2 from 1
+ move %phi.3 from 0
+ br label %for.cond
 
 }
 

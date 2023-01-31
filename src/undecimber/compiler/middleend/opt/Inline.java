@@ -13,8 +13,8 @@ import java.util.Map;
 
 public class Inline implements ModulePass {
     public IRModule module;
-    private static int calleeInstMax=20,callerInstMax=40,
-    blockMax=30;
+    private static int calleeInstMax=200,callerInstMax=150,
+    blockMax=100;
 
     private final ArrayList<CallNode> inlineable = new ArrayList<>();
     private final Map<IRFunction, Integer> nodeNum = new HashMap<>();
