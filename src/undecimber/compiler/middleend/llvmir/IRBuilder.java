@@ -272,9 +272,10 @@ public class IRBuilder implements ASTVisitor {
         station.push(node.scope);
         if (node.initExprNode != null) {
             node.initExprNode.accept(this);
-            for (VarDefSingleNode varDefSingleNode : node.initVarDefSingleNodes) {
-                varDefSingleNode.accept(this);
-            }
+
+        }
+        for (VarDefSingleNode varDefSingleNode : node.initVarDefSingleNodes) {
+            varDefSingleNode.accept(this);
         }
         new BrNode(condBlock, cur.block);
         cur.block = condBlock;

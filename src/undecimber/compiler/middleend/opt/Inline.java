@@ -116,6 +116,7 @@ public class Inline implements ModulePass {
                 tmp.setParentBlock(inlinedBlock);
                 replaceValueMap.put(instruction,tmp);
             }
+
         }
 
         for (int i = 0; i < callee.getArgNum(); i++)

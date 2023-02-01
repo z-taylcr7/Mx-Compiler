@@ -19,8 +19,9 @@ ExitCode: 0
 InstLimit: -1
 Origin Package: Codeforces 71A #53307259
 */
-int i,t;
 
+
+int i,t;
 int main(){
 	t = getInt();
     for(i=0;i<t;++i){
