@@ -314,6 +314,7 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
         Value index = Node.isGetMember() ? Node.getIndex(1) : Node.getIndex(0);
         IRStructType classType = Node.isGetMember() ? (IRStructType) ((IRPointerType) Node.headPointer().type).pointedType : null;
         int elemSize = ((IRPointerType) Node.headPointer().type).pointedType.size();
+        //class
         if (index instanceof IntConst && !(Node.headPointer() instanceof GlobalValue) && GEPSpecFlag(Node)) {
             int offset;
             if (classType != null) {
@@ -324,7 +325,7 @@ public class AsmBuilder implements ModulePass, FunctionPass, BlockPass, IRVisito
             Node.asmOperand = new RawMemOffset(cur.toReg(Node.headPointer()), offset);
             return;
         }
-
+        //array
         Register instReg = cur.toReg(Node);
         VirtualReg gep = new VirtualReg();
         if (classType == null) {

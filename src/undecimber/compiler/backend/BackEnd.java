@@ -38,7 +38,7 @@ public class BackEnd {
 
         PrintStream ps= new PrintStream("output.s");
 
-        new AsmPrinter(ps,"ssss.s"  ).runModule(this.module);
+        new AsmPrinter(ps,"output.s"  ).runModule(this.module);
         BuiltInPrinter biu=new BuiltInPrinter();
         biu.print();
     }

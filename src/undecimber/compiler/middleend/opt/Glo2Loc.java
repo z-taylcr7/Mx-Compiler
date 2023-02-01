@@ -106,8 +106,6 @@ public class Glo2Loc implements FunctionPass {
                        initAlloc = new AllocaNode(LLVM.LocalPrefix + global.name, ((IRPointerType) global.type).pointedType, null),
                        initStore = new StoreNode(initAlloc, initLoad, null);
 
-            // Notice that "tAddFirst" method is like the stack
-            // Therefore the correct order of these three insts is:
             // 1. alloc space for local
             // 2. load value from global
             // 3. store value to local

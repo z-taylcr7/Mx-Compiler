@@ -35,12 +35,12 @@ public class MergeBlock implements AsmPass {
 
     @Override
     public void runBlock(AsmBlock block) {
-
+    //nothing
     }
 
     @Override
     public void runModule(AsmModule module) {
-
+        //nothing
     }
 
     @Override

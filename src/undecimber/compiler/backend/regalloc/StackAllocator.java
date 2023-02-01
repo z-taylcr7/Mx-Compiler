@@ -18,7 +18,9 @@ public class StackAllocator {
         int mod;
         //here to calculate the stack offset in total
         function.totalStackUse+=function.callerArgStackUse+function.allocaStackUse+ function.spillStackUse;
-        // |caller|alloca|spill
+
+        // | caller | alloca | spill | callee
+
         //stack alignment
         if( (mod=function.totalStackUse% RV32I.SpLowUnit)>0)function.totalStackUse=(function.totalStackUse / RV32I.SpLowUnit + 1) * RV32I.SpLowUnit;
         for (AsmBlock block : function.blocks) {

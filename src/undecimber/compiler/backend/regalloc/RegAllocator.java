@@ -87,7 +87,6 @@ public class RegAllocator implements AsmPass {
                 new LiveAnalyzer().runFunction(function);
                 buildInterferenceGraph();
                 makeWorklist();
-
                 do {
                     if (!simplifyWorklist.isEmpty()) simplify();
                     else if (!worklistMoves.isEmpty()) coalesce();
@@ -142,7 +141,8 @@ public class RegAllocator implements AsmPass {
                 minCost=register.node.priority/register.node.deg;
             };
         }
-        if(minReg==null) for (Register register : spillWorklist) {
+
+        if(minReg==null) for (Register register : introducedTemp) {
             if(minCost>register.node.priority/register.node.deg){
                 minReg=register;
                 minCost=register.node.priority/register.node.deg;

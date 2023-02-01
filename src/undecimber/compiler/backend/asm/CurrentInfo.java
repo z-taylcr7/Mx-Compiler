@@ -20,18 +20,19 @@ public class CurrentInfo {
         if (value.asmOperand != null) {
             return (Register) value.asmOperand;
         }
+        //typo(it's initValue
         Integer intValue = null;
         if (value instanceof IntConst) intValue = ((IntConst) value).data;
         else if (value instanceof BoolConst) intValue = ((BoolConst) value).flag ? 1 : 0;
         else if (value instanceof NullConst) intValue = 0;
-
+        //zero
         if (intValue != null && intValue == 0) {
             value.asmOperand = PhysicalReg.reg("zero");
             return PhysicalReg.reg("zero");
         }
 
         Register ret;
-
+        //find in li map, update li map
         if (LiMap.containsKey(intValue)) {
             ret = LiMap.get(intValue);
         }

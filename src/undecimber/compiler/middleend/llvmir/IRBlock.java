@@ -1,6 +1,7 @@
 package undecimber.compiler.middleend.llvmir;
 
 
+import undecimber.compiler.middleend.analytics.DTBuilder;
 import undecimber.compiler.middleend.analytics.DomTreeBuilder;
 import undecimber.compiler.middleend.analytics.loop.Loop;
 import undecimber.compiler.middleend.llvmir.irnode.BrNode;
@@ -25,7 +26,8 @@ public class IRBlock extends Value {
 
     // info in Loop
     public int loopDepth = 0;
-    public DomTreeBuilder.Node dtNode=new DomTreeBuilder.Node(this);
+//    public DomTreeBuilder.Node dtNode=new DomTreeBuilder.Node(this);
+    public DTBuilder.Node dtNode=new DTBuilder.Node(this);
     public Loop belongLoop;
 
     //public Loop belongLoop = null;

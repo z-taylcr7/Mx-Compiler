@@ -5,6 +5,7 @@ import undecimber.compiler.middleend.analytics.loop.LoopAnalyzer;
 import undecimber.compiler.middleend.llvmir.IRFunction;
 import undecimber.compiler.middleend.llvmir.IRModule;
 import undecimber.compiler.middleend.opt.ssa.Mem2Reg;
+import undecimber.compiler.middleend.opt.ssa.MemToReg;
 import undecimber.compiler.middleend.opt.ssa.SSADestructor;
 import utility.pass.ModulePass;
 
@@ -21,7 +22,7 @@ public class MidOptim implements ModulePass {
 
         for (IRFunction function : module.functions) {
             new Glo2Loc().runFunction(function);
-            new Mem2Reg().runFunction(function);
+            new MemToReg().runFunction(function);
         }
         new Inline().runModule(module);
 

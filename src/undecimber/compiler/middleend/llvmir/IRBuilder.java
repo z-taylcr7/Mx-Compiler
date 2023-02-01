@@ -466,11 +466,13 @@ public class IRBuilder implements ASTVisitor {
         } else if (node.ctx.This() != null) node.value = cur.getThis();
         else if (node.ctx.StringLiteral() != null) {
             String rawString = node.ctx.StringLiteral().toString();
+
             String constString = rawString.substring(1, rawString.length() - 1)
                     .replace("\\\"", "\"")
                     .replace("\\n", "\n")
                     .replace("\\t", "\t")
                     .replace("\\\\", "\\");
+
             node.value = new GetElementPtrNode(module.getStringConst(constString),
                     IRTranslator.stringType, cur.block, new IntConst(0), new IntConst(0));
         } else if (node.ctx.ID() != null) {
