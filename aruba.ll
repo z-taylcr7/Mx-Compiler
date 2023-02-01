@@ -20,6 +20,11 @@ declare i8* @_str_substring(i8*, i32, i32)
 declare i32 @_str_parseInt(i8*)
 declare i32 @_str_ord(i8*, i32)
 
+@i = global i32 zeroinitializer, align 4
+@t = global i32 zeroinitializer, align 4
+
+@anon.strconst = private unnamed_addr constant [ 12 x i8 ] c"into cycle.\00", align 1
+
 define void @_glb_init()
 {
 
@@ -31,89 +36,43 @@ exit.11:                       ;prevs =
 
 }
 
-define i32 @qpow(i32 %a, i32 %p, i32 %mod)
+define i32 @main()
 {
 
 entry.12:                       ;prevs = 
- %y.addr = alloca  i32, align 4
- %t.addr = alloca  i32, align 4
- %mod.addr = alloca  i32, align 4
- %p.addr = alloca  i32, align 4
- %a.addr = alloca  i32, align 4
  %internal.ret.addr = alloca  i32, align 4
- store i32 %a,i32* %a.addr, align 4
- store i32 %p,i32* %p.addr, align 4
- store i32 %mod,i32* %mod.addr, align 4
- store i32 1,i32* %t.addr, align 4
- %a.load = load i32, i32* %a.addr, align 4
- store i32 %a.load,i32* %y.addr, align 4
- br label %wh.cond
+ call void @_glb_init()
+ store i32 0,i32* %internal.ret.addr, align 4
+ %t.load = load i32, i32* @t, align 4
+ %getInt.call = call i32 @getInt()
+ store i32 %getInt.call,i32* @t, align 4
+ %i.load = load i32, i32* @i, align 4
+ store i32 0,i32* @i, align 4
+ br label %for.cond
 
 exit.12:                       ;prevs = 
  %internal.ret.load = load i32, i32* %internal.ret.addr, align 4
  ret i32 %internal.ret.load
 
-wh.cond:                       ;prevs = 
- %p.load = load i32, i32* %p.addr, align 4
- %sgt = icmp sgt i32 %p.load , 0
- br i1 %sgt , label %wh.body , label %wh.exit
+for.cond:                       ;prevs = 
+ %i.load.1 = load i32, i32* @i, align 4
+ %t.load.1 = load i32, i32* @t, align 4
+ %slt = icmp slt i32 %i.load.1 , %t.load.1
+ br i1 %slt , label %for.body , label %for.exit
 
-wh.body:                       ;prevs = 
- %p.load.1 = load i32, i32* %p.addr, align 4
- %and = and i32 %p.load.1 , 1
- %eq = icmp eq i32 %and , 1
- br i1 %eq , label %if.true , label %if.false
+for.incr:                       ;prevs = 
+ %i.load.2 = load i32, i32* @i, align 4
+ %add = add i32 %i.load.2 , 1
+ store i32 %add,i32* @i, align 4
+ br label %for.cond
 
-wh.exit:                       ;prevs = 
- %t.load.2 = load i32, i32* %t.addr, align 4
- store i32 %t.load.2,i32* %internal.ret.addr, align 4
+for.body:                       ;prevs = 
+ %getelementptr = getelementptr inbounds [ 12 x i8 ], [ 12 x i8 ]* @anon.strconst, i32 0, i32 0
+ call void @println(i8* %getelementptr)
+ br label %for.incr
+
+for.exit:                       ;prevs = 
  br label %exit.12
-
-if.true:                       ;prevs = 
- %t.load = load i32, i32* %t.addr, align 4
- %t.load.1 = load i32, i32* %t.addr, align 4
- %y.load = load i32, i32* %y.addr, align 4
- %mul = mul i32 %t.load.1 , %y.load
- %mod.load = load i32, i32* %mod.addr, align 4
- %srem = srem i32 %mul , %mod.load
- store i32 %srem,i32* %t.addr, align 4
- br label %if.exit
-
-if.false:                       ;prevs = 
- br label %if.exit
-
-if.exit:                       ;prevs = 
- %y.load.1 = load i32, i32* %y.addr, align 4
- %y.load.2 = load i32, i32* %y.addr, align 4
- %y.load.3 = load i32, i32* %y.addr, align 4
- %mul.1 = mul i32 %y.load.2 , %y.load.3
- %mod.load.1 = load i32, i32* %mod.addr, align 4
- %srem.1 = srem i32 %mul.1 , %mod.load.1
- store i32 %srem.1,i32* %y.addr, align 4
- %p.load.2 = load i32, i32* %p.addr, align 4
- %p.load.3 = load i32, i32* %p.addr, align 4
- %sdiv = sdiv i32 %p.load.3 , 2
- store i32 %sdiv,i32* %p.addr, align 4
- br label %wh.cond
-
-}
-
-define i32 @main()
-{
-
-entry.13:                       ;prevs = 
- %internal.ret.addr.1 = alloca  i32, align 4
- call void @_glb_init()
- store i32 0,i32* %internal.ret.addr.1, align 4
- %qpow.call = call i32 @qpow(i32 2, i32 10, i32 10000)
- %toString.call = call i8* @toString(i32 %qpow.call)
- call void @println(i8* %toString.call)
- store i32 0,i32* %internal.ret.addr.1, align 4
- br label %exit.13
-
-exit.13:                       ;prevs = 
- %internal.ret.load.1 = load i32, i32* %internal.ret.addr.1, align 4
- ret i32 %internal.ret.load.1
 
 }
 
