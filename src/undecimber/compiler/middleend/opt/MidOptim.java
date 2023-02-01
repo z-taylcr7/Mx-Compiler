@@ -24,7 +24,9 @@ public class MidOptim implements ModulePass {
             new Glo2Loc().runFunction(function);
             new MemToReg().runFunction(function);
         }
+
         new Inline().runModule(module);
+        new GlobalPointerMarker().runModule(module);
 
         // re-analyze info for asm
         for (IRFunction function : module.functions) {
