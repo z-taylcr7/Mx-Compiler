@@ -20,10 +20,10 @@ declare i8* @_str_substring(i8*, i32, i32)
 declare i32 @_str_parseInt(i8*)
 declare i32 @_str_ord(i8*, i32)
 
-@t = global i32 zeroinitializer, align 4
-@l = global i32 zeroinitializer, align 4
 @i = global i32 zeroinitializer, align 4
-@s = global i8* zeroinitializer, align 8
+@t = global i32 zeroinitializer, align 4
+
+@anon.strconst = private unnamed_addr constant [ 12 x i8 ] c"into cycle.\00", align 1
 
 define void @_glb_init()
 {
@@ -67,43 +67,12 @@ for.incr:                       ;prevs =
  br label %for.cond
 
 for.body:                       ;prevs = 
- %s.load = load i8*, i8** @s, align 8
- %getString.call = call i8* @getString()
- store i8* %getString.call,i8** @s, align 8
- %l.load = load i32, i32* @l, align 4
- %s.load.1 = load i8*, i8** @s, align 8
- %_str_length.call = call i32 @_str_length(i8* %s.load.1)
- store i32 %_str_length.call,i32* @l, align 4
- %l.load.1 = load i32, i32* @l, align 4
- %sgt = icmp sgt i32 %l.load.1 , 10
- br i1 %sgt , label %if.true , label %if.false
+ %getelementptr = getelementptr inbounds [ 12 x i8 ], [ 12 x i8 ]* @anon.strconst, i32 0, i32 0
+ call void @println(i8* %getelementptr)
+ br label %for.incr
 
 for.exit:                       ;prevs = 
  br label %exit.12
-
-if.true:                       ;prevs = 
- %s.load.3 = load i8*, i8** @s, align 8
- %_str_substring.call = call i8* @_str_substring(i8* %s.load.3, i32 0, i32 1)
- %l.load.2 = load i32, i32* @l, align 4
- %sub = sub i32 %l.load.2 , 2
- %toString.call = call i8* @toString(i32 %sub)
- %_bot_str_cat.call = call i8* @_bot_str_cat(i8* %_str_substring.call, i8* %toString.call)
- %s.load.4 = load i8*, i8** @s, align 8
- %l.load.3 = load i32, i32* @l, align 4
- %sub.1 = sub i32 %l.load.3 , 1
- %l.load.4 = load i32, i32* @l, align 4
- %_str_substring.call.1 = call i8* @_str_substring(i8* %s.load.4, i32 %sub.1, i32 %l.load.4)
- %_bot_str_cat.call.1 = call i8* @_bot_str_cat(i8* %_bot_str_cat.call, i8* %_str_substring.call.1)
- call void @println(i8* %_bot_str_cat.call.1)
- br label %if.exit
-
-if.false:                       ;prevs = 
- %s.load.2 = load i8*, i8** @s, align 8
- call void @println(i8* %s.load.2)
- br label %if.exit
-
-if.exit:                       ;prevs = 
- br label %for.incr
 
 }
 
