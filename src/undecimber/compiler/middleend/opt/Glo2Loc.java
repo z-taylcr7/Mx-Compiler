@@ -16,23 +16,6 @@ import utility.pass.FunctionPass;
 
 import java.util.*;
 
-/**
- * Glo2Loc Pass:
- *
- * if a GlobalVariable is used many times in a function, localize it.
- * also, if a GlobalVariable will not be modified in the program, replace it with a constant
- * localize can be beneficial to optimization
- *
- * works well in the following case:
- *      int N;
- *      void func() {
- *          for (int i = 1; i < N; i++)
- *              ...
- *      }
- *
- * @requirement: CallGraphAnalyzer. Run before Mem2Reg because it introduces alloc
- */
-
 public class Glo2Loc implements FunctionPass {
 
     // if a global variable isn't used many times, not localize it because not worthy

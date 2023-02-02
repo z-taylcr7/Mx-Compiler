@@ -5,7 +5,6 @@ import undecimber.compiler.middleend.analytics.loop.LoopAnalyzer;
 import undecimber.compiler.middleend.llvmir.IRFunction;
 import undecimber.compiler.middleend.llvmir.IRModule;
 import undecimber.compiler.middleend.opt.ssa.Mem2Reg;
-import undecimber.compiler.middleend.opt.ssa.MemToReg;
 import undecimber.compiler.middleend.opt.ssa.SSADestructor;
 import utility.pass.ModulePass;
 
