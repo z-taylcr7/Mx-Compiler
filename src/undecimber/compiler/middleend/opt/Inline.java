@@ -13,8 +13,8 @@ import java.util.Map;
 
 public class Inline implements ModulePass {
     public IRModule module;
-    private static int calleeInstMax=100,callerInstMax=200,
-    blockMax=100;
+    private static int calleeInstMax=500,callerInstMax=2200,
+    blockMax=1100;
 
     private final ArrayList<CallNode> inlineable = new ArrayList<>();
     private final Map<IRFunction, Integer> nodeNum = new HashMap<>();
@@ -35,20 +35,21 @@ public class Inline implements ModulePass {
 
 
             for (CallNode pendingCall : inlineable) {
+                // don't accept recursive
                 if (pendingCall.callFunc() != pendingCall.parentBlock.parentFunction)
                     inline(pendingCall);
             }
 
-            for (CallNode pendingCall : inlineable) {
-                if (pendingCall.callFunc() == pendingCall.parentBlock.parentFunction)
-                    inline(pendingCall);
-            }
         }
 
         new CallGraphAnalyzer().runModule(module);
 
         // remove dead function
-        module.functions.removeIf(function -> !isUntouchable(function) && function.node.caller.size() == 0);
+        ArrayList<IRFunction> toRemove=new ArrayList();
+        for (IRFunction function : module.functions) {
+            if(!isUntouchable(function)&&function.node.caller.isEmpty())toRemove.add(function);
+        }
+        module.functions.removeAll(toRemove);
     }
     private boolean isUntouchable(IRFunction function) {
         return function.name.equals("main") || module.builtinFunctions.contains(function);
@@ -65,17 +66,17 @@ public class Inline implements ModulePass {
     private void collectAbleSet(){
         nodeNum.clear();
         inlineable.clear();
+        // Statistics of functions
         for (IRFunction function : module.functions) {
-//            nodeNum.putIfAbsent(function, 0);
-//            for (IRBlock block : function.blockList) {
-//                nodeNum.put(function, nodeNum.get(function) + block.instructions.size());
-//            }
+
             int sum=0;
             for (IRBlock block : function.blockList) {
                 sum+=block.instructions.size();
             }
             nodeNum.put(function,sum);
         }
+        //Statistics of calls
+        //dead functions will be deprecated
         for (IRFunction function : module.functions) {
             for (CallNode callNode : function.node.call) {
                 if(canInline(function,callNode.callFunc()))inlineable.add(callNode);
@@ -95,8 +96,8 @@ public class Inline implements ModulePass {
 
         IRBlock inlineEntry = call.parentBlock;
 
-        // self-copy the function body
-        // avoiding concurrent self recursion
+        // self-copy the callee function body
+        // avoiding concurrent self recursion.
 
         ArrayList<IRBlock> calleeBlocks = new ArrayList<>(callee.blockList);
 
@@ -116,16 +117,15 @@ public class Inline implements ModulePass {
                 tmp.setParentBlock(inlinedBlock);
                 replaceValueMap.put(instruction,tmp);
             }
-
         }
 
+
+        //Arguments replacement
         for (int i = 0; i < callee.getArgNum(); i++)
             replaceValueMap.put(callee.getArg(i), call.getArg(i));
 
         for (IRBlock oldBlock : replaceBlockMap.keySet()) {
             IRBlock newBlock = replaceBlockMap.get(oldBlock);
-
-
 
             for (IRBaseNode node : newBlock.instructions)
                 replaceOperand(node, replaceValueMap);
@@ -134,16 +134,16 @@ public class Inline implements ModulePass {
                 replaceOperand(phinode, replaceValueMap);
         }
 
-        //relink the block
+        //relink the blocks after the call to the end of inline block
 
         IRBlock inlineExit = new IRBlock(LLVM.SplitBlockLabel, caller);
 
-        boolean splitStart = false;
+        boolean splitStarted = false;
         var it = inlineEntry.instructions.iterator();
         while (it.hasNext()) {
             IRBaseNode node = it.next();
-            if (node == call)splitStart=true;
-            if (!splitStart) continue;
+            if (node == call)splitStarted=true;
+            if (!splitStarted) continue;
             if (node != call) node.setParentBlock(inlineExit);
             it.remove();
         }
@@ -152,17 +152,18 @@ public class Inline implements ModulePass {
         inlineEntry.addLast(new BrNode(replaceBlockMap.get(callee.entryBlock), null));
 
         inlineEntry.nexts.forEach(suc -> suc.redirectPreBlock(inlineEntry, inlineExit));
-
+        //replace all the uses of callnode with the ret value
         RetNode ret = (RetNode) replaceBlockMap.get(callee.exitBlock).terminator();
         if (!callee.isVoid()) {
             call.replaceAllUsesWith(ret.retValue());
         }
 
+        //replace of the terminator of the callfunc(it's a return node) with jmp to inline-exit
         replaceBlockMap.get(callee.exitBlock).terminator().removedFromAllUsers();
         replaceBlockMap.get(callee.exitBlock).replaceTerminator(new BrNode(inlineExit, null));
-
         if (caller.exitBlock == inlineEntry) caller.exitBlock = inlineExit;
 
+        //re-analyse because inline changed controlflow
         new CFGBuilder().runFunction(caller);
     }
 
