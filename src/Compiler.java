@@ -20,8 +20,8 @@ public class Compiler {
     public static void main(String[] args) throws Exception {
         try {
             Frontend frontend = new Frontend();
-            MiddleEnd middleEnd=new MiddleEnd(frontend);
-            BackEnd backEnd=new BackEnd(middleEnd);
+//            MiddleEnd middleEnd=new MiddleEnd(frontend);
+//            BackEnd backEnd=new BackEnd(middleEnd);
         }
         catch (Exception e) {
             errorHandle(  e);
