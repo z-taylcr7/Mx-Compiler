@@ -1,5 +1,6 @@
 package undecimber.compiler.frontend.ast;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import undecimber.compiler.frontend.ast.nodes.*;
 import undecimber.compiler.frontend.ast.nodes.exprNode.*;
 import undecimber.compiler.frontend.ast.nodes.stmtNode.*;
@@ -13,6 +14,7 @@ import utility.Position;
 import utility.errors.syntax.*;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -282,8 +284,22 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
     }
 
     @Override public ASTNode visitAssignExp(MxParser.AssignExpContext ctx) {
+        List<ParseTree> lhs=ctx.expression(0).children;
+        List<ParseTree> rhs=ctx.expression(1).children;
+
+
+        boolean isRubbish=true;
+        if(lhs.size()==rhs.size()){
+            for (int i = 0; i < lhs.size(); i++) {
+                if(lhs.get(i).getText().equals(rhs.get(i).getText()))continue;
+                else {
+                    isRubbish=false;break;
+                }
+            }
+        }else isRubbish=false;
+
         return new AssignExprNode(new Position(ctx),
-                (ExprNode) visit(ctx.expression(0)), (ExprNode) visit(ctx.expression(1)));
+                (ExprNode) visit(ctx.expression(0)), (ExprNode) visit(ctx.expression(1)),isRubbish);
     }
 
     @Override public ASTNode visitFunctionCallExp(MxParser.FunctionCallExpContext ctx) {

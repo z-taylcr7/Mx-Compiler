@@ -25,12 +25,14 @@ public class MidOptim implements ModulePass {
         }
 
         new Inline().runModule(module);
-        new GlobalPointerMarker().runModule(module);
 
         // re-analyze info for asm
         for (IRFunction function : module.functions) {
             new SSADestructor().runFunction(function);
             new LoopAnalyzer().runFunction(function);
         }
+
+        new Inline().runModule(module);
+
     }
 }

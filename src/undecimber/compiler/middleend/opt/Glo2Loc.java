@@ -19,7 +19,7 @@ import java.util.*;
 public class Glo2Loc implements FunctionPass {
 
     // if a global variable isn't used many times, not localize it because not worthy
-    public static final int UsageThreshold = 1;
+    public static final int UsageThreshold = 2;
 
     private Map<GlobalVariable, Integer> refTimes = new HashMap<>();
     private Set<GlobalVariable> ableSet = new HashSet<>(), constAbleSet = new HashSet<>();
@@ -122,7 +122,6 @@ public class Glo2Loc implements FunctionPass {
         for (GlobalVariable global : constAbleSet) {
             // replace all load with initValue, remove all loads
             // remove the only store
-
             for (User use : global.users) {
                 assert use instanceof IRBaseNode;
                 if (use instanceof LoadNode) use.replaceAllUsesWith(global.val);

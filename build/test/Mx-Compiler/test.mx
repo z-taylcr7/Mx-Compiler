@@ -47,3 +47,4 @@ int compute(int num){
 int main(){
     printInt(compute(20));
 }
+

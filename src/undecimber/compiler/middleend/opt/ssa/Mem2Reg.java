@@ -24,7 +24,7 @@ import java.util.*;
  *
  * @reference:
  *      DomTree algorithm is based on the book "Engineering a Compiler"
- *      variable renaming part is based on SSA Book
+ *      variable renaming part is based on SSA Book and LLVM origin code
  */
 
 public class Mem2Reg implements FunctionPass {

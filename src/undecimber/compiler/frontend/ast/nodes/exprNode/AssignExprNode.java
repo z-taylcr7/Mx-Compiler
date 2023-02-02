@@ -6,11 +6,13 @@ import utility.Position;
 
 public class AssignExprNode extends ExprNode{
     public ExprNode lhs, rhs;
+    public boolean rubbish=false;
 
-    public AssignExprNode(Position pos, ExprNode lhs, ExprNode rhs ) {
+    public AssignExprNode(Position pos, ExprNode lhs, ExprNode rhs,boolean isRubbish ) {
         super(pos);
         this.lhs = lhs;
         this.rhs = rhs;
+        this.rubbish=isRubbish;
     }
 
     @Override
