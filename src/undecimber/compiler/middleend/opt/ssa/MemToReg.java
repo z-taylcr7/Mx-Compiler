@@ -2,8 +2,6 @@ package undecimber.compiler.middleend.opt.ssa;
 
 
 import undecimber.compiler.middleend.analytics.CFGBuilder;
-import undecimber.compiler.middleend.analytics.CFG_Builder;
-import undecimber.compiler.middleend.analytics.DTBuilder;
 import undecimber.compiler.middleend.analytics.DomTreeBuilder;
 import undecimber.compiler.middleend.llvmir.IRBlock;
 import undecimber.compiler.middleend.llvmir.IRFunction;
@@ -57,8 +55,8 @@ public class MemToReg implements FunctionPass {
 
     @Override
     public void runFunction(IRFunction function) {
-        new CFG_Builder().runFunction(function);
-        new DTBuilder(false).runFunction(function);
+        new CFGBuilder().runFunction(function);
+        new DomTreeBuilder(false).runFunction(function);
         phiInsertion(function);
         variableRenaming(function.entryBlock);
     }

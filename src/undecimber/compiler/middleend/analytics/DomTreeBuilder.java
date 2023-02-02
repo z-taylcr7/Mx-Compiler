@@ -40,7 +40,7 @@ public class DomTreeBuilder implements FunctionPass {
     public static class Node {
         public int order;
         public IRBlock fromBlock;
-        public DTBuilder.Node idom;
+        public Node idom;
         public List<Node> sons;
         public HashSet<Node> doms;
         public List<IRBlock> domFrontier;
@@ -76,7 +76,7 @@ public class DomTreeBuilder implements FunctionPass {
         blocksInRPO.add(block);
     }
 
-    private DTBuilder.Node intersect(DTBuilder.Node u, DTBuilder.Node v) {
+    private Node intersect(Node u, Node v) {
         /*
          * LCA in DomTree
          */
@@ -88,14 +88,14 @@ public class DomTreeBuilder implements FunctionPass {
     }
 
     private void calculateIDom(IRFunction function) {
-        DTBuilder.Node startNode = startBlock.dtNode;
+        DomTreeBuilder.Node startNode = startBlock.dtNode;
         startNode.idom = startNode;
         boolean changed = true;
         while (changed) {
             changed = false;
             for (IRBlock block : blocksInRPO) {
                 if (block.dtNode == startNode) continue;
-                DTBuilder.Node newIdom = null;
+                Node newIdom = null;
                 var truePrevs = postDomTree ? block.nexts : block.prevs;
                 for (IRBlock pred : truePrevs) {
                     //to calculate the intersect of all the predecessors
@@ -122,7 +122,7 @@ public class DomTreeBuilder implements FunctionPass {
             var truePrevs = postDomTree ? block.nexts : block.prevs;
             if (truePrevs.size() < 2) continue;
             for (IRBlock pred : truePrevs) {
-                DTBuilder.Node runner = pred.dtNode;
+               Node runner = pred.dtNode;
                 while (runner != block.dtNode.idom && runner != null) {
                     runner.domFrontier.add(block);
                     runner = runner.idom;
@@ -136,7 +136,7 @@ public class DomTreeBuilder implements FunctionPass {
             block.dtNode.doms.addAll(block.dtNode.idom.doms);
         }
         block.dtNode.doms.add(block.dtNode.idom);
-        for (DTBuilder.Node son : block.dtNode.sons) {
+        for (Node son : block.dtNode.sons) {
             calculateDoms(son.fromBlock);
         }
     }

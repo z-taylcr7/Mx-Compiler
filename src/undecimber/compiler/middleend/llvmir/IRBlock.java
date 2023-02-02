@@ -1,19 +1,15 @@
 package undecimber.compiler.middleend.llvmir;
 
 
-import undecimber.compiler.middleend.analytics.DTBuilder;
 import undecimber.compiler.middleend.analytics.DomTreeBuilder;
 import undecimber.compiler.middleend.analytics.loop.Loop;
 import undecimber.compiler.middleend.llvmir.irnode.BrNode;
 import undecimber.compiler.middleend.llvmir.irnode.IRBaseNode;
 import undecimber.compiler.middleend.llvmir.irnode.PhiNode;
 import undecimber.compiler.middleend.llvmir.irtype.IRLabelType;
-import utility.errors.internalError;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.ListIterator;
 
 public class IRBlock extends Value {
     public LinkedList<IRBaseNode> instructions=new LinkedList<>();
@@ -27,7 +23,7 @@ public class IRBlock extends Value {
     // info in Loop
     public int loopDepth = 0;
 //    public DomTreeBuilder.Node dtNode=new DomTreeBuilder.Node(this);
-    public DTBuilder.Node dtNode=new DTBuilder.Node(this);
+    public DomTreeBuilder.Node dtNode=new DomTreeBuilder.Node(this);
     public Loop belongLoop;
 
     //public Loop belongLoop = null;
