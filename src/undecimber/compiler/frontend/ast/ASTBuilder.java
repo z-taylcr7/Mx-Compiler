@@ -267,8 +267,8 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
             ret.op = ctx.equalOps().getText();
             ret.opType = Mx.equalOpType;
         } else if (ctx.compareOps() != null) {
-        ret.op = ctx.compareOps().getText();
-        ret.opType = Mx.compareOpType;
+            ret.op = ctx.compareOps().getText();
+            ret.opType = Mx.compareOpType;
         } else if (ctx.infOps() != null) {
             ret.op = ctx.infOps().getText();
             ret.opType = Mx.arithOpType;

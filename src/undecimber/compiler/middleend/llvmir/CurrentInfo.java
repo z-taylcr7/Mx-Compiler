@@ -29,7 +29,7 @@ public class CurrentInfo {
             throw new InternalError(x);
         }
     }
-    public void TerminateAll(){
+    public void linkToFuncTerminator(){
         for (IRBlock block : this.function.blockList)
             if (!block.isTerminatedNode)
                 new BrNode(this.function.exitBlock, block);

@@ -40,18 +40,29 @@ public class IRBuilder implements ASTVisitor {
     public void visit(RootNode node) {
         station.push(node.scope);
         translator.setGlobalScope(node.scope);
+
         builtInFuncDeclaration(node);
         createInitFunc();
+        //first class def
         classDeclaration(node);
+        //then function def
         for (ASTNode sonNode : node.sonNodes) {
-            if (sonNode instanceof FuncDefNode) funcDeclaration((FuncDefNode) sonNode);
+            if (sonNode instanceof FuncDefNode) {
+                funcDeclaration((FuncDefNode) sonNode);
+            }
         }
+        //var def&implement
         for (ASTNode sonNode : node.sonNodes) {
-            if (sonNode instanceof VarDefStmtNode) sonNode.accept(this);
+            if (sonNode instanceof VarDefStmtNode) {
+                sonNode.accept(this);
+            }
         }
-        cur.TerminateAll();
+        cur.linkToFuncTerminator();
+        //func&class implement
         for (ASTNode sonNode : node.sonNodes) {
-            if (!(sonNode instanceof VarDefStmtNode)) sonNode.accept(this);
+            if (!(sonNode instanceof VarDefStmtNode)) {
+                sonNode.accept(this);
+            }
         }
         station.pop();
     }
@@ -239,7 +250,7 @@ public class IRBuilder implements ASTVisitor {
 
         }
         node.packNode.accept(this);
-        cur.TerminateAll();
+        cur.linkToFuncTerminator();
         station.pop();
     }
 
