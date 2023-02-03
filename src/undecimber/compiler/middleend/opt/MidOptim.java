@@ -20,7 +20,7 @@ public class MidOptim implements ModulePass {
 
 
         for (IRFunction function : module.functions) {
-            new Glo2Loc().runFunction(function);
+//            new Glo2Loc().runFunction(function);
             new Mem2Reg().runFunction(function);
         }
 
