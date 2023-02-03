@@ -19,7 +19,7 @@ import java.util.*;
 public class Glo2Loc implements FunctionPass {
 
     // if a global variable isn't used many times, not localize it because not worthy
-    public static final int UsageThreshold = 2;
+    public static final int UsageThreshold = 1;
 
     private Map<GlobalVariable, Integer> refTimes = new HashMap<>();
     private Set<GlobalVariable> ableSet = new HashSet<>(), constAbleSet = new HashSet<>();
