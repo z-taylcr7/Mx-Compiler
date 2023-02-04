@@ -1,224 +1,173 @@
 	.text
-	.globl	loop
-	.p2align	1
-	.type	loop,@function
-loop:
-entry.12:
-	addi	sp, sp, -16
-	sw	s0, 0(sp)
-	sw	ra, 4(sp)
-	li	s0, 10000
-	slli	t0, s0, 2
-	addi	a0, t0, 4
-	call	_bot_malloc
-	sw	s0, 0(a0)
-	li	t0, 4
-	add	t5, a0, t0
-	mv	t0, zero
-	mv	t2, zero
-	mv	t3, zero
-	li	t4, 0
-	j	for.cond
-for.cond:
-	li	t1, 10
-	blt	t4,t1,for.body
-	j	for.exit
-for.body:
-	li	t3, 0
-	j	for.cond.1
-for.exit:
-	li	a0, 0
-	li	t4, 0
-	j	for.cond.4
-for.cond.1:
-	li	t1, 10
-	blt	t3,t1,for.body.1
-	j	for.exit.1
-for.body.1:
-	li	t2, 0
-	j	for.cond.2
-for.exit.1:
-	addi	t4, t4, 1
-	j	for.cond
-for.cond.2:
-	li	t1, 10
-	blt	t2,t1,for.body.2
-	j	for.exit.2
-for.body.2:
-	li	t0, 0
-	j	for.cond.3
-for.exit.2:
-	addi	t3, t3, 1
-	j	for.cond.1
-for.cond.3:
-	li	t1, 10
-	blt	t0,t1,for.body.3
-	j	for.exit.3
-for.body.3:
-	li	t1, 1000
-	mul	t6, t4, t1
-	li	t1, 100
-	mul	t1, t3, t1
-	add	t6, t6, t1
-	li	t1, 10
-	mul	t1, t2, t1
-	add	t1, t6, t1
-	add	t6, t1, t0
-	li	t1, 4
-	mul	t1, t6, t1
-	add	t1, t5, t1
-	add	t6, t4, t0
-	sw	t6, 0(t1)
-	addi	t0, t0, 1
-	j	for.cond.3
-for.exit.3:
-	addi	t2, t2, 1
-	j	for.cond.2
-for.cond.4:
-	li	t1, 10
-	blt	t4,t1,for.body.4
-	j	for.exit.4
-for.body.4:
-	li	t3, 0
-	j	for.cond.5
-for.exit.4:
-	lw	s0, 0(sp)
-	lw	ra, 4(sp)
-	addi	sp, sp, 16
-	ret
-for.cond.5:
-	li	t1, 10
-	blt	t3,t1,for.body.5
-	j	for.exit.5
-for.body.5:
-	li	t2, 0
-	j	for.cond.6
-for.exit.5:
-	addi	t4, t4, 1
-	j	for.cond.4
-for.cond.6:
-	li	t1, 10
-	blt	t2,t1,for.body.6
-	j	for.exit.6
-for.body.6:
-	li	t0, 0
-	j	for.cond.7
-for.exit.6:
-	addi	t3, t3, 1
-	j	for.cond.5
-for.cond.7:
-	li	t1, 10
-	blt	t0,t1,for.body.7
-	j	for.exit.7
-for.body.7:
-	andi	t6, t0, 1
-	li	t1, 1
-	beq	t6,t1,if.true
-	j	if.false
-for.exit.7:
-	addi	t2, t2, 1
-	j	for.cond.6
-if.true:
-	li	t1, 1000
-	mul	t6, t4, t1
-	li	t1, 100
-	mul	t1, t3, t1
-	add	t6, t6, t1
-	li	t1, 10
-	mul	t1, t2, t1
-	add	t1, t6, t1
-	add	t6, t1, t0
-	li	t1, 4
-	mul	t1, t6, t1
-	add	t1, t5, t1
-	lw	t1, 0(t1)
-	add	a0, a0, t1
-	j	if.exit
-if.false:
-	li	t1, 1000
-	mul	t6, t4, t1
-	li	t1, 100
-	mul	t1, t3, t1
-	add	t6, t6, t1
-	li	t1, 10
-	mul	t1, t2, t1
-	add	t1, t6, t1
-	add	t6, t1, t0
-	li	t1, 4
-	mul	t1, t6, t1
-	add	t1, t5, t1
-	lw	t1, 0(t1)
-	sub	a0, a0, t1
-	j	if.exit
-if.exit:
-	addi	t0, t0, 1
-	j	for.cond.7
-	.size	loop, .-loop
-                            #function ends.
-	.globl	compute
-	.p2align	1
-	.type	compute,@function
-compute:
-entry.13:
-	addi	sp, sp, -16
-	sw	s0, 8(sp)
-	sw	s1, 4(sp)
-	sw	s2, 0(sp)
-	sw	ra, 12(sp)
-	mv	s0, a0
-	mv	a0, zero
-	li	s1, 0
-	li	s2, 0
-	j	wh.cond
-wh.cond:
-	bge	s0,s2,wh.body
-	j	wh.exit
-wh.body:
-	call	loop
-	li	t0, 5000
-	blt	t0,a0,if.true.1
-	j	if.exit.1
-wh.exit:
-	mv	a0, s1
-	lw	s0, 8(sp)
-	lw	s1, 4(sp)
-	lw	s2, 0(sp)
-	lw	ra, 12(sp)
-	addi	sp, sp, 16
-	ret
-if.true.1:
-	li	t0, 5000
-	sub	a0, a0, t0
-	j	if.exit.1
-if.exit.1:
-	add	t1, s1, a0
-	li	t0, 5000
-	blt	t0,t1,if.true.2
-	j	if.exit.2
-if.true.2:
-	li	t0, 5000
-	sub	t1, t1, t0
-	j	if.exit.2
-if.exit.2:
-	addi	t0, s2, 1
-	mv	s1, t1
-	mv	s2, t0
-	j	wh.cond
-	.size	compute, .-compute
-                            #function ends.
 	.globl	main
 	.p2align	1
 	.type	main,@function
 main:
-entry.14:
+entry.13:
 	addi	sp, sp, -16
 	sw	ra, 0(sp)
-	li	a0, 20
-	call	compute
+	li	t3, 0
+	li	t5, 0
+	li	t1, 0
+	li	a1, 0
+	li	a2, 0
+	li	a0, 678
+	li	t2, 567
+	li	t0, 456
+	li	t6, 345
+	li	t4, 234
+	j	for.cond.i
+for.cond.i:
+	li	a3, 100
+	blt	a2,a3,for.body.i
+	j	for.exit.i
+for.body.i:
+	li	t4, 123
+	add	t4, t4, t6
+	sub	a1, t4, t2
+	li	t4, 789
+	sub	t4, a1, t4
+	li	a1, 0
+	j	for.cond.1.i
+for.exit.i:
+	mv	a2, a1
+	li	a1, 0
+	j	for.cond.5.i
+for.cond.1.i:
+	li	a3, 100
+	blt	a1,a3,for.body.1.i
+	j	for.exit.1.i
+for.body.1.i:
+	add	t1, t4, t0
+	sub	t6, t1, a0
+	li	t1, 123
+	sub	a3, t6, t1
+	mv	t1, t5
+	li	a4, 0
+	mv	t6, a0
+	j	for.cond.2.i
+for.exit.1.i:
+	addi	a2, a2, 1
+	j	for.cond.i
+for.cond.2.i:
+	li	t5, 100
+	blt	a4,t5,for.body.2.i
+	j	for.exit.2.i
+for.body.2.i:
+	add	t1, a3, t2
+	li	t0, 789
+	sub	t0, t1, t0
+	sub	t0, t0, t4
+	li	t1, 0
+	mv	t5, t6
+	j	for.cond.3.i
+for.exit.2.i:
+	addi	a0, a1, 1
+	mv	t5, t1
+	mv	t1, a4
+	mv	a1, a0
+	mv	a0, t6
+	mv	t6, a3
+	j	for.cond.1.i
+for.cond.3.i:
+	li	t6, 10
+	blt	t1,t6,for.body.3.i
+	j	for.exit.3.i
+for.body.3.i:
+	add	t3, t0, t5
+	li	t2, 123
+	sub	t2, t3, t2
+	sub	t2, t2, a3
+	addi	t3, t2, 789
+	sub	t3, t3, t4
+	sub	t6, t3, t0
+	li	t3, 0
+	j	for.cond.4.i
+for.exit.3.i:
+	addi	t6, a4, 1
+	mv	a4, t6
+	mv	t6, t5
+	j	for.cond.2.i
+for.cond.4.i:
+	li	a0, 10
+	blt	t3,a0,for.body.4.i
+	j	for.exit.4.i
+for.body.4.i:
+	addi	t3, t3, 1
+	mv	t5, t6
+	j	for.cond.4.i
+for.exit.4.i:
+	addi	t1, t1, 1
+	j	for.cond.3.i
+for.cond.5.i:
+	li	a2, 10
+	blt	a1,a2,for.body.5.i
+	j	for.exit.5.i
+for.body.5.i:
+	li	a2, 0
+	j	for.cond.6.i
+for.exit.5.i:
 	call	printInt
 	li	a0, 0
 	lw	ra, 0(sp)
 	addi	sp, sp, 16
 	ret
+for.cond.6.i:
+	li	a3, 10
+	blt	a2,a3,for.body.6.i
+	j	for.exit.6.i
+for.body.6.i:
+	mv	t1, t5
+	li	a3, 0
+	j	for.cond.7.i
+for.exit.6.i:
+	addi	a1, a1, 1
+	j	for.cond.5.i
+for.cond.7.i:
+	li	t5, 10
+	blt	a3,t5,for.body.7.i
+	j	for.exit.7.i
+for.body.7.i:
+	add	t0, t6, t2
+	addi	t0, t0, 789
+	add	t0, t0, t4
+	add	t1, t0, a0
+	addi	t1, t1, 123
+	add	t3, t1, t6
+	li	t1, 0
+	j	for.cond.8.i
+for.exit.7.i:
+	addi	a2, a2, 1
+	mv	t5, t1
+	mv	t1, a3
+	j	for.cond.6.i
+for.cond.8.i:
+	li	t5, 10
+	blt	t1,t5,for.body.8.i
+	j	for.exit.8.i
+for.body.8.i:
+	addi	t1, t1, 1
+	mv	t2, t3
+	j	for.cond.8.i
+for.exit.8.i:
+	addi	t3, t2, 789
+	add	t3, t3, t4
+	add	a4, t3, t0
+	li	t3, 0
+	mv	t5, a0
+	j	for.cond.9.i
+for.cond.9.i:
+	li	a0, 10
+	blt	t3,a0,for.body.9.i
+	j	for.exit.9.i
+for.body.9.i:
+	addi	t3, t3, 1
+	mv	t5, a4
+	j	for.cond.9.i
+for.exit.9.i:
+	addi	a0, a3, 1
+	mv	a3, a0
+	mv	a0, t5
+	j	for.cond.7.i
 	.size	main, .-main
                             #function ends.

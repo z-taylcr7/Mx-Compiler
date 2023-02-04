@@ -67,9 +67,6 @@ public class Loop {
 
         for (Value operand : inst.operands) {
             if (!this.isInvariant(operand)) {
-                // Log.mark("not invariant");
-                // Log.info(inst.format());
-                // Log.info(operand.identifier());
                 return false;
             }
         }

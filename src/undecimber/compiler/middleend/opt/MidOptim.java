@@ -27,6 +27,8 @@ public class MidOptim implements ModulePass {
         new Inline().runModule(module);
         for (IRFunction function : module.functions) {
             new BlockMerger().runFunction(function);
+            new LoopInvariant().runFunction(function);
+            new BlockMerger().runFunction(function);
         }
 
         // re-analyze info for asm
