@@ -125,6 +125,7 @@ public class Mem2Reg implements FunctionPass {
                 it.remove();
             }
             else if (inst instanceof LoadNode) {
+                //load: replace with phis
                 if (allocated.contains(((LoadNode) inst).getLoadAddr())) {
                     String name = ((LoadNode) inst).getLoadAddr().name;
                     Value replace = getReplace(name);
@@ -142,9 +143,11 @@ public class Mem2Reg implements FunctionPass {
                 }
             }
             else if (inst instanceof StoreNode) {
+                //store: update namestack
                 if (allocated.contains(((StoreNode) inst).getStorePtr())) {
                     String name = ((StoreNode) inst).getStorePtr().name;
                     updateReplace(name, ((StoreNode) inst).getStoreData());
+
                     rollbackRecord.add(name);
                     it.remove();
                 }

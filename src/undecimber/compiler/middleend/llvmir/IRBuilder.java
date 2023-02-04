@@ -694,14 +694,6 @@ public class IRBuilder implements ASTVisitor {
         module.functions.add(cur.function);
         station.getFuncInStack(cur.function.name).value = cur.function;
     }
-
-    private void funcDeclaration(FuncDefNode node) {
-        FuncRegistry funcRegistry = node.funcRegistry;
-        IRFunction fun = new IRFunction(funcRegistry.name, translator.translateFuncType(funcRegistry.type, null), module);
-        module.functions.add(fun);
-        funcRegistry.value = fun;
-    }
-
     private void builtInFuncDeclaration(RootNode node) {
         module.setBottomFunctions();
         for (FuncRegistry funcRegistry : node.scope.builtinFuncList) {
@@ -717,6 +709,14 @@ public class IRBuilder implements ASTVisitor {
             module.builtinFunctions.add(builtinFunc);
             builtinFuncRegistry.value = builtinFunc;
         }
+    }
+
+
+    private void funcDeclaration(FuncDefNode node) {
+        FuncRegistry funcRegistry = node.funcRegistry;
+        IRFunction fun = new IRFunction(funcRegistry.name, translator.translateFuncType(funcRegistry.type, null), module);
+        module.functions.add(fun);
+        funcRegistry.value = fun;
     }
 
     private void classDeclaration(RootNode node) {

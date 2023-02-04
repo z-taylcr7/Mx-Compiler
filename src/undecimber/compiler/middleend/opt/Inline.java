@@ -83,7 +83,8 @@ public class Inline implements ModulePass {
             }
         }
     }
-    // callee's code will be inserted to caller
+
+
     private void inline(CallNode call) {
         IRFunction caller = call.parentBlock.parentFunction,
                 callee = call.callFunc();
@@ -100,7 +101,6 @@ public class Inline implements ModulePass {
         // avoiding concurrent self recursion.
 
         ArrayList<IRBlock> calleeBlocks = new ArrayList<>(callee.blockList);
-
         for (IRBlock block : calleeBlocks) {
             IRBlock inlinedBlock = new IRBlock(block.name + LLVM.InlineSuffix, caller);
             replaceValueMap.put(block, inlinedBlock);

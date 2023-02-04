@@ -10,6 +10,7 @@ import undecimber.compiler.middleend.llvmir.irtype.IRLabelType;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 public class IRBlock extends Value {
     public LinkedList<IRBaseNode> instructions=new LinkedList<>();
@@ -99,17 +100,17 @@ public class IRBlock extends Value {
         if (instructions.isEmpty()) return;
         instructions.add(instructions.size() - 1, inst);
     }
-//
-//    public void tAddByIterator(IRBaseInst inst, ListIterator<IRBaseInst> it) {
-//        inst.parentBlock = this;
-//        it.add(inst);
-//    }
-//
-//    public void tSetByIterator(IRBaseInst inst, ListIterator<IRBaseInst> it) {
-//        inst.parentBlock = this;
-//        it.set(inst);
-//    }
-//
+
+    public void addByIterator(IRBaseNode node, ListIterator<IRBaseNode> it) {
+        node.parentBlock = this;
+        it.add(node);
+    }
+
+    public void setByIterator(IRBaseNode node, ListIterator<IRBaseNode> it) {
+        node.parentBlock = this;
+        it.set(node);
+    }
+
     public void replaceTerminator(IRBaseNode newTerminator) {
         newTerminator.parentBlock = this;
         instructions.removeLast();
