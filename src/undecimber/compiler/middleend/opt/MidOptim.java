@@ -24,7 +24,7 @@ public class MidOptim implements ModulePass {
             new Mem2Reg().runFunction(function);
         }
 
-        new Inline().runModule(module);
+//        new Inline().runModule(module);
         for (IRFunction function : module.functions) {
 //            new BlockMerger().runFunction(function);
         }
