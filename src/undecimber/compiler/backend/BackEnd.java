@@ -34,12 +34,12 @@ public class BackEnd {
         new StackAllocator().runModule(this.module);
 
          new BackEndOptim().runModule(this.module);
-//        PrintStream ps=System.out;
+        PrintStream ps=System.out;
 
-        PrintStream ps= new PrintStream("output.s");
+//        PrintStream ps= new PrintStream("output.s");
 
         new AsmPrinter(ps,"output.s"  ).runModule(this.module);
-        BuiltInPrinter biu=new BuiltInPrinter();
-        biu.print();
+//        BuiltInPrinter biu=new BuiltInPrinter();
+//        biu.print();
     }
 }
